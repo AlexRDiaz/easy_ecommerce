@@ -1,0 +1,548 @@
+Date : 2023-04-24 12:01:46
+Directory : /Users/matiasfonseca/Desktop/EasyEcommerce/frontend
+Total : 260 files,  35919 codes, 767 comments, 2131 blanks, all 38817 lines
+
+Languages
++------------+------------+------------+------------+------------+------------+
+| language   | files      | code       | comment    | blank      | total      |
++------------+------------+------------+------------+------------+------------+
+| Dart       |        206 |     34,282 |        494 |      1,852 |     36,628 |
+| XML        |         17 |        607 |         48 |         19 |        674 |
+| C++        |         16 |        543 |        118 |        181 |        842 |
+| JSON       |          4 |        248 |          0 |          4 |        252 |
+| Groovy     |          3 |         89 |          5 |         22 |        116 |
+| YAML       |          2 |         49 |         83 |         21 |        153 |
+| Swift      |          4 |         42 |          3 |         12 |         57 |
+| HTML       |          1 |         38 |         16 |          6 |         60 |
+| Markdown   |          5 |         13 |          0 |         12 |         25 |
+| Properties |          2 |          8 |          0 |          2 |         10 |
++------------+------------+------------+------------+------------+------------+
+
+Directories
++--------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                                                 | files      | code       | comment    | blank      | total      |
++--------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                                                    |        260 |     35,919 |        767 |      2,131 |     38,817 |
+| . (Files)                                                                                                                            |          3 |         59 |         83 |         28 |        170 |
+| android                                                                                                                              |         12 |        159 |         51 |         33 |        243 |
+| android (Files)                                                                                                                      |          3 |         38 |          0 |         10 |         48 |
+| android/app                                                                                                                          |          8 |        116 |         51 |         22 |        189 |
+| android/app (Files)                                                                                                                  |          1 |         54 |          5 |         13 |         72 |
+| android/app/src                                                                                                                      |          7 |         62 |         46 |          9 |        117 |
+| android/app/src/debug                                                                                                                |          1 |          4 |          4 |          1 |          9 |
+| android/app/src/main                                                                                                                 |          5 |         54 |         38 |          7 |         99 |
+| android/app/src/main (Files)                                                                                                         |          1 |         28 |          6 |          1 |         35 |
+| android/app/src/main/res                                                                                                             |          4 |         26 |         32 |          6 |         64 |
+| android/app/src/main/res/drawable                                                                                                    |          1 |          4 |          7 |          2 |         13 |
+| android/app/src/main/res/drawable-v21                                                                                                |          1 |          4 |          7 |          2 |         13 |
+| android/app/src/main/res/values                                                                                                      |          1 |          9 |          9 |          1 |         19 |
+| android/app/src/main/res/values-night                                                                                                |          1 |          9 |          9 |          1 |         19 |
+| android/app/src/profile                                                                                                              |          1 |          4 |          4 |          1 |          9 |
+| android/gradle                                                                                                                       |          1 |          5 |          0 |          1 |          6 |
+| android/gradle/wrapper                                                                                                               |          1 |          5 |          0 |          1 |          6 |
+| ios                                                                                                                                  |         11 |        315 |          2 |         13 |        330 |
+| ios/Flutter                                                                                                                          |          1 |         26 |          0 |          1 |         27 |
+| ios/Runner                                                                                                                           |          8 |        273 |          2 |         10 |        285 |
+| ios/Runner (Files)                                                                                                                   |          3 |         64 |          0 |          4 |         68 |
+| ios/Runner.xcodeproj                                                                                                                 |          1 |          8 |          0 |          1 |          9 |
+| ios/Runner.xcodeproj/project.xcworkspace                                                                                             |          1 |          8 |          0 |          1 |          9 |
+| ios/Runner.xcodeproj/project.xcworkspace/xcshareddata                                                                                |          1 |          8 |          0 |          1 |          9 |
+| ios/Runner.xcworkspace                                                                                                               |          1 |          8 |          0 |          1 |          9 |
+| ios/Runner.xcworkspace/xcshareddata                                                                                                  |          1 |          8 |          0 |          1 |          9 |
+| ios/Runner/Assets.xcassets                                                                                                           |          3 |        148 |          0 |          4 |        152 |
+| ios/Runner/Assets.xcassets/AppIcon.appiconset                                                                                        |          1 |        122 |          0 |          1 |        123 |
+| ios/Runner/Assets.xcassets/LaunchImage.imageset                                                                                      |          2 |         26 |          0 |          3 |         29 |
+| ios/Runner/Base.lproj                                                                                                                |          2 |         61 |          2 |          2 |         65 |
+| lib                                                                                                                                  |        208 |     34,268 |        484 |      1,848 |     36,600 |
+| lib (Files)                                                                                                                          |          1 |         65 |          1 |          4 |         70 |
+| lib/config                                                                                                                           |          3 |         17 |          0 |          5 |         22 |
+| lib/connections                                                                                                                      |          1 |      1,667 |         23 |        202 |      1,892 |
+| lib/helpers                                                                                                                          |          3 |         21 |          0 |          6 |         27 |
+| lib/middlewares                                                                                                                      |          1 |         19 |          0 |          3 |         22 |
+| lib/providers                                                                                                                        |          6 |        109 |          0 |         21 |        130 |
+| lib/providers (Files)                                                                                                                |          1 |          0 |          0 |          1 |          1 |
+| lib/providers/filters_orders                                                                                                         |          1 |         69 |          0 |         12 |         81 |
+| lib/providers/logistic                                                                                                               |          1 |         10 |          0 |          2 |         12 |
+| lib/providers/operator                                                                                                               |          1 |         10 |          0 |          2 |         12 |
+| lib/providers/sellers                                                                                                                |          1 |         10 |          0 |          2 |         12 |
+| lib/providers/transport                                                                                                              |          1 |         10 |          0 |          2 |         12 |
+| lib/routes                                                                                                                           |          1 |        309 |         43 |         41 |        393 |
+| lib/theme                                                                                                                            |          1 |         16 |          0 |          2 |         18 |
+| lib/ui                                                                                                                               |        191 |     32,045 |        417 |      1,564 |     34,026 |
+| lib/ui/login                                                                                                                         |          2 |        194 |          0 |         14 |        208 |
+| lib/ui/login (Files)                                                                                                                 |          1 |        178 |          0 |         11 |        189 |
+| lib/ui/login/controllers                                                                                                             |          1 |         16 |          0 |          3 |         19 |
+| lib/ui/logistic                                                                                                                      |         85 |     13,724 |        303 |        712 |     14,739 |
+| lib/ui/logistic (Files)                                                                                                              |          1 |          0 |          0 |          1 |          1 |
+| lib/ui/logistic/account_status                                                                                                       |          3 |        340 |          2 |         21 |        363 |
+| lib/ui/logistic/account_status (Files)                                                                                               |          2 |        336 |          2 |         19 |        357 |
+| lib/ui/logistic/account_status/controllers                                                                                           |          1 |          4 |          0 |          2 |          6 |
+| lib/ui/logistic/add_carrier                                                                                                          |          3 |        450 |        111 |         22 |        583 |
+| lib/ui/logistic/add_carrier (Files)                                                                                                  |          2 |        412 |         96 |         18 |        526 |
+| lib/ui/logistic/add_carrier/controllers                                                                                              |          1 |         38 |         15 |          4 |         57 |
+| lib/ui/logistic/add_logistics_user                                                                                                   |          3 |      1,029 |          2 |         30 |      1,061 |
+| lib/ui/logistic/add_logistics_user (Files)                                                                                           |          2 |        976 |          2 |         24 |      1,002 |
+| lib/ui/logistic/add_logistics_user/controllers                                                                                       |          1 |         53 |          0 |          6 |         59 |
+| lib/ui/logistic/add_sellers                                                                                                          |          3 |        774 |          2 |         35 |        811 |
+| lib/ui/logistic/add_sellers (Files)                                                                                                  |          2 |        695 |          2 |         25 |        722 |
+| lib/ui/logistic/add_sellers/controllers                                                                                              |          1 |         79 |          0 |         10 |         89 |
+| lib/ui/logistic/add_stock_to_vendors                                                                                                 |          3 |        339 |         68 |         23 |        430 |
+| lib/ui/logistic/add_stock_to_vendors (Files)                                                                                         |          2 |        318 |         68 |         19 |        405 |
+| lib/ui/logistic/add_stock_to_vendors/controllers                                                                                     |          1 |         21 |          0 |          4 |         25 |
+| lib/ui/logistic/assign_routes                                                                                                        |          2 |        196 |          0 |          7 |        203 |
+| lib/ui/logistic/assign_routes (Files)                                                                                                |          1 |        190 |          0 |          5 |        195 |
+| lib/ui/logistic/assign_routes/controllers                                                                                            |          1 |          6 |          0 |          2 |          8 |
+| lib/ui/logistic/dashboard                                                                                                            |          1 |        681 |          3 |         32 |        716 |
+| lib/ui/logistic/delivery_historial                                                                                                   |          4 |        686 |          9 |         40 |        735 |
+| lib/ui/logistic/delivery_historial (Files)                                                                                           |          3 |        682 |          9 |         38 |        729 |
+| lib/ui/logistic/delivery_historial/controllers                                                                                       |          1 |          4 |          0 |          2 |          6 |
+| lib/ui/logistic/delivery_status                                                                                                      |          3 |        622 |          1 |         28 |        651 |
+| lib/ui/logistic/delivery_status (Files)                                                                                              |          2 |        618 |          1 |         26 |        645 |
+| lib/ui/logistic/delivery_status/controllers                                                                                          |          1 |          4 |          0 |          2 |          6 |
+| lib/ui/logistic/guides_sent                                                                                                          |          3 |        599 |          3 |         31 |        633 |
+| lib/ui/logistic/guides_sent (Files)                                                                                                  |          2 |        595 |          3 |         29 |        627 |
+| lib/ui/logistic/guides_sent/controllers                                                                                              |          1 |          4 |          0 |          2 |          6 |
+| lib/ui/logistic/income_and_expenses                                                                                                  |          3 |        545 |          1 |         26 |        572 |
+| lib/ui/logistic/income_and_expenses (Files)                                                                                          |          2 |        517 |          1 |         21 |        539 |
+| lib/ui/logistic/income_and_expenses/controllers                                                                                      |          1 |         28 |          0 |          5 |         33 |
+| lib/ui/logistic/layout                                                                                                               |          1 |        208 |          2 |          9 |        219 |
+| lib/ui/logistic/logistic_balance                                                                                                     |          2 |        422 |          0 |         21 |        443 |
+| lib/ui/logistic/logistic_balance (Files)                                                                                             |          1 |        416 |          0 |         19 |        435 |
+| lib/ui/logistic/logistic_balance/controllers                                                                                         |          1 |          6 |          0 |          2 |          8 |
+| lib/ui/logistic/logistics_products                                                                                                   |          2 |        133 |          0 |          7 |        140 |
+| lib/ui/logistic/logistics_products (Files)                                                                                           |          1 |        129 |          0 |          5 |        134 |
+| lib/ui/logistic/logistics_products/controllers                                                                                       |          1 |          4 |          0 |          2 |          6 |
+| lib/ui/logistic/print_guides                                                                                                         |          3 |        968 |          2 |         30 |      1,000 |
+| lib/ui/logistic/print_guides (Files)                                                                                                 |          1 |        473 |          2 |         19 |        494 |
+| lib/ui/logistic/print_guides/controllers                                                                                             |          1 |          5 |          0 |          2 |          7 |
+| lib/ui/logistic/print_guides/model_guide                                                                                             |          1 |        490 |          0 |          9 |        499 |
+| lib/ui/logistic/printed_guides                                                                                                       |          2 |        100 |          0 |          6 |        106 |
+| lib/ui/logistic/printed_guides (Files)                                                                                               |          1 |         96 |          0 |          4 |        100 |
+| lib/ui/logistic/printed_guides/controllers                                                                                           |          1 |          4 |          0 |          2 |          6 |
+| lib/ui/logistic/profit_date                                                                                                          |          1 |         74 |          0 |          6 |         80 |
+| lib/ui/logistic/proof_payment                                                                                                        |          3 |        646 |         17 |         45 |        708 |
+| lib/ui/logistic/proof_payment (Files)                                                                                                |          2 |        642 |         17 |         43 |        702 |
+| lib/ui/logistic/proof_payment/controllers                                                                                            |          1 |          4 |          0 |          2 |          6 |
+| lib/ui/logistic/provider_invoices                                                                                                    |          1 |         23 |          0 |          5 |         28 |
+| lib/ui/logistic/remote_support                                                                                                       |          1 |        114 |          0 |          4 |        118 |
+| lib/ui/logistic/returns                                                                                                              |          3 |        530 |          1 |         22 |        553 |
+| lib/ui/logistic/returns (Files)                                                                                                      |          2 |        526 |          1 |         20 |        547 |
+| lib/ui/logistic/returns/controllers                                                                                                  |          1 |          4 |          0 |          2 |          6 |
+| lib/ui/logistic/sales_invoices                                                                                                       |          1 |         23 |          0 |          5 |         28 |
+| lib/ui/logistic/shopping                                                                                                             |          2 |         89 |          0 |          7 |         96 |
+| lib/ui/logistic/shopping (Files)                                                                                                     |          1 |         85 |          0 |          5 |         90 |
+| lib/ui/logistic/shopping/controllers                                                                                                 |          1 |          4 |          0 |          2 |          6 |
+| lib/ui/logistic/shopping_status                                                                                                      |          2 |         89 |          0 |          7 |         96 |
+| lib/ui/logistic/shopping_status (Files)                                                                                              |          1 |         85 |          0 |          5 |         90 |
+| lib/ui/logistic/shopping_status/controllers                                                                                          |          1 |          4 |          0 |          2 |          6 |
+| lib/ui/logistic/stock                                                                                                                |          2 |         89 |          0 |          7 |         96 |
+| lib/ui/logistic/stock (Files)                                                                                                        |          1 |         85 |          0 |          5 |         90 |
+| lib/ui/logistic/stock/controllers                                                                                                    |          1 |          4 |          0 |          2 |          6 |
+| lib/ui/logistic/stock_by_company                                                                                                     |          2 |        128 |          0 |          7 |        135 |
+| lib/ui/logistic/stock_by_company (Files)                                                                                             |          1 |        124 |          0 |          5 |        129 |
+| lib/ui/logistic/stock_by_company/controllers                                                                                         |          1 |          4 |          0 |          2 |          6 |
+| lib/ui/logistic/transport_delivery_historial                                                                                         |          4 |        703 |          9 |         39 |        751 |
+| lib/ui/logistic/transport_delivery_historial (Files)                                                                                 |          3 |        699 |          9 |         37 |        745 |
+| lib/ui/logistic/transport_delivery_historial/controllers                                                                             |          1 |          4 |          0 |          2 |          6 |
+| lib/ui/logistic/transport_invoices                                                                                                   |          5 |        713 |         13 |         50 |        776 |
+| lib/ui/logistic/transport_invoices (Files)                                                                                           |          4 |        709 |         13 |         48 |        770 |
+| lib/ui/logistic/transport_invoices/controllers                                                                                       |          1 |          4 |          0 |          2 |          6 |
+| lib/ui/logistic/transport_invoices_cxc                                                                                               |          5 |        811 |         13 |         50 |        874 |
+| lib/ui/logistic/transport_invoices_cxc (Files)                                                                                       |          4 |        807 |         13 |         48 |        868 |
+| lib/ui/logistic/transport_invoices_cxc/controllers                                                                                   |          1 |          4 |          0 |          2 |          6 |
+| lib/ui/logistic/update_password                                                                                                      |          2 |        176 |          2 |          9 |        187 |
+| lib/ui/logistic/update_password (Files)                                                                                              |          1 |        163 |          2 |          7 |        172 |
+| lib/ui/logistic/update_password/controllers                                                                                          |          1 |         13 |          0 |          2 |         15 |
+| lib/ui/logistic/vendor_invoices                                                                                                      |          5 |        843 |         41 |         51 |        935 |
+| lib/ui/logistic/vendor_invoices (Files)                                                                                              |          4 |        839 |         41 |         49 |        929 |
+| lib/ui/logistic/vendor_invoices/controllers                                                                                          |          1 |          4 |          0 |          2 |          6 |
+| lib/ui/logistic/vendor_withdrawal_request                                                                                            |          3 |        558 |          1 |         25 |        584 |
+| lib/ui/logistic/vendor_withdrawal_request (Files)                                                                                    |          2 |        554 |          1 |         23 |        578 |
+| lib/ui/logistic/vendor_withdrawal_request/controllers                                                                                |          1 |          4 |          0 |          2 |          6 |
+| lib/ui/logistic/withdrawal_assignment                                                                                                |          1 |         23 |          0 |          4 |         27 |
+| lib/ui/operator                                                                                                                      |         12 |      2,598 |          6 |        115 |      2,719 |
+| lib/ui/operator/layout                                                                                                               |          1 |         90 |          0 |          8 |         98 |
+| lib/ui/operator/my_operator_account                                                                                                  |          1 |         62 |          0 |          4 |         66 |
+| lib/ui/operator/orders_operator                                                                                                      |          3 |        615 |          1 |         29 |        645 |
+| lib/ui/operator/orders_operator (Files)                                                                                              |          2 |        551 |          1 |         24 |        576 |
+| lib/ui/operator/orders_operator/controllers                                                                                          |          1 |         64 |          0 |          5 |         69 |
+| lib/ui/operator/received_values.dart                                                                                                 |          2 |        603 |          2 |         28 |        633 |
+| lib/ui/operator/returns                                                                                                              |          1 |        419 |          0 |         11 |        430 |
+| lib/ui/operator/state_orders                                                                                                         |          2 |        634 |          1 |         26 |        661 |
+| lib/ui/operator/update_password_operator                                                                                             |          2 |        175 |          2 |          9 |        186 |
+| lib/ui/operator/update_password_operator (Files)                                                                                     |          1 |        162 |          2 |          7 |        171 |
+| lib/ui/operator/update_password_operator/controllers                                                                                 |          1 |         13 |          0 |          2 |         15 |
+| lib/ui/sellers                                                                                                                       |         37 |      6,276 |         15 |        296 |      6,587 |
+| lib/ui/sellers/add_seller_user                                                                                                       |          3 |        595 |          0 |         19 |        614 |
+| lib/ui/sellers/add_seller_user (Files)                                                                                               |          2 |        591 |          0 |         17 |        608 |
+| lib/ui/sellers/add_seller_user/controllers                                                                                           |          1 |          4 |          0 |          2 |          6 |
+| lib/ui/sellers/cash_withdrawals_sellers                                                                                              |          5 |        495 |          1 |         34 |        530 |
+| lib/ui/sellers/cash_withdrawals_sellers (Files)                                                                                      |          3 |        487 |          1 |         30 |        518 |
+| lib/ui/sellers/cash_withdrawals_sellers/controllers                                                                                  |          2 |          8 |          0 |          4 |         12 |
+| lib/ui/sellers/dashboard                                                                                                             |          1 |        609 |          2 |         29 |        640 |
+| lib/ui/sellers/delivery_status                                                                                                       |          2 |        598 |          1 |         26 |        625 |
+| lib/ui/sellers/layout                                                                                                                |          1 |        150 |          0 |          9 |        159 |
+| lib/ui/sellers/my_cart_sellers                                                                                                       |          2 |        124 |          0 |          7 |        131 |
+| lib/ui/sellers/my_cart_sellers (Files)                                                                                               |          1 |        118 |          0 |          5 |        123 |
+| lib/ui/sellers/my_cart_sellers/controllers                                                                                           |          1 |          6 |          0 |          2 |          8 |
+| lib/ui/sellers/my_seller_account                                                                                                     |          2 |        233 |          0 |         10 |        243 |
+| lib/ui/sellers/my_seller_account (Files)                                                                                             |          1 |        209 |          0 |          7 |        216 |
+| lib/ui/sellers/my_seller_account/controllers                                                                                         |          1 |         24 |          0 |          3 |         27 |
+| lib/ui/sellers/my_stock                                                                                                              |          2 |        109 |          0 |          7 |        116 |
+| lib/ui/sellers/my_stock (Files)                                                                                                      |          1 |        103 |          0 |          5 |        108 |
+| lib/ui/sellers/my_stock/controllers                                                                                                  |          1 |          6 |          0 |          2 |          8 |
+| lib/ui/sellers/order_entry                                                                                                           |          3 |        800 |          1 |         31 |        832 |
+| lib/ui/sellers/order_entry (Files)                                                                                                   |          2 |        736 |          1 |         26 |        763 |
+| lib/ui/sellers/order_entry/controllers                                                                                               |          1 |         64 |          0 |          5 |         69 |
+| lib/ui/sellers/order_history_sellers                                                                                                 |          3 |        460 |          5 |         23 |        488 |
+| lib/ui/sellers/order_history_sellers (Files)                                                                                         |          2 |        456 |          5 |         21 |        482 |
+| lib/ui/sellers/order_history_sellers/controllers                                                                                     |          1 |          4 |          0 |          2 |          6 |
+| lib/ui/sellers/providers_sellers                                                                                                     |          2 |        111 |          0 |          7 |        118 |
+| lib/ui/sellers/providers_sellers (Files)                                                                                             |          1 |        107 |          0 |          5 |        112 |
+| lib/ui/sellers/providers_sellers/controllers                                                                                         |          1 |          4 |          0 |          2 |          6 |
+| lib/ui/sellers/returns_seller                                                                                                        |          3 |        525 |          1 |         22 |        548 |
+| lib/ui/sellers/returns_seller (Files)                                                                                                |          2 |        519 |          1 |         20 |        540 |
+| lib/ui/sellers/returns_seller/controllers                                                                                            |          1 |          6 |          0 |          2 |          8 |
+| lib/ui/sellers/sales_report                                                                                                          |          3 |        736 |          2 |         36 |        774 |
+| lib/ui/sellers/sales_report (Files)                                                                                                  |          2 |        716 |          2 |         32 |        750 |
+| lib/ui/sellers/sales_report/controllers                                                                                              |          1 |         20 |          0 |          4 |         24 |
+| lib/ui/sellers/unwanted_orders_sellers                                                                                               |          2 |        417 |          0 |         17 |        434 |
+| lib/ui/sellers/unwanted_orders_sellers (Files)                                                                                       |          1 |        392 |          0 |         15 |        407 |
+| lib/ui/sellers/unwanted_orders_sellers/controllers                                                                                   |          1 |         25 |          0 |          2 |         27 |
+| lib/ui/sellers/update_password                                                                                                       |          2 |        177 |          2 |          9 |        188 |
+| lib/ui/sellers/update_password (Files)                                                                                               |          1 |        164 |          2 |          7 |        173 |
+| lib/ui/sellers/update_password/controllers                                                                                           |          1 |         13 |          0 |          2 |         15 |
+| lib/ui/sellers/wallet_sellers                                                                                                        |          1 |        137 |          0 |         10 |        147 |
+| lib/ui/transport                                                                                                                     |         30 |      5,293 |         79 |        258 |      5,630 |
+| lib/ui/transport/add_operators_transport                                                                                             |          3 |        767 |          3 |         38 |        808 |
+| lib/ui/transport/add_operators_transport (Files)                                                                                     |          2 |        714 |          3 |         29 |        746 |
+| lib/ui/transport/add_operators_transport/controllers                                                                                 |          1 |         53 |          0 |          9 |         62 |
+| lib/ui/transport/create_sub_routes_transport                                                                                         |          2 |        114 |          0 |          7 |        121 |
+| lib/ui/transport/create_sub_routes_transport (Files)                                                                                 |          1 |        110 |          0 |          5 |        115 |
+| lib/ui/transport/create_sub_routes_transport/controllers                                                                             |          1 |          4 |          0 |          2 |          6 |
+| lib/ui/transport/delivery_status_transport                                                                                           |          3 |        626 |          1 |         28 |        655 |
+| lib/ui/transport/delivery_status_transport (Files)                                                                                   |          2 |        620 |          1 |         26 |        647 |
+| lib/ui/transport/delivery_status_transport/controllers                                                                               |          1 |          6 |          0 |          2 |          8 |
+| lib/ui/transport/layout                                                                                                              |          1 |         96 |          0 |          8 |        104 |
+| lib/ui/transport/my_orders_prv                                                                                                       |          3 |        644 |          1 |         27 |        672 |
+| lib/ui/transport/my_orders_prv (Files)                                                                                               |          2 |        640 |          1 |         25 |        666 |
+| lib/ui/transport/my_orders_prv/controllers                                                                                           |          1 |          4 |          0 |          2 |          6 |
+| lib/ui/transport/my_transporter_account                                                                                              |          2 |         91 |         57 |         11 |        159 |
+| lib/ui/transport/my_transporter_account (Files)                                                                                      |          1 |         91 |         57 |         10 |        158 |
+| lib/ui/transport/my_transporter_account/controllers                                                                                  |          1 |          0 |          0 |          1 |          1 |
+| lib/ui/transport/orders_history_transport                                                                                            |          3 |        478 |          5 |         26 |        509 |
+| lib/ui/transport/orders_history_transport (Files)                                                                                    |          2 |        472 |          5 |         24 |        501 |
+| lib/ui/transport/orders_history_transport/controllers                                                                                |          1 |          6 |          0 |          2 |          8 |
+| lib/ui/transport/payment_vouchers_transport                                                                                          |          5 |      1,082 |          7 |         52 |      1,141 |
+| lib/ui/transport/payment_vouchers_transport (Files)                                                                                  |          4 |      1,078 |          7 |         50 |      1,135 |
+| lib/ui/transport/payment_vouchers_transport/controllers                                                                              |          1 |          4 |          0 |          2 |          6 |
+| lib/ui/transport/returns_transport                                                                                                   |          3 |        513 |          1 |         22 |        536 |
+| lib/ui/transport/returns_transport (Files)                                                                                           |          2 |        509 |          1 |         20 |        530 |
+| lib/ui/transport/returns_transport/controllers                                                                                       |          1 |          4 |          0 |          2 |          6 |
+| lib/ui/transport/transportation_billing                                                                                              |          3 |        706 |          2 |         30 |        738 |
+| lib/ui/transport/transportation_billing (Files)                                                                                      |          2 |        702 |          2 |         28 |        732 |
+| lib/ui/transport/transportation_billing/controllers                                                                                  |          1 |          4 |          0 |          2 |          6 |
+| lib/ui/transport/update_password_transport                                                                                           |          2 |        176 |          2 |          9 |        187 |
+| lib/ui/transport/update_password_transport (Files)                                                                                   |          1 |        163 |          2 |          7 |        172 |
+| lib/ui/transport/update_password_transport/controllers                                                                               |          1 |         13 |          0 |          2 |         15 |
+| lib/ui/utils                                                                                                                         |          1 |         36 |          1 |          2 |         39 |
+| lib/ui/welcome                                                                                                                       |          1 |        150 |          0 |          4 |        154 |
+| lib/ui/widgets                                                                                                                       |         23 |      3,774 |         13 |        163 |      3,950 |
+| lib/ui/widgets (Files)                                                                                                               |          5 |        229 |          0 |         14 |        243 |
+| lib/ui/widgets/forms                                                                                                                 |          8 |        612 |          0 |         35 |        647 |
+| lib/ui/widgets/logistic                                                                                                              |          4 |      1,254 |          6 |         27 |      1,287 |
+| lib/ui/widgets/logistic (Files)                                                                                                      |          2 |        805 |          1 |         14 |        820 |
+| lib/ui/widgets/logistic/data                                                                                                         |          1 |         67 |          5 |          6 |         78 |
+| lib/ui/widgets/logistic/layout                                                                                                       |          1 |        382 |          0 |          7 |        389 |
+| lib/ui/widgets/routes                                                                                                                |          3 |        485 |          6 |         39 |        530 |
+| lib/ui/widgets/sellers                                                                                                               |          1 |        321 |          0 |          5 |        326 |
+| lib/ui/widgets/transport                                                                                                             |          1 |        160 |          0 |          4 |        164 |
+| lib/ui/widgets/update_status_operator                                                                                                |          1 |        713 |          1 |         39 |        753 |
+| linux                                                                                                                                |          5 |        102 |         27 |         38 |        167 |
+| linux (Files)                                                                                                                        |          3 |         86 |         18 |         27 |        131 |
+| linux/flutter                                                                                                                        |          2 |         16 |          9 |         11 |         36 |
+| macos                                                                                                                                |          8 |        489 |          3 |         15 |        507 |
+| macos/Flutter                                                                                                                        |          1 |         10 |          3 |          4 |         17 |
+| macos/Runner                                                                                                                         |          5 |        463 |          0 |          9 |        472 |
+| macos/Runner (Files)                                                                                                                 |          3 |         52 |          0 |          7 |         59 |
+| macos/Runner.xcodeproj                                                                                                               |          1 |          8 |          0 |          1 |          9 |
+| macos/Runner.xcodeproj/project.xcworkspace                                                                                           |          1 |          8 |          0 |          1 |          9 |
+| macos/Runner.xcodeproj/project.xcworkspace/xcshareddata                                                                              |          1 |          8 |          0 |          1 |          9 |
+| macos/Runner.xcworkspace                                                                                                             |          1 |          8 |          0 |          1 |          9 |
+| macos/Runner.xcworkspace/xcshareddata                                                                                                |          1 |          8 |          0 |          1 |          9 |
+| macos/Runner/Assets.xcassets                                                                                                         |          1 |         68 |          0 |          1 |         69 |
+| macos/Runner/Assets.xcassets/AppIcon.appiconset                                                                                      |          1 |         68 |          0 |          1 |         69 |
+| macos/Runner/Base.lproj                                                                                                              |          1 |        343 |          0 |          1 |        344 |
+| test                                                                                                                                 |          1 |         14 |         10 |          7 |         31 |
+| web                                                                                                                                  |          2 |         73 |         16 |          7 |         96 |
+| windows                                                                                                                              |         10 |        440 |         91 |        142 |        673 |
+| windows/flutter                                                                                                                      |          2 |         14 |          9 |         11 |         34 |
+| windows/runner                                                                                                                       |          8 |        426 |         82 |        131 |        639 |
++--------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++--------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| filename                                                                                                                             | language   | code       | comment    | blank      | total      |
++--------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/README.md                                                                        | Markdown   |         10 |          0 |          7 |         17 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/analysis_options.yaml                                                            | YAML       |          3 |         23 |          4 |         30 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/android/app/build.gradle                                                         | Groovy     |         54 |          5 |         13 |         72 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/android/app/src/debug/AndroidManifest.xml                                        | XML        |          4 |          4 |          1 |          9 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/android/app/src/main/AndroidManifest.xml                                         | XML        |         28 |          6 |          1 |         35 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/android/app/src/main/res/drawable-v21/launch_background.xml                      | XML        |          4 |          7 |          2 |         13 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/android/app/src/main/res/drawable/launch_background.xml                          | XML        |          4 |          7 |          2 |         13 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/android/app/src/main/res/values-night/styles.xml                                 | XML        |          9 |          9 |          1 |         19 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/android/app/src/main/res/values/styles.xml                                       | XML        |          9 |          9 |          1 |         19 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/android/app/src/profile/AndroidManifest.xml                                      | XML        |          4 |          4 |          1 |          9 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/android/build.gradle                                                             | Groovy     |         27 |          0 |          5 |         32 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/android/gradle.properties                                                        | Properties |          3 |          0 |          1 |          4 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/android/gradle/wrapper/gradle-wrapper.properties                                 | Properties |          5 |          0 |          1 |          6 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/android/settings.gradle                                                          | Groovy     |          8 |          0 |          4 |         12 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/ios/Flutter/AppFrameworkInfo.plist                                               | XML        |         26 |          0 |          1 |         27 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/ios/Runner.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist   | XML        |          8 |          0 |          1 |          9 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/ios/Runner.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist                     | XML        |          8 |          0 |          1 |          9 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/ios/Runner/AppDelegate.swift                                                     | Swift      |         12 |          0 |          2 |         14 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/ios/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json                      | JSON       |        122 |          0 |          1 |        123 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/ios/Runner/Assets.xcassets/LaunchImage.imageset/Contents.json                    | JSON       |         23 |          0 |          1 |         24 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/ios/Runner/Assets.xcassets/LaunchImage.imageset/README.md                        | Markdown   |          3 |          0 |          2 |          5 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/ios/Runner/Base.lproj/LaunchScreen.storyboard                                    | XML        |         36 |          1 |          1 |         38 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/ios/Runner/Base.lproj/Main.storyboard                                            | XML        |         25 |          1 |          1 |         27 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/ios/Runner/Info.plist                                                            | XML        |         51 |          0 |          1 |         52 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/ios/Runner/Runner-Bridging-Header.h                                              | C++        |          1 |          0 |          1 |          2 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/config/colors.dart                                                           | Dart       |          7 |          0 |          2 |          9 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/config/exports.dart                                                          | Dart       |          4 |          0 |          2 |          6 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/config/images.dart                                                           | Dart       |          6 |          0 |          1 |          7 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/connections/connections.dart                                                 | Dart       |      1,667 |         23 |        202 |      1,892 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/helpers/navigators.dart                                                      | Dart       |         10 |          0 |          3 |         13 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/helpers/responsive.dart                                                      | Dart       |          8 |          0 |          2 |         10 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/helpers/server.dart                                                          | Dart       |          3 |          0 |          1 |          4 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/main.dart                                                                    | Dart       |         65 |          1 |          4 |         70 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/middlewares/navigation_middlewares.dart                                      | Dart       |         19 |          0 |          3 |         22 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/providers/filters_orders/filters_orders.dart                                 | Dart       |         69 |          0 |         12 |         81 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/providers/logistic/navigation_provider.dart                                  | Dart       |         10 |          0 |          2 |         12 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/providers/operator/navigation_provider.dart                                  | Dart       |         10 |          0 |          2 |         12 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/providers/readme.md                                                          | Markdown   |          0 |          0 |          1 |          1 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/providers/sellers/navigation_provider.dart                                   | Dart       |         10 |          0 |          2 |         12 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/providers/transport/navigation_provider.dart                                 | Dart       |         10 |          0 |          2 |         12 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/routes/get_routes.dart                                                       | Dart       |        309 |         43 |         41 |        393 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/theme/theme.dart                                                             | Dart       |         16 |          0 |          2 |         18 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/login/controllers/controllers.dart                                        | Dart       |         16 |          0 |          3 |         19 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/login/login.dart                                                          | Dart       |        178 |          0 |         11 |        189 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/account_status/account_status.dart                               | Dart       |        201 |          2 |         13 |        216 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/account_status/account_status_details.dart                       | Dart       |        135 |          0 |          6 |        141 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/account_status/controllers/controllers.dart                      | Dart       |          4 |          0 |          2 |          6 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/add_carrier/add_carrier.dart                                     | Dart       |        255 |         53 |         10 |        318 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/add_carrier/carrier_details.dart                                 | Dart       |        157 |         43 |          8 |        208 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/add_carrier/controllers/controllers.dart                         | Dart       |         38 |         15 |          4 |         57 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/add_logistics_user/add_logistics_user.dart                       | Dart       |        243 |          0 |         12 |        255 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/add_logistics_user/controllers/controllers.dart                  | Dart       |         53 |          0 |          6 |         59 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/add_logistics_user/edit_logistic_user.dart                       | Dart       |        733 |          2 |         12 |        747 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/add_sellers/add_sellers.dart                                     | Dart       |        425 |          0 |         12 |        437 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/add_sellers/controllers/controllers.dart                         | Dart       |         79 |          0 |         10 |         89 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/add_sellers/edit_sellers.dart                                    | Dart       |        270 |          2 |         13 |        285 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/add_stock_to_vendors/add_stock_details.dart                      | Dart       |        136 |         43 |          8 |        187 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/add_stock_to_vendors/add_stock_to_vendors.dart                   | Dart       |        182 |         25 |         11 |        218 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/add_stock_to_vendors/controllers/controllers.dart                | Dart       |         21 |          0 |          4 |         25 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/assign_routes/assign_routes.dart                                 | Dart       |        190 |          0 |          5 |        195 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/assign_routes/controllers/controllers.dart                       | Dart       |          6 |          0 |          2 |          8 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/dashboard/dashboard.dart                                         | Dart       |        681 |          3 |         32 |        716 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/delivery_historial/controllers/controllers.dart                  | Dart       |          4 |          0 |          2 |          6 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/delivery_historial/delivery_details.dart                         | Dart       |        193 |          1 |          9 |        203 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/delivery_historial/delivery_historial.dart                       | Dart       |        138 |          4 |         13 |        155 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/delivery_historial/history_by_date.dart                          | Dart       |        351 |          4 |         16 |        371 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/delivery_status/controllers/controllers.dart                     | Dart       |          4 |          0 |          2 |          6 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/delivery_status/delivery_status.dart                             | Dart       |        360 |          0 |         16 |        376 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/delivery_status/delivery_status_info.dart                        | Dart       |        258 |          1 |         10 |        269 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/guides_sent/controllers/controllers.dart                         | Dart       |          4 |          0 |          2 |          6 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/guides_sent/guides_sent.dart                                     | Dart       |         75 |          0 |          9 |         84 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/guides_sent/table_orders_guides_sent.dart                        | Dart       |        520 |          3 |         20 |        543 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/income_and_expenses/controllers/controllers.dart                 | Dart       |         28 |          0 |          5 |         33 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/income_and_expenses/income_and_expenses.dart                     | Dart       |        238 |          0 |         11 |        249 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/income_and_expenses/income_expense_details.dart                  | Dart       |        279 |          1 |         10 |        290 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/layout/layout.dart                                               | Dart       |        208 |          2 |          9 |        219 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/logistic_balance/controllers/controllers.dart                    | Dart       |          6 |          0 |          2 |          8 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/logistic_balance/logistic_balance.dart                           | Dart       |        416 |          0 |         19 |        435 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/logistics_products/controllers/controllers.dart                  | Dart       |          4 |          0 |          2 |          6 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/logistics_products/logistics_products.dart                       | Dart       |        129 |          0 |          5 |        134 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/print_guides/controllers/controllers.dart                        | Dart       |          5 |          0 |          2 |          7 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/print_guides/model_guide/model_guide.dart                        | Dart       |        490 |          0 |          9 |        499 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/print_guides/print_guides.dart                                   | Dart       |        473 |          2 |         19 |        494 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/printed_guides/controllers/controllers.dart                      | Dart       |          4 |          0 |          2 |          6 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/printed_guides/printedguides.dart                                | Dart       |         96 |          0 |          4 |        100 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/profit_date/profit_date.dart                                     | Dart       |         74 |          0 |          6 |         80 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/proof_payment/controllers/controllers.dart                       | Dart       |          4 |          0 |          2 |          6 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/proof_payment/payments_by_transport.dart                         | Dart       |        224 |          5 |         12 |        241 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/proof_payment/proof_payment.dart                                 | Dart       |        418 |         12 |         31 |        461 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/provider_invoices/provider_invoices.dart                         | Dart       |         23 |          0 |          5 |         28 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/readme.md                                                        | Markdown   |          0 |          0 |          1 |          1 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/remote_support/remote_support.dart                               | Dart       |        114 |          0 |          4 |        118 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/returns/controllers/controllers.dart                             | Dart       |          4 |          0 |          2 |          6 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/returns/return_details.dart                                      | Dart       |        178 |          1 |          9 |        188 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/returns/returns.dart                                             | Dart       |        348 |          0 |         11 |        359 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/sales_invoices/sales_invoices.dart                               | Dart       |         23 |          0 |          5 |         28 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/shopping/controllers/controllers.dart                            | Dart       |          4 |          0 |          2 |          6 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/shopping/shopping.dart                                           | Dart       |         85 |          0 |          5 |         90 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/shopping_status/controllers/controllers.dart                     | Dart       |          4 |          0 |          2 |          6 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/shopping_status/shopping_status.dart                             | Dart       |         85 |          0 |          5 |         90 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/stock/controllers/controllers.dart                               | Dart       |          4 |          0 |          2 |          6 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/stock/stock.dart                                                 | Dart       |         85 |          0 |          5 |         90 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/stock_by_company/controllers/controllers.dart                    | Dart       |          4 |          0 |          2 |          6 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/stock_by_company/stock_by_company.dart                           | Dart       |        124 |          0 |          5 |        129 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/transport_delivery_historial/controllers/controllers.dart        | Dart       |          4 |          0 |          2 |          6 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/transport_delivery_historial/transport_delivery_details.dart     | Dart       |        183 |          1 |          9 |        193 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/transport_delivery_historial/transport_delivery_historial.dart   | Dart       |        138 |          4 |         13 |        155 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/transport_delivery_historial/transport_history_by_transport.dart | Dart       |        378 |          4 |         15 |        397 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/transport_invoices/controllers/controllers.dart                  | Dart       |          4 |          0 |          2 |          6 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/transport_invoices/invoice_detail.dart                           | Dart       |        163 |          1 |          9 |        173 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/transport_invoices/invoices_by_date.dart                         | Dart       |        165 |          4 |         14 |        183 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/transport_invoices/invoices_by_transport.dart                    | Dart       |        237 |          4 |         12 |        253 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/transport_invoices/transport_invoices.dart                       | Dart       |        144 |          4 |         13 |        161 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/transport_invoices_cxc/cc_invoice_detail.dart                    | Dart       |        157 |          1 |          9 |        167 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/transport_invoices_cxc/cc_invoices_by_date.dart                  | Dart       |        165 |          4 |         14 |        183 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/transport_invoices_cxc/cc_invoices_by_transport.dart             | Dart       |        341 |          4 |         12 |        357 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/transport_invoices_cxc/cc_transport_invoices.dart                | Dart       |        144 |          4 |         13 |        161 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/transport_invoices_cxc/controllers/controllers.dart              | Dart       |          4 |          0 |          2 |          6 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/update_password/controllers/controllers.dart                     | Dart       |         13 |          0 |          2 |         15 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/update_password/update_password.dart                             | Dart       |        163 |          2 |          7 |        172 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/vendor_invoices/controllers/controllers.dart                     | Dart       |          4 |          0 |          2 |          6 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/vendor_invoices/invoice_details.dart                             | Dart       |        178 |          1 |          9 |        188 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/vendor_invoices/invoices_by_date.dart                            | Dart       |        363 |          4 |         11 |        378 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/vendor_invoices/invoices_by_vendor.dart                          | Dart       |        147 |          0 |         12 |        159 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/vendor_invoices/vendor_invoices.dart                             | Dart       |        151 |         36 |         17 |        204 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/vendor_withdrawal_request/controllers/controllers.dart           | Dart       |          4 |          0 |          2 |          6 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/vendor_withdrawal_request/vendor_withdrawal_request.dart         | Dart       |        321 |          0 |         11 |        332 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/vendor_withdrawal_request/withdrawal_details.dart                | Dart       |        233 |          1 |         12 |        246 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/logistic/withdrawal_assignment/withdrawal_assignment.dart                 | Dart       |         23 |          0 |          4 |         27 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/operator/layout/layout.dart                                               | Dart       |         90 |          0 |          8 |         98 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/operator/my_operator_account/my_operator_account.dart                     | Dart       |         62 |          0 |          4 |         66 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/operator/orders_operator/controllers/controllers.dart                     | Dart       |         64 |          0 |          5 |         69 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/operator/orders_operator/info_orders_operator.dart                        | Dart       |        248 |          1 |         10 |        259 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/operator/orders_operator/orders_operator.dart                             | Dart       |        303 |          0 |         14 |        317 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/operator/received_values.dart/info_received_orders.dart                   | Dart       |        244 |          1 |         10 |        255 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/operator/received_values.dart/received_values.dart                        | Dart       |        359 |          1 |         18 |        378 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/operator/returns/returns.dart                                             | Dart       |        419 |          0 |         11 |        430 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/operator/state_orders/info_state_orders.dart                              | Dart       |        284 |          1 |         10 |        295 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/operator/state_orders/state_orders.dart                                   | Dart       |        350 |          0 |         16 |        366 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/operator/update_password_operator/controllers/controllers.dart            | Dart       |         13 |          0 |          2 |         15 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/operator/update_password_operator/update_password_operator.dart           | Dart       |        162 |          2 |          7 |        171 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/sellers/add_seller_user/add_seller_user.dart                              | Dart       |        174 |          0 |          9 |        183 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/sellers/add_seller_user/controllers/controllers.dart                      | Dart       |          4 |          0 |          2 |          6 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/sellers/add_seller_user/seller_details.dart                               | Dart       |        417 |          0 |          8 |        425 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/sellers/cash_withdrawals_sellers/cash_withdrawals_sellers.dart            | Dart       |        157 |          0 |         12 |        169 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/sellers/cash_withdrawals_sellers/controllers/controllers.dart             | Dart       |          4 |          0 |          2 |          6 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/sellers/cash_withdrawals_sellers/controllers/search_controller.dart       | Dart       |          4 |          0 |          2 |          6 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/sellers/cash_withdrawals_sellers/withdrawal_details.dart                  | Dart       |        129 |          0 |          8 |        137 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/sellers/cash_withdrawals_sellers/withdrawal_info.dart                     | Dart       |        201 |          1 |         10 |        212 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/sellers/dashboard/dashboard.dart                                          | Dart       |        609 |          2 |         29 |        640 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/sellers/delivery_status/delivery_status.dart                              | Dart       |        340 |          0 |         16 |        356 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/sellers/delivery_status/info_delivery.dart                                | Dart       |        258 |          1 |         10 |        269 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/sellers/layout/layout.dart                                                | Dart       |        150 |          0 |          9 |        159 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/sellers/my_cart_sellers/controllers/controllers.dart                      | Dart       |          6 |          0 |          2 |          8 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/sellers/my_cart_sellers/my_cart_sellers.dart                              | Dart       |        118 |          0 |          5 |        123 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/sellers/my_seller_account/controllers/controllers.dart                    | Dart       |         24 |          0 |          3 |         27 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/sellers/my_seller_account/my_seller_account.dart                          | Dart       |        209 |          0 |          7 |        216 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/sellers/my_stock/controllers/controllers.dart                             | Dart       |          6 |          0 |          2 |          8 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/sellers/my_stock/my_stock.dart                                            | Dart       |        103 |          0 |          5 |        108 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/sellers/order_entry/controllers/controllers.dart                          | Dart       |         64 |          0 |          5 |         69 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/sellers/order_entry/order_entry.dart                                      | Dart       |        447 |          0 |         15 |        462 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/sellers/order_entry/order_info.dart                                       | Dart       |        289 |          1 |         11 |        301 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/sellers/order_history_sellers/controllers/controllers.dart                | Dart       |          4 |          0 |          2 |          6 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/sellers/order_history_sellers/order_details.dart                          | Dart       |        173 |          1 |          9 |        183 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/sellers/order_history_sellers/order_history_sellers.dart                  | Dart       |        283 |          4 |         12 |        299 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/sellers/providers_sellers/controllers/controllers.dart                    | Dart       |          4 |          0 |          2 |          6 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/sellers/providers_sellers/providers_sellers.dart                          | Dart       |        107 |          0 |          5 |        112 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/sellers/returns_seller/controllers/controllers.dart                       | Dart       |          6 |          0 |          2 |          8 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/sellers/returns_seller/return_details.dart                                | Dart       |        219 |          1 |          9 |        229 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/sellers/returns_seller/returns_seller.dart                                | Dart       |        300 |          0 |         11 |        311 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/sellers/sales_report/controllers/controllers.dart                         | Dart       |         20 |          0 |          4 |         24 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/sellers/sales_report/new_record.dart                                      | Dart       |        544 |          2 |         19 |        565 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/sellers/sales_report/sales_report.dart                                    | Dart       |        172 |          0 |         13 |        185 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/sellers/unwanted_orders_sellers/controllers/controllers.dart              | Dart       |         25 |          0 |          2 |         27 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/sellers/unwanted_orders_sellers/unwanted_orders_sellers.dart              | Dart       |        392 |          0 |         15 |        407 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/sellers/update_password/controllers/controllers.dart                      | Dart       |         13 |          0 |          2 |         15 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/sellers/update_password/update_password.dart                              | Dart       |        164 |          2 |          7 |        173 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/sellers/wallet_sellers/wallet_sellers.dart                                | Dart       |        137 |          0 |         10 |        147 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/transport/add_operators_transport/add_operators_transport.dart            | Dart       |        428 |          2 |         16 |        446 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/transport/add_operators_transport/controllers/controllers.dart            | Dart       |         53 |          0 |          9 |         62 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/transport/add_operators_transport/edit_operator_transport.dart            | Dart       |        286 |          1 |         13 |        300 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/transport/create_sub_routes_transport/controllers/controllers.dart        | Dart       |          4 |          0 |          2 |          6 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/transport/create_sub_routes_transport/create_sub_routes_transport.dart    | Dart       |        110 |          0 |          5 |        115 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/transport/delivery_status_transport/controllers/controllers.dart          | Dart       |          6 |          0 |          2 |          8 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/transport/delivery_status_transport/delivery_details.dart                 | Dart       |        265 |          1 |         10 |        276 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/transport/delivery_status_transport/delivery_status_transport.dart        | Dart       |        355 |          0 |         16 |        371 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/transport/layout/layout.dart                                              | Dart       |         96 |          0 |          8 |        104 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/transport/my_orders_prv/controllers/controllers.dart                      | Dart       |          4 |          0 |          2 |          6 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/transport/my_orders_prv/my_orders_prv.dart                                | Dart       |        360 |          0 |         14 |        374 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/transport/my_orders_prv/prv_info.dart                                     | Dart       |        280 |          1 |         11 |        292 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/transport/my_transporter_account/controllers/controllers.dart             | Dart       |          0 |          0 |          1 |          1 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/transport/my_transporter_account/my_transporter_account.dart              | Dart       |         91 |         57 |         10 |        158 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/transport/orders_history_transport/controllers/controllers.dart           | Dart       |          6 |          0 |          2 |          8 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/transport/orders_history_transport/order_details.dart                     | Dart       |        153 |          1 |         10 |        164 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/transport/orders_history_transport/orders_history_transport.dart          | Dart       |        319 |          4 |         14 |        337 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/transport/payment_vouchers_transport/controllers/controllers.dart         | Dart       |          4 |          0 |          2 |          6 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/transport/payment_vouchers_transport/info_payment_voucher.dart            | Dart       |        239 |          1 |         10 |        250 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/transport/payment_vouchers_transport/payment_vouchers_transport.dart      | Dart       |        476 |          0 |         19 |        495 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/transport/payment_vouchers_transport/payments_by_transport.dart           | Dart       |        224 |          5 |         12 |        241 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/transport/payment_vouchers_transport/voucher_details.dart                 | Dart       |        139 |          1 |          9 |        149 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/transport/returns_transport/controllers/controllers.dart                  | Dart       |          4 |          0 |          2 |          6 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/transport/returns_transport/return_details.dart                           | Dart       |        184 |          1 |          9 |        194 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/transport/returns_transport/returns_transport.dart                        | Dart       |        325 |          0 |         11 |        336 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/transport/transportation_billing/controllers/controllers.dart             | Dart       |          4 |          0 |          2 |          6 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/transport/transportation_billing/info_transportation_billing.dart         | Dart       |        240 |          1 |         10 |        251 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/transport/transportation_billing/transportation_billing.dart              | Dart       |        462 |          1 |         18 |        481 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/transport/update_password_transport/controllers/controllers.dart          | Dart       |         13 |          0 |          2 |         15 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/transport/update_password_transport/update_password_transport.dart        | Dart       |        163 |          2 |          7 |        172 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/utils/utils.dart                                                          | Dart       |         36 |          1 |          2 |         39 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/welcome/welcome.dart                                                      | Dart       |        150 |          0 |          4 |        154 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/widgets/amount_row.dart                                                   | Dart       |         23 |          0 |          3 |         26 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/widgets/filters_orders.dart                                               | Dart       |         84 |          0 |          3 |         87 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/widgets/forms/date_input.dart                                             | Dart       |        152 |          0 |          6 |        158 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/widgets/forms/image_input.dart                                            | Dart       |         57 |          0 |          6 |         63 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/widgets/forms/image_row.dart                                              | Dart       |         35 |          0 |          3 |         38 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/widgets/forms/input_row.dart                                              | Dart       |         56 |          0 |          4 |         60 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/widgets/forms/modal_row.dart                                              | Dart       |         82 |          0 |          5 |         87 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/widgets/forms/row_label.dart                                              | Dart       |         52 |          0 |          3 |         55 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/widgets/forms/row_options.dart                                            | Dart       |         78 |          0 |          5 |         83 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/widgets/forms/text_input.dart                                             | Dart       |        100 |          0 |          3 |        103 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/widgets/loading.dart                                                      | Dart       |         22 |          0 |          2 |         24 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/widgets/logistic/add_logistic_user.dart                                   | Dart       |        694 |          1 |          8 |        703 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/widgets/logistic/data/data.dart                                           | Dart       |         67 |          5 |          6 |         78 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/widgets/logistic/generate_logistic_balance.dart                           | Dart       |        111 |          0 |          6 |        117 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/widgets/logistic/layout/navbar_drawer.dart                                | Dart       |        382 |          0 |          7 |        389 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/widgets/options_modal.dart                                                | Dart       |        100 |          0 |          5 |        105 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/widgets/readme.md                                                         | Markdown   |          0 |          0 |          1 |          1 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/widgets/routes/create_sub_route.dart                                      | Dart       |        113 |          1 |          9 |        123 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/widgets/routes/routes.dart                                                | Dart       |        184 |          2 |         15 |        201 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/widgets/routes/sub_routes.dart                                            | Dart       |        188 |          3 |         15 |        206 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/widgets/sellers/add_sellers.dart                                          | Dart       |        321 |          0 |          5 |        326 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/widgets/transport/transport_returns.dart                                  | Dart       |        160 |          0 |          4 |        164 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/lib/ui/widgets/update_status_operator/update_status_operator.dart                | Dart       |        713 |          1 |         39 |        753 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/linux/flutter/generated_plugin_registrant.cc                                     | C++        |         11 |          4 |          5 |         20 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/linux/flutter/generated_plugin_registrant.h                                      | C++        |          5 |          5 |          6 |         16 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/linux/main.cc                                                                    | C++        |          5 |          0 |          2 |          7 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/linux/my_application.cc                                                          | C++        |         74 |         11 |         20 |        105 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/linux/my_application.h                                                           | C++        |          7 |          7 |          5 |         19 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/macos/Flutter/GeneratedPluginRegistrant.swift                                    | Swift      |         10 |          3 |          4 |         17 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/macos/Runner.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist | XML        |          8 |          0 |          1 |          9 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/macos/Runner.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist                   | XML        |          8 |          0 |          1 |          9 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/macos/Runner/AppDelegate.swift                                                   | Swift      |          8 |          0 |          2 |         10 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/macos/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json                    | JSON       |         68 |          0 |          1 |         69 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/macos/Runner/Base.lproj/MainMenu.xib                                             | XML        |        343 |          0 |          1 |        344 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/macos/Runner/Info.plist                                                          | XML        |         32 |          0 |          1 |         33 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/macos/Runner/MainFlutterWindow.swift                                             | Swift      |         12 |          0 |          4 |         16 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/pubspec.yaml                                                                     | YAML       |         46 |         60 |         17 |        123 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/test/widget_test.dart                                                            | Dart       |         14 |         10 |          7 |         31 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/web/index.html                                                                   | HTML       |         38 |         16 |          6 |         60 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/web/manifest.json                                                                | JSON       |         35 |          0 |          1 |         36 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/windows/flutter/generated_plugin_registrant.cc                                   | C++        |          9 |          4 |          5 |         18 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/windows/flutter/generated_plugin_registrant.h                                    | C++        |          5 |          5 |          6 |         16 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/windows/runner/flutter_window.cpp                                                | C++        |         48 |          4 |         15 |         67 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/windows/runner/flutter_window.h                                                  | C++        |         20 |          5 |          9 |         34 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/windows/runner/main.cpp                                                          | C++        |         30 |          4 |         10 |         44 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/windows/runner/resource.h                                                        | C++        |          9 |          6 |          2 |         17 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/windows/runner/utils.cpp                                                         | C++        |         53 |          2 |         10 |         65 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/windows/runner/utils.h                                                           | C++        |          8 |          6 |          6 |         20 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/windows/runner/win32_window.cpp                                                  | C++        |        210 |         24 |         55 |        289 |
+| /Users/matiasfonseca/Desktop/EasyEcommerce/frontend/windows/runner/win32_window.h                                                    | C++        |         48 |         31 |         24 |        103 |
+| Total                                                                                                                                |            |     35,919 |        767 |      2,131 |     38,817 |
++--------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
