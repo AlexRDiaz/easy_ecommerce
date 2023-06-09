@@ -6,9 +6,11 @@ import 'package:frontend/helpers/server.dart';
 import 'package:frontend/ui/operator/orders_operator/controllers/controllers.dart';
 import 'package:frontend/ui/widgets/loading.dart';
 import 'package:frontend/ui/widgets/update_status_operator/update_status_operator.dart';
+import 'package:frontend/ui/widgets/update_status_operator/update_status_operator_historial.dart';
 
 class InfoStateOrdersOperator extends StatefulWidget {
-  const InfoStateOrdersOperator({super.key});
+  final String id;
+  const InfoStateOrdersOperator({super.key, required this.id});
 
   @override
   State<InfoStateOrdersOperator> createState() =>
@@ -30,7 +32,7 @@ class _InfoStateOrdersOperatorState extends State<InfoStateOrdersOperator> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getLoadingModal(context, false);
     });
-    var response = await Connections().getOrdersByID();
+    var response = await Connections().getOrdersByIDOperator(widget.id);
     // data = response;
     data = response;
     _controllers.editControllers(response);
@@ -50,12 +52,7 @@ class _InfoStateOrdersOperatorState extends State<InfoStateOrdersOperator> {
         backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.white,
-          leading: GestureDetector(
-              onTap: () {
-                Navigators()
-                    .pushNamedAndRemoveUntil(context, "/layout/operator");
-              },
-              child: Icon(Icons.arrow_back_ios, color: Colors.black)),
+          leading: Container(),
           centerTitle: true,
           title: Text(
             "Información Pedido",
@@ -92,7 +89,7 @@ class _InfoStateOrdersOperatorState extends State<InfoStateOrdersOperator> {
                                       await showDialog(
                                           context: context,
                                           builder: (context) {
-                                            return UpdateStatusOperator(
+                                            return UpdateStatusOperatorHistorial(
                                               numberTienda:
                                                   response['vendedores'][0]
                                                           ['Telefono2']
@@ -101,6 +98,7 @@ class _InfoStateOrdersOperatorState extends State<InfoStateOrdersOperator> {
                                                   "${data['attributes']['Name_Comercial']}-${data['attributes']['NumeroOrden']}",
                                               numberCliente:
                                                   "${data['attributes']['TelefonoShipping']}",
+                                                  id: widget.id,
                                             );
                                           });
                                       await loadData();

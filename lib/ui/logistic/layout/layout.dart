@@ -35,6 +35,7 @@ import 'package:frontend/ui/logistic/update_password/update_password.dart';
 import 'package:frontend/ui/logistic/vendor_invoices/vendor_invoices.dart';
 import 'package:frontend/ui/logistic/vendor_withdrawal_request/vendor_withdrawal_request.dart';
 import 'package:frontend/ui/logistic/withdrawal_assignment/withdrawal_assignment.dart';
+import 'package:frontend/ui/test/test.dart';
 import 'package:frontend/ui/welcome/welcome.dart';
 import 'package:frontend/ui/widgets/logistic/layout/navbar_drawer.dart';
 import 'package:provider/provider.dart';
@@ -66,6 +67,7 @@ class _LayoutPageState extends State<LayoutPage> {
       getOption(
         "DashBoard",
         DashBoardLogistic(),
+        // TestValues()
       ),
       getOption(
         "Ingresos y Egresos",

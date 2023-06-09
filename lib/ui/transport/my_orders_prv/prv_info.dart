@@ -10,7 +10,8 @@ import 'package:frontend/ui/widgets/update_status_operator/update_status_operato
 import 'package:get/route_manager.dart';
 
 class MyOrdersPRVInfo extends StatefulWidget {
-  const MyOrdersPRVInfo({super.key});
+  final String id;
+  const MyOrdersPRVInfo({super.key, required this.id});
 
   @override
   State<MyOrdersPRVInfo> createState() => _MyOrdersPRVInfoState();
@@ -31,7 +32,7 @@ class _MyOrdersPRVInfoState extends State<MyOrdersPRVInfo> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getLoadingModal(context, false);
     });
-    var response = await Connections().getOrdersByID();
+    var response = await Connections().getOrdersByIDTransport(widget.id);
     // data = response;
     data = response;
     _controllers.editControllers(response);
@@ -51,12 +52,7 @@ class _MyOrdersPRVInfoState extends State<MyOrdersPRVInfo> {
         backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.white,
-          leading: GestureDetector(
-              onTap: () {
-                Navigators()
-                    .pushNamedAndRemoveUntil(context, "/layout/transport");
-              },
-              child: Icon(Icons.arrow_back_ios, color: Colors.black)),
+          leading: Container(),
           centerTitle: true,
           title: Text(
             "Información Pedido",
@@ -89,7 +85,7 @@ class _MyOrdersPRVInfoState extends State<MyOrdersPRVInfo> {
                                       builder: (context) {
                                         return SubRoutesModal(
                                           idOrder:
-                                              Get.parameters['id'].toString(),
+                                              widget.id,
                                           someOrders: false,
                                         );
                                       });

@@ -7,7 +7,8 @@ import 'package:frontend/ui/widgets/loading.dart';
 import 'package:get/route_manager.dart';
 
 class PrintedGuideInfo extends StatefulWidget {
-  const PrintedGuideInfo({super.key});
+  final String id;
+  const PrintedGuideInfo({super.key, required this.id});
 
   @override
   State<PrintedGuideInfo> createState() => _PrintedGuideInfoState();
@@ -27,7 +28,7 @@ class _PrintedGuideInfoState extends State<PrintedGuideInfo> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getLoadingModal(context, false);
     });
-    var response = await Connections().getOrdersByID();
+    var response = await Connections().getOrdersByIDLogistic(widget.id);
     // data = response;
     data = response;
     Future.delayed(Duration(milliseconds: 500), () {
@@ -45,11 +46,7 @@ class _PrintedGuideInfoState extends State<PrintedGuideInfo> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        leading: GestureDetector(
-            onTap: () {
-              Navigators().pushNamedAndRemoveUntil(context, "/layout/logistic");
-            },
-            child: Icon(Icons.arrow_back_ios, color: Colors.black)),
+        leading: Container(),
         centerTitle: true,
         title: Text(
           "Información Pedido",
@@ -182,7 +179,7 @@ class _PrintedGuideInfoState extends State<PrintedGuideInfo> {
                 getLoadingModal(context, false);
                 var response = await Connections()
                     .updateOrderInteralStatusLogistic(
-                        "NO DESEA", Get.parameters['id'].toString());
+                        "NO DESEA", widget.id);
                 Navigator.pop(context);
 
                 setState(() {});
@@ -202,7 +199,7 @@ class _PrintedGuideInfoState extends State<PrintedGuideInfo> {
 
                 var response = await Connections()
                     .updateOrderLogisticStatusPrint(
-                        "ENVIADO", Get.parameters['id'].toString());
+                        "ENVIADO",widget.id);
                 Navigator.pop(context);
 
                 setState(() {});

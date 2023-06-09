@@ -10,6 +10,7 @@ import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:frontend/connections/connections.dart';
 import 'package:frontend/helpers/navigators.dart';
 import 'package:frontend/main.dart';
+import 'package:frontend/ui/sellers/delivery_status/info_delivery.dart';
 import 'package:frontend/ui/transport/my_orders_prv/controllers/controllers.dart';
 import 'package:frontend/ui/widgets/loading.dart';
 import 'package:frontend/ui/widgets/routes/sub_routes.dart';
@@ -130,9 +131,12 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                 )),
             Expanded(
               child: DataTable2(
-                  headingTextStyle: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-                  dataTextStyle:
-                      TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black),
+                  headingTextStyle: TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.black),
+                  dataTextStyle: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black),
                   columnSpacing: 12,
                   horizontalMargin: 12,
                   minWidth: 2500,
@@ -272,97 +276,517 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                             DataCell(
                                 Text(data[index]['attributes']['Fecha_Entrega']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/sellers/delivery-status/info?id=${data[index]['id']}');
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      content: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        height:
+                                            MediaQuery.of(context).size.height,
+                                        child: Column(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Icon(Icons.close),
+                                              ),
+                                            ),
+                                            Expanded(
+                                                child:
+                                                    DeliveryStatusSellerInfo(
+                                              id: data[index]['id'].toString(),
+                                            ))
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  });
                             }),
                             DataCell(
                                 Text(
                                     '${data[index]['attributes']['Name_Comercial'].toString()}-${data[index]['attributes']['NumeroOrden'].toString()}'),
                                 onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/sellers/delivery-status/info?id=${data[index]['id']}');
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      content: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        height:
+                                            MediaQuery.of(context).size.height,
+                                        child: Column(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Icon(Icons.close),
+                                              ),
+                                            ),
+                                            Expanded(
+                                                child:
+                                                    DeliveryStatusSellerInfo(
+                                              id: data[index]['id'].toString(),
+                                            ))
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  });
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['CiudadShipping']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/sellers/delivery-status/info?id=${data[index]['id']}');
+                                     showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      content: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        height:
+                                            MediaQuery.of(context).size.height,
+                                        child: Column(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Icon(Icons.close),
+                                              ),
+                                            ),
+                                            Expanded(
+                                                child:
+                                                    DeliveryStatusSellerInfo(
+                                              id: data[index]['id'].toString(),
+                                            ))
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  });
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['NombreShipping']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/sellers/delivery-status/info?id=${data[index]['id']}');
+                             showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      content: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        height:
+                                            MediaQuery.of(context).size.height,
+                                        child: Column(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Icon(Icons.close),
+                                              ),
+                                            ),
+                                            Expanded(
+                                                child:
+                                                    DeliveryStatusSellerInfo(
+                                              id: data[index]['id'].toString(),
+                                            ))
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  });
                             }),
                             DataCell(
                                 Text(data[index]['attributes']
                                         ['DireccionShipping']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/sellers/delivery-status/info?id=${data[index]['id']}');
+                                  showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      content: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        height:
+                                            MediaQuery.of(context).size.height,
+                                        child: Column(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Icon(Icons.close),
+                                              ),
+                                            ),
+                                            Expanded(
+                                                child:
+                                                    DeliveryStatusSellerInfo(
+                                              id: data[index]['id'].toString(),
+                                            ))
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  });
                             }),
                             DataCell(
                                 Text(data[index]['attributes']
                                         ['TelefonoShipping']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/sellers/delivery-status/info?id=${data[index]['id']}');
+                                  showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      content: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        height:
+                                            MediaQuery.of(context).size.height,
+                                        child: Column(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Icon(Icons.close),
+                                              ),
+                                            ),
+                                            Expanded(
+                                                child:
+                                                    DeliveryStatusSellerInfo(
+                                              id: data[index]['id'].toString(),
+                                            ))
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  });
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['Cantidad_Total']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/sellers/delivery-status/info?id=${data[index]['id']}');
+                                   showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      content: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        height:
+                                            MediaQuery.of(context).size.height,
+                                        child: Column(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Icon(Icons.close),
+                                              ),
+                                            ),
+                                            Expanded(
+                                                child:
+                                                    DeliveryStatusSellerInfo(
+                                              id: data[index]['id'].toString(),
+                                            ))
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  });
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['ProductoP']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/sellers/delivery-status/info?id=${data[index]['id']}');
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      content: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        height:
+                                            MediaQuery.of(context).size.height,
+                                        child: Column(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Icon(Icons.close),
+                                              ),
+                                            ),
+                                            Expanded(
+                                                child:
+                                                    DeliveryStatusSellerInfo(
+                                              id: data[index]['id'].toString(),
+                                            ))
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  });
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['ProductoExtra']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/sellers/delivery-status/info?id=${data[index]['id']}');
+                             showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      content: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        height:
+                                            MediaQuery.of(context).size.height,
+                                        child: Column(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Icon(Icons.close),
+                                              ),
+                                            ),
+                                            Expanded(
+                                                child:
+                                                    DeliveryStatusSellerInfo(
+                                              id: data[index]['id'].toString(),
+                                            ))
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  });
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['PrecioTotal']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/sellers/delivery-status/info?id=${data[index]['id']}');
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      content: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        height:
+                                            MediaQuery.of(context).size.height,
+                                        child: Column(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Icon(Icons.close),
+                                              ),
+                                            ),
+                                            Expanded(
+                                                child:
+                                                    DeliveryStatusSellerInfo(
+                                              id: data[index]['id'].toString(),
+                                            ))
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  });
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['Comentario']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/sellers/delivery-status/info?id=${data[index]['id']}');
+                                  showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      content: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        height:
+                                            MediaQuery.of(context).size.height,
+                                        child: Column(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Icon(Icons.close),
+                                              ),
+                                            ),
+                                            Expanded(
+                                                child:
+                                                    DeliveryStatusSellerInfo(
+                                              id: data[index]['id'].toString(),
+                                            ))
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  });
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['Status']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/sellers/delivery-status/info?id=${data[index]['id']}');
+                               showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      content: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        height:
+                                            MediaQuery.of(context).size.height,
+                                        child: Column(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Icon(Icons.close),
+                                              ),
+                                            ),
+                                            Expanded(
+                                                child:
+                                                    DeliveryStatusSellerInfo(
+                                              id: data[index]['id'].toString(),
+                                            ))
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  });
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['Estado_Interno']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/sellers/delivery-status/info?id=${data[index]['id']}');
+                                     showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      content: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        height:
+                                            MediaQuery.of(context).size.height,
+                                        child: Column(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Icon(Icons.close),
+                                              ),
+                                            ),
+                                            Expanded(
+                                                child:
+                                                    DeliveryStatusSellerInfo(
+                                              id: data[index]['id'].toString(),
+                                            ))
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  });
                             }),
                             DataCell(
                                 Text(data[index]['attributes']
                                         ['Estado_Logistico']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/sellers/delivery-status/info?id=${data[index]['id']}');
+                                 showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      content: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        height:
+                                            MediaQuery.of(context).size.height,
+                                        child: Column(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Icon(Icons.close),
+                                              ),
+                                            ),
+                                            Expanded(
+                                                child:
+                                                    DeliveryStatusSellerInfo(
+                                              id: data[index]['id'].toString(),
+                                            ))
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  });
                             }),
                             DataCell(
                                 Text(data[index]['attributes']
                                         ['Estado_Devolucion']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/sellers/delivery-status/info?id=${data[index]['id']}');
+                                   showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      content: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        height:
+                                            MediaQuery.of(context).size.height,
+                                        child: Column(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Icon(Icons.close),
+                                              ),
+                                            ),
+                                            Expanded(
+                                                child:
+                                                    DeliveryStatusSellerInfo(
+                                              id: data[index]['id'].toString(),
+                                            ))
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  });
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['users'] != null
@@ -380,8 +804,36 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                                             .toString()
                                         : ""
                                     : ""), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/sellers/delivery-status/info?id=${data[index]['id']}');
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      content: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        height:
+                                            MediaQuery.of(context).size.height,
+                                        child: Column(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Icon(Icons.close),
+                                              ),
+                                            ),
+                                            Expanded(
+                                                child:
+                                                    DeliveryStatusSellerInfo(
+                                              id: data[index]['id'].toString(),
+                                            ))
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  });
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['users'] != null
@@ -404,14 +856,70 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                                             : ""
                                         : ""
                                     : ""), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/sellers/delivery-status/info?id=${data[index]['id']}');
+                                  showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      content: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        height:
+                                            MediaQuery.of(context).size.height,
+                                        child: Column(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Icon(Icons.close),
+                                              ),
+                                            ),
+                                            Expanded(
+                                                child:
+                                                    DeliveryStatusSellerInfo(
+                                              id: data[index]['id'].toString(),
+                                            ))
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  });
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['Marca_T_I']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/sellers/delivery-status/info?id=${data[index]['id']}');
+                                     showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      content: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        height:
+                                            MediaQuery.of(context).size.height,
+                                        child: Column(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Icon(Icons.close),
+                                              ),
+                                            ),
+                                            Expanded(
+                                                child:
+                                                    DeliveryStatusSellerInfo(
+                                              id: data[index]['id'].toString(),
+                                            ))
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  });
                             }),
                           ]))),
             ),

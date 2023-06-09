@@ -7,6 +7,7 @@ import 'package:frontend/config/exports.dart';
 import 'package:frontend/connections/connections.dart';
 import 'package:frontend/main.dart';
 import 'package:frontend/ui/logistic/print_guides/model_guide/model_guide.dart';
+import 'package:frontend/ui/logistic/transport_delivery_historial/transport_delivery_details.dart';
 import 'package:frontend/ui/logistic/vendor_invoices/controllers/controllers.dart';
 import 'package:frontend/ui/utils/utils.dart';
 import 'package:frontend/ui/widgets/amount_row.dart';
@@ -123,7 +124,7 @@ class _TransportDeliveryHistorialState
       });
       var response = await Connections()
           .getOrdersForHistorialTransportByCode(_search.text, url);
-
+ 
       setState(() {
         data = response;
       });
@@ -1018,12 +1019,13 @@ class _TransportDeliveryHistorialState
         DataCell(Checkbox(
             value: optionsCheckBox[index]['check'],
             onChanged: (value) {
+
               setState(() {
                 if (value!) {
                   optionsCheckBox[index]['check'] = value;
                   optionsCheckBox[index]['id'] = data[index]['id'].toString();
                   optionsCheckBox[index]['numPedido'] =
-                      "${data[index]['Tienda_Temporal'].toString()}-${data[index]['NumeroOrden']}"
+                      "${data[index]['users']!=null?data[index]['users'][0]['vendedores'][0]['Nombre_Comercial']:data[index]['Tienda_Temporal'].toString()}-${data[index]['NumeroOrden']}"
                           .toString();
                   optionsCheckBox[index]['date'] =
                       data[index]['pedido_fecha']['Fecha'].toString();
@@ -1062,8 +1064,19 @@ class _TransportDeliveryHistorialState
               });
             })),
         DataCell(Text('${data[index]['Marca_T_I'].toString()}'), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+          showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
+      
         }),
         DataCell(
             Text(
@@ -1072,8 +1085,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+        showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
         DataCell(
             Text(
@@ -1082,8 +1105,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+  showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
         DataCell(
             Text(
@@ -1092,8 +1125,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+        showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
         DataCell(
             Text(
@@ -1102,8 +1145,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+         showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
 
         DataCell(
@@ -1113,8 +1166,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+       showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
         DataCell(
             Text(
@@ -1123,8 +1186,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+       showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
         DataCell(
             Text(
@@ -1133,8 +1206,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+  showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
         DataCell(
             Text(
@@ -1143,8 +1226,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+  showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
         DataCell(
             Text(
@@ -1153,8 +1246,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+         showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
         DataCell(
             Text(
@@ -1163,8 +1266,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+    showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
         DataCell(
             Text(
@@ -1173,8 +1286,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+          showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
 
         DataCell(
@@ -1184,8 +1307,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+         showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
 
         DataCell(
@@ -1195,8 +1328,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+    showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
 
         DataCell(
@@ -1206,8 +1349,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+           showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
         DataCell(
             Text(
@@ -1219,8 +1372,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+      showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
         DataCell(
             Text(
@@ -1232,8 +1395,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+         showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
         DataCell(
             Text(
@@ -1245,8 +1418,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+        showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
         DataCell(
             Text(
@@ -1258,8 +1441,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+  showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
         DataCell(
             Text(
@@ -1268,8 +1461,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+        showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
         DataCell(
             Text(
@@ -1278,8 +1481,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+          showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
         DataCell(
             Text(
@@ -1288,8 +1501,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+        showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
         DataCell(
             Text(
@@ -1298,8 +1521,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+       showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
 
         DataCell(
@@ -1313,8 +1546,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+    showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
         DataCell(
             Text(
@@ -1326,8 +1569,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+       showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
 
         DataCell(
@@ -1336,8 +1589,18 @@ class _TransportDeliveryHistorialState
                 ? data[index]['users'][0]['vendedores'][0]['CostoEnvio']
                     .toString()
                 : ""), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+    showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
         DataCell(
             Text(data[index]['users'] != null &&
@@ -1345,8 +1608,18 @@ class _TransportDeliveryHistorialState
                 ? data[index]['users'][0]['vendedores'][0]['CostoDevolucion']
                     .toString()
                 : ""), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+        showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
 
         // DataCell(Text(
@@ -1362,8 +1635,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+           showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
         DataCell(
             Text(
@@ -1372,8 +1655,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+          showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
         DataCell(
             Text(
@@ -1382,256 +1675,22 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+        showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
       ];
     } else {
-      // return [
-      //   DataCell(
-      //       Text(
-      //         "${data[index]['attributes']['Name_Comercial']}-${data[index]['attributes']['NumeroOrden']}",
-      //         style: TextStyle(
-      //           color: rowColor,
-      //         ),
-      //       ),
-      //       onTap: () {}),
-      //   DataCell(Text('${data[index]['attributes']['Marca_T_I'].toString()}')),
-      //   DataCell(Text(
-      //     data[index]['attributes']['pedido_fecha']['data']['attributes']
-      //             ['Fecha']
-      //         .toString(),
-      //     style: TextStyle(
-      //       color: rowColor,
-      //     ),
-      //   )),
-      //   DataCell(Text(
-      //     data[index]['attributes']['Cantidad_Total'].toString(),
-      //     style: TextStyle(
-      //       color: rowColor,
-      //     ),
-      //   )),
-      //   DataCell(Text(
-      //     data[index]['attributes']['PrecioTotal'].toString(),
-      //     style: TextStyle(
-      //       color: rowColor,
-      //     ),
-      //   )),
-      //   DataCell(Text(
-      //     data[index]['attributes']['ProductoP'].toString(),
-      //     style: TextStyle(
-      //       color: rowColor,
-      //     ),
-      //   )),
-      //   DataCell(Text(
-      //     '${data[index]['attributes']['DireccionShipping'].toString()}',
-      //     style: TextStyle(
-      //       color: rowColor,
-      //     ),
-      //   )),
-      //   DataCell(Text(
-      //     '${data[index]['attributes']['CiudadShipping'].toString()}',
-      //     style: TextStyle(
-      //       color: rowColor,
-      //     ),
-      //   )),
-      //   DataCell(Text(
-      //     '${data[index]['attributes']['Comentario'].toString()}',
-      //     style: TextStyle(
-      //       color: rowColor,
-      //     ),
-      //   )),
-      //   DataCell(Text(
-      //     data[index]['attributes']['TipoPago'].toString(),
-      //     style: TextStyle(
-      //       color: rowColor,
-      //     ),
-      //   )),
-      //   DataCell(Text(
-      //     data[index]['attributes']['ruta'] != null
-      //         ? data[index]['attributes']['ruta']['data'] != null
-      //             ? data[index]['attributes']['ruta']['data']['attributes']
-      //                     ['Titulo']
-      //                 .toString()
-      //             : ""
-      //         : "",
-      //     style: TextStyle(
-      //       color: rowColor,
-      //     ),
-      //   )),
-      //   DataCell(Text(
-      //     data[index]['attributes']['transportadora'] != null
-      //         ? data[index]['attributes']['transportadora']['data'] != null
-      //             ? data[index]['attributes']['transportadora']['data']
-      //                     ['attributes']['Nombre']
-      //                 .toString()
-      //             : ""
-      //         : "",
-      //     style: TextStyle(
-      //       color: rowColor,
-      //     ),
-      //   )),
-      //   DataCell(Text(
-      //     data[index]['attributes']['sub_ruta'] != null
-      //         ? data[index]['sub_ruta']['data'] != null
-      //             ? data[index]['sub_ruta']['data']['attributes']['Titulo']
-      //                 .toString()
-      //             : ""
-      //         : "",
-      //     style: TextStyle(
-      //       color: rowColor,
-      //     ),
-      //   )),
-      //   DataCell(Text(
-      //     data[index]['attributes']['operadore'] != null
-      //         ? data[index]['attributes']['operadore']['data'] != null
-      //             ? data[index]['attributes']['operadore']['data']['attributes']
-      //                     ['user']['data']['attributes']['username']
-      //                 .toString()
-      //             : ""
-      //         : "",
-      //     style: TextStyle(
-      //       color: rowColor,
-      //     ),
-      //   )),
-      //   DataCell(Text(
-      //     data[index]['attributes']['Name_Comercial'].toString(),
-      //     style: TextStyle(
-      //       color: rowColor,
-      //     ),
-      //   )),
-      //   DataCell(Text(
-      //     data[index]['attributes']['Fecha_Entrega'].toString(),
-      //     style: TextStyle(
-      //       color: rowColor,
-      //     ),
-      //   )),
-      //   DataCell(Text(
-      //     data[index]['attributes']['NombreShipping'].toString(),
-      //     style: TextStyle(
-      //       color: rowColor,
-      //     ),
-      //   )),
-      //   DataCell(Text(
-      //     data[index]['attributes']['ProductoExtra'].toString(),
-      //     style: TextStyle(
-      //       color: rowColor,
-      //     ),
-      //   )),
-      //   DataCell(Text(
-      //     data[index]['attributes']['Estado_Interno'].toString(),
-      //     style: TextStyle(
-      //       color: rowColor,
-      //     ),
-      //   )),
-      //   DataCell(Text(
-      //     data[index]['attributes']['Fecha_Confirmacion'].toString(),
-      //     style: TextStyle(
-      //       color: rowColor,
-      //     ),
-      //   )),
-      //   DataCell(Text(
-      //     data[index]['attributes']['DL'].toString(),
-      //     style: TextStyle(
-      //       color: rowColor,
-      //     ),
-      //   )),
-      //   DataCell(Text(
-      //     data[index]['attributes']['Status'].toString(),
-      //     style: TextStyle(
-      //       color: rowColor,
-      //     ),
-      //   )),
-      //   DataCell(Text(
-      //     data[index]['attributes']['Estado_Pagado'].toString(),
-      //     style: TextStyle(
-      //       color: rowColor,
-      //     ),
-      //   )),
-      //   DataCell(Text(
-      //     data[index]['attributes']['Observacion'].toString(),
-      //     style: TextStyle(
-      //       color: rowColor,
-      //     ),
-      //   )),
-      //   DataCell(Text(
-      //     data[index]['attributes']['TelefonoShipping'].toString(),
-      //     style: TextStyle(
-      //       color: rowColor,
-      //     ),
-      //   )),
-
-      //   DataCell(Text(
-      //     data[index]['attributes']['transportadora'] != null
-      //         ? data[index]['attributes']['transportadora']['data'] != null
-      //             ? data[index]['attributes']['transportadora']['data']
-      //                     ['attributes']['Costo_Transportadora']
-      //                 .toString()
-      //             : ""
-      //         : "",
-      //     style: TextStyle(
-      //       color: rowColor,
-      //     ),
-      //   )),
-      //   DataCell(Text(
-      //     data[index]['attributes']['operadore'] != null
-      //         ? data[index]['attributes']['operadore']['data'] != null
-      //             ? data[index]['attributes']['operadore']['data']['attributes']
-      //                     ['Costo_Operador']
-      //                 .toString()
-      //             : ""
-      //         : "",
-      //     style: TextStyle(
-      //       color: rowColor,
-      //     ),
-      //   )),
-      //   DataCell(Text(
-      //     data[index]['attributes']['transportadora'] != null &&
-      //             data[index]['attributes']['operadore'] != null
-      //         ? (double.parse(data[index]['attributes']['transportadora']
-      //                             ['data'] !=
-      //                         null
-      //                     ? data[index]['attributes']['transportadora']['data']
-      //                         ['attributes']['Costo_Transportadora']
-      //                     : "0") -
-      //                 double.parse(
-      //                     data[index]['attributes']['operadore']['data'] != null
-      //                         ? data[index]['attributes']['operadore']['data']
-      //                                 ['attributes']['Costo_Operador']
-      //                             .toString()
-      //                         : "0"))
-      //             .toString()
-      //         : "",
-      //     style: TextStyle(
-      //       color: rowColor,
-      //     ),
-      //   )),
-      //   // DataCell(Text(
-      //   //   data[index]['operadore']['Costo_Operador'].toString(),
-      //   //   style: TextStyle(
-      //   //     color: rowColor,
-      //   //   ),
-      //   // )),
-      //   DataCell(Text(
-      //     data[index]['attributes']['Estado_Devolucion'].toString(),
-      //     style: TextStyle(
-      //       color: rowColor,
-      //     ),
-      //   )),
-      //   DataCell(Text(
-      //     data[index]['attributes']['Marca_Tiempo_Envio'].toString(),
-      //     style: TextStyle(
-      //       color: rowColor,
-      //     ),
-      //   )),
-      //   DataCell(Text(
-      //     data[index]['attributes']['Estado_Pago_Logistica'].toString(),
-      //     style: TextStyle(
-      //       color: rowColor,
-      //     ),
-      //   )),
-      // ];
-
+      
       return [
         DataCell(Checkbox(
             value: optionsCheckBox[index]['check'],
@@ -1641,7 +1700,7 @@ class _TransportDeliveryHistorialState
                   optionsCheckBox[index]['check'] = value;
                   optionsCheckBox[index]['id'] = data[index]['id'].toString();
                   optionsCheckBox[index]['numPedido'] =
-                      "${data[index]['attributes']['Tienda_Temporal'].toString()}-${data[index]['attributes']['NumeroOrden']}"
+                      "${data[index]['attributes']['users']['data']!=null?data[index]['attributes']['users']['data'][0]['attributes']['vendedores']['data'][0]['attributes']['Nombre_Comercial']:data[index]['attributes']['Tienda_Temporal'].toString()}-${data[index]['attributes']['NumeroOrden']}"
                           .toString();
                   optionsCheckBox[index]['date'] = data[index]['attributes']
                           ['pedido_fecha']['data']['attributes']['Fecha']
@@ -1681,21 +1740,39 @@ class _TransportDeliveryHistorialState
             })),
         DataCell(Text('${data[index]['attributes']['Marca_T_I'].toString()}'),
             onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+  showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
         DataCell(
             Text(
               data[index]['attributes']['Marca_T_I']
-                  .toString()
-                  .split(' ')[0]
                   .toString(),
               style: TextStyle(
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+       showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
         DataCell(
             Text(
@@ -1704,8 +1781,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+  showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
         DataCell(
             Text(
@@ -1714,8 +1801,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+       showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
         DataCell(
             Text(
@@ -1724,8 +1821,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+       showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
 
         DataCell(
@@ -1735,8 +1842,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+  showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
         DataCell(
             Text(
@@ -1745,8 +1862,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+  showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
         DataCell(
             Text(
@@ -1755,8 +1882,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+        showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
         DataCell(
             Text(
@@ -1765,8 +1902,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+  showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
         DataCell(
             Text(
@@ -1775,8 +1922,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+    showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
         DataCell(
             Text(
@@ -1785,8 +1942,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+    showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
         DataCell(
             Text(
@@ -1795,8 +1962,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+           showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
 
         DataCell(
@@ -1806,8 +1983,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+           showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
 
         DataCell(
@@ -1817,8 +2004,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+       showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
 
         DataCell(
@@ -1828,8 +2025,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+          showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
         DataCell(
             Text(
@@ -1842,8 +2049,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+  showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
         DataCell(
             Text(
@@ -1856,8 +2073,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+        showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
         DataCell(
             Text(
@@ -1870,8 +2097,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+     showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
         DataCell(
             Text(
@@ -1884,8 +2121,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+        showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
         DataCell(
             Text(
@@ -1894,8 +2141,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+          showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
         DataCell(
             Text(
@@ -1904,8 +2161,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+     showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
         DataCell(
             Text(
@@ -1914,8 +2181,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+  showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
         DataCell(
             Text(
@@ -1924,8 +2201,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+      showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
 
         DataCell(
@@ -1939,8 +2226,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+       showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
         DataCell(
             Text(
@@ -1954,8 +2251,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+      showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
 
         DataCell(
@@ -1964,8 +2271,18 @@ class _TransportDeliveryHistorialState
                         ['vendedores']['data'][0]['attributes']['CostoEnvio']
                     .toString()
                 : ""), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+  showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
         DataCell(
             Text(data[index]['attributes']['users']['data'] != null
@@ -1974,8 +2291,18 @@ class _TransportDeliveryHistorialState
                         ['CostoDevolucion']
                     .toString()
                 : ""), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+  showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
 
         // DataCell(Text(
@@ -1991,8 +2318,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+         showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
         DataCell(
             Text(
@@ -2001,8 +2338,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+  showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
         DataCell(
             Text(
@@ -2011,8 +2358,18 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          Navigators().pushNamed(context,
-              "/layout/logistic/transport-delivery-history/details?id=${data[index]['id']}");
+   showDialog(context: context, builder: (context){
+            return AlertDialog(
+              content: Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(children: [
+                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
+                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
+                ],),
+              ),
+            );
+          });
         }),
       ];
     }

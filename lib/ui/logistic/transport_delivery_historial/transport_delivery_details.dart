@@ -8,6 +8,7 @@ import 'package:frontend/ui/widgets/routes/routes.dart';
 import 'package:frontend/ui/widgets/routes/sub_routes.dart';
 import 'package:frontend/ui/widgets/routes/sub_routes_historial.dart';
 import 'package:frontend/ui/widgets/update_status_operator/update_status_operator.dart';
+import 'package:frontend/ui/widgets/update_status_operator/update_status_operator_historial.dart';
 import 'package:get/route_manager.dart';
 import 'package:frontend/helpers/server.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +23,8 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
 class TransportDeliveryHistoryDetails extends StatefulWidget {
-  const TransportDeliveryHistoryDetails({super.key});
+  final String id;
+  const TransportDeliveryHistoryDetails({super.key, required this.id});
 
   @override
   State<TransportDeliveryHistoryDetails> createState() =>
@@ -33,7 +35,6 @@ class _TransportDeliveryHistoryDetailsState
     extends State<TransportDeliveryHistoryDetails> {
   ScreenshotController screenshotController = ScreenshotController();
 
-  String id = "";
   String codigo = "";
   TextEditingController _marcaTiempo = TextEditingController();
   TextEditingController _fecha = TextEditingController();
@@ -77,10 +78,9 @@ class _TransportDeliveryHistoryDetailsState
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getLoadingModal(context, false);
     });
-    var response = await Connections()
-        .getOrderByIDHistory(Get.parameters['id'].toString());
+    var response = await Connections().getOrderByIDHistory(widget.id);
     codigo =
-        '${response['attributes']['Tienda_Temporal']}-${response['attributes']['NumeroOrden']}';
+        '${response['attributes']['users']['data'] != null ? response['attributes']['users']['data'][0]['attributes']['vendedores']['data'][0]['attributes']['Nombre_Comercial'] : response['attributes']['Tienda_Temporal'].toString()}-${response['attributes']['NumeroOrden']}';
     _marcaTiempo.text = '${response['attributes']['Marca_T_I'].toString()}';
     _fecha.text =
         '${response['attributes']['pedido_fecha']['data']['attributes']['Fecha'].toString()}';
@@ -152,7 +152,8 @@ class _TransportDeliveryHistoryDetailsState
     _marcaTiempoEnvio.text =
         response['attributes']['Marca_Tiempo_Envio'].toString();
 
-    _estadoDeposito.text = response['attributes']['Estado_Pago_Logistica'].toString();
+    _estadoDeposito.text =
+        response['attributes']['Estado_Pago_Logistica'].toString();
     devolucionLogistica =
         response['attributes']['Estado_Devolucion'].toString();
     setState(() {
@@ -171,11 +172,7 @@ class _TransportDeliveryHistoryDetailsState
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        leading: GestureDetector(
-            onTap: () {
-              Navigators().pushNamedAndRemoveUntil(context, "/layout/logistic");
-            },
-            child: const Icon(Icons.arrow_back_ios, color: Colors.black)),
+        leading: Container(),
         centerTitle: true,
         title: const Text(
           "Detalles",
@@ -227,9 +224,7 @@ class _TransportDeliveryHistoryDetailsState
                                                   context: context,
                                                   builder: (context) {
                                                     return RoutesModal(
-                                                      idOrder: Get
-                                                          .parameters['id']
-                                                          .toString(),
+                                                      idOrder: widget.id,
                                                       someOrders: false,
                                                     );
                                                   });
@@ -251,9 +246,7 @@ class _TransportDeliveryHistoryDetailsState
                                                   context: context,
                                                   builder: (context) {
                                                     return SubRoutesModalHistorial(
-                                                      idOrder: Get
-                                                          .parameters['id']
-                                                          .toString(),
+                                                      idOrder: widget.id,
                                                       someOrders: false,
                                                     );
                                                   });
@@ -274,9 +267,7 @@ class _TransportDeliveryHistoryDetailsState
                                               getLoadingModal(context, false);
                                               var response = await Connections()
                                                   .updateOrderLogisticStatus(
-                                                      "IMPRESO",
-                                                      Get.parameters['id']
-                                                          .toString());
+                                                      "IMPRESO", widget.id);
                                               await loadData();
 
                                               Navigator.pop(context);
@@ -297,10 +288,7 @@ class _TransportDeliveryHistoryDetailsState
 
                                               var response = await Connections()
                                                   .updateOrderLogisticStatusPrint(
-                                                      "ENVIADO",
-                                                      Get.parameters['id']
-                                                          .toString());
-                                              print(response);
+                                                      "ENVIADO", widget.id);
                                               await loadData();
                                               Navigator.pop(context);
 
@@ -322,7 +310,7 @@ class _TransportDeliveryHistoryDetailsState
                                               await showDialog(
                                                   context: context,
                                                   builder: (context) {
-                                                    return UpdateStatusOperator(
+                                                    return UpdateStatusOperatorHistorial(
                                                       numberTienda:
                                                           response['vendedores']
                                                                       [0]
@@ -332,6 +320,7 @@ class _TransportDeliveryHistoryDetailsState
                                                           "${data['attributes']['Name_Comercial']}-${data['attributes']['NumeroOrden']}",
                                                       numberCliente:
                                                           "${data['attributes']['TelefonoShipping']}",
+                                                          id: widget.id,
                                                     );
                                                   });
                                               await loadData();
@@ -368,14 +357,11 @@ class _TransportDeliveryHistoryDetailsState
                                                 extraProduct: data['attributes']
                                                         ['ProductoExtra']
                                                     .toString(),
-                                                idForBarcode: Get
-                                                    .parameters['id']
-                                                    .toString(),
+                                                idForBarcode: widget.id,
                                                 name: data['attributes']
                                                         ['NombreShipping']
                                                     .toString(),
-                                                numPedido:
-                                                    "${data['attributes']['Tienda_Temporal']}-${data['attributes']['NumeroOrden']}",
+                                                numPedido: codigo.toString(),
                                                 observation: data['attributes']
                                                         ['Observacion']
                                                     .toString(),
@@ -389,13 +375,16 @@ class _TransportDeliveryHistoryDetailsState
                                                         ['ProductoP']
                                                     .toString(),
                                                 qrLink: data['attributes']
-                                                                        ['users']
-                                                                    ['data'][0]
-                                                                ['attributes'][
-                                                            'vendedores']['data'][0]
-                                                        [
-                                                        'attributes']['Url_Tienda']
-                                                    .toString(),
+                                                            ['users'] !=
+                                                        null
+                                                    ? data['attributes']['users']
+                                                                        ['data'][0]
+                                                                    ['attributes']
+                                                                ['vendedores']['data'][0]
+                                                            [
+                                                            'attributes']['Url_Tienda']
+                                                        .toString()
+                                                    : "",
                                                 quantity: data['attributes']
                                                         ['Cantidad_Total']
                                                     .toString(),
@@ -491,9 +480,7 @@ class _TransportDeliveryHistoryDetailsState
                                               getLoadingModal(context, false);
                                               var response = await Connections()
                                                   .updateOrderInteralStatusHistorial(
-                                                      "PENDIENTE",
-                                                      Get.parameters['id']
-                                                          .toString());
+                                                      "PENDIENTE", widget.id);
                                               Navigator.pop(context);
                                               await loadData();
                                             },
@@ -510,9 +497,7 @@ class _TransportDeliveryHistoryDetailsState
                                               getLoadingModal(context, false);
                                               var response = await Connections()
                                                   .updateOrderInteralStatusHistorial(
-                                                      "CONFIRMADO",
-                                                      Get.parameters['id']
-                                                          .toString());
+                                                      "CONFIRMADO", widget.id);
                                               Navigator.pop(context);
                                               await loadData();
                                             },
@@ -529,9 +514,7 @@ class _TransportDeliveryHistoryDetailsState
                                               getLoadingModal(context, false);
                                               var response = await Connections()
                                                   .updateOrderInteralStatusHistorial(
-                                                      "NO DESEA",
-                                                      Get.parameters['id']
-                                                          .toString());
+                                                      "NO DESEA", widget.id);
                                               Navigator.pop(context);
                                               await loadData();
                                             },
@@ -577,9 +560,8 @@ class _TransportDeliveryHistoryDetailsState
                                             onPressed: () async {
                                               getLoadingModal(context, false);
                                               await Connections()
-                                                  .updateOrderReturnAll(Get
-                                                      .parameters['id']
-                                                      .toString());
+                                                  .updateOrderReturnAll(
+                                                      widget.id);
                                               await loadData();
                                               Navigator.pop(context);
                                             },
@@ -595,9 +577,8 @@ class _TransportDeliveryHistoryDetailsState
                                             onPressed: () async {
                                               getLoadingModal(context, false);
                                               await Connections()
-                                                  .updateOrderReturnOperator(Get
-                                                      .parameters['id']
-                                                      .toString());
+                                                  .updateOrderReturnOperator(
+                                                      widget.id);
                                               await loadData();
                                               Navigator.pop(context);
                                             },
@@ -613,9 +594,8 @@ class _TransportDeliveryHistoryDetailsState
                                             onPressed: () async {
                                               getLoadingModal(context, false);
                                               await Connections()
-                                                  .updateOrderReturnLogistic(Get
-                                                      .parameters['id']
-                                                      .toString());
+                                                  .updateOrderReturnLogistic(
+                                                      widget.id);
                                               await loadData();
                                               Navigator.pop(context);
                                             },
@@ -658,16 +638,16 @@ class _TransportDeliveryHistoryDetailsState
                                         ),
                                         ElevatedButton(
                                             onPressed: () async {
-                                             
-                                           
                                               await showDialog(
                                                   context: context,
                                                   builder: (context) {
                                                     TextEditingController
                                                         _rechazado =
                                                         TextEditingController();
-                                                    _rechazado.text =
-                                                        data['attributes']['ComentarioRechazado'].toString();
+                                                    _rechazado.text = data[
+                                                                'attributes'][
+                                                            'ComentarioRechazado']
+                                                        .toString();
 
                                                     return AlertDialog(
                                                       content: Container(
@@ -677,155 +657,145 @@ class _TransportDeliveryHistoryDetailsState
                                                             .size
                                                             .height,
                                                         child: Column(
-                                                          children: [                const SizedBox(
-                                                              height: 20,
-                                                            ),
-                                                            Divider(),
-                                                           TextButton(
-                                                                    onPressed:
-                                                                        () async {
-                                                                      getLoadingModal(
-                                                                          context,
-                                                                          false);
-                                                                      var valorTemporal =
-                                                                          0.0;
-                                                                     
-                                                                   
-                                                                       
-                                                                            var data =
-                                                                                await Connections().updateOrderPendienteStateLogisticUser(Get
-                                                                          .parameters[
-                                                                              'id']
-                                                                          .toString());
-                                                                          
-                                                                        
-                                                                      
-                                                                      Navigator.pop(
-                                                                          context);
-                                                                                
-                                                                      Navigator.pop(
-                                                                          context);
-                                                              
-                                                                    },
-                                                                    child: Text(
-                                                                      "MARCAR PENDIENTE PEDIDOS DIFERENTE A ENTREGADO",
-                                                                      style: TextStyle(
-                                                                          fontWeight: FontWeight
-                                                                              .bold,
-                                                                          color:
-                                                                              Colors.blueAccent),
-                                                                    )),  const SizedBox(
-                                                              height: 20,
-                                                            ),
-                                                                       Divider(),
-                                                           TextButton(
-                                                                    onPressed:
-                                                                        () {
-                                                                      launchUrl(
-                                                                          Uri.parse(
-                                                                              "$generalServer${data['attributes']['Url_P_L_Foto']}"));
-                                                                    },
-                                                                    child: Text(
-                                                                      "VER COMPROBANTE",
-                                                                      style: TextStyle(
-                                                                          fontWeight:
-                                                                              FontWeight.bold, color: Colors.black),
-                                                                    )),
+                                                          children: [
                                                             const SizedBox(
                                                               height: 20,
                                                             ),
                                                             Divider(),
-                                                           TextButton(
-                                                                    onPressed:
-                                                                        () async {
-                                                                      getLoadingModal(
-                                                                          context,
-                                                                          false);
-                                                                      var valorTemporal =
-                                                                          0.0;
-                                                                     
-                                                                   
-                                                                       
-                                                                            var data =
-                                                                                await Connections().updateOrderPayStateLogisticUser(Get
-                                                                          .parameters[
-                                                                              'id']
-                                                                          .toString());
-                                                                          
-                                                                        
-                                                                      
-                                                                      Navigator.pop(
-                                                                          context);
-                                                                                
-                                                                      Navigator.pop(
-                                                                          context);
-                                                              
-                                                                    },
-                                                                    child: Text(
-                                                                      "MARCAR RECIBIDO",
-                                                                      style: TextStyle(
-                                                                          fontWeight: FontWeight
+                                                            TextButton(
+                                                                onPressed:
+                                                                    () async {
+                                                                  getLoadingModal(
+                                                                      context,
+                                                                      false);
+                                                                  var valorTemporal =
+                                                                      0.0;
+
+                                                                  var data = await Connections().updateOrderPendienteStateLogisticUser(widget.id);
+
+                                                                  Navigator.pop(
+                                                                      context);
+
+                                                                  Navigator.pop(
+                                                                      context);
+                                                                },
+                                                                child: Text(
+                                                                  "MARCAR PENDIENTE PEDIDOS DIFERENTE A ENTREGADO",
+                                                                  style: TextStyle(
+                                                                      fontWeight:
+                                                                          FontWeight
                                                                               .bold,
-                                                                          color:
-                                                                              Colors.greenAccent),
-                                                                    )),
+                                                                      color: Colors
+                                                                          .blueAccent),
+                                                                )),
+                                                            const SizedBox(
+                                                              height: 20,
+                                                            ),
+                                                            Divider(),
+                                                            TextButton(
+                                                                onPressed: () {
+                                                                  launchUrl(
+                                                                      Uri.parse(
+                                                                          "$generalServer${data['attributes']['Url_P_L_Foto']}"));
+                                                                },
+                                                                child: Text(
+                                                                  "VER COMPROBANTE",
+                                                                  style: TextStyle(
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      color: Colors
+                                                                          .black),
+                                                                )),
+                                                            const SizedBox(
+                                                              height: 20,
+                                                            ),
+                                                            Divider(),
+                                                            TextButton(
+                                                                onPressed:
+                                                                    () async {
+                                                                  getLoadingModal(
+                                                                      context,
+                                                                      false);
+                                                                  var valorTemporal =
+                                                                      0.0;
+
+                                                                  var data = await Connections().updateOrderPayStateLogisticUser(widget.id);
+
+                                                                  Navigator.pop(
+                                                                      context);
+
+                                                                  Navigator.pop(
+                                                                      context);
+                                                                },
+                                                                child: Text(
+                                                                  "MARCAR RECIBIDO",
+                                                                  style: TextStyle(
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      color: Colors
+                                                                          .greenAccent),
+                                                                )),
                                                             SizedBox(
                                                               height: 20,
                                                             ),
                                                             Divider(),
-                                                        Text(
-                                                                    "Para marcar como rechazado primero llenar el campo de texto y luego aplastar el botón rechazado",
-                                                                    style: TextStyle(
-                                                                        fontSize:
-                                                                            10,
-                                                                        color: Colors
-                                                                            .black,
-                                                                        fontWeight:
-                                                                            FontWeight.bold),
-                                                                  ),
+                                                            Text(
+                                                              "Para marcar como rechazado primero llenar el campo de texto y luego aplastar el botón rechazado",
+                                                              style: TextStyle(
+                                                                  fontSize: 10,
+                                                                  color: Colors
+                                                                      .black,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold),
+                                                            ),
                                                             SizedBox(
                                                               height: 20,
                                                             ),
-                                                          TextField(
-                                                                    controller:
-                                                                        _rechazado,
-                                                                    style: TextStyle(
-                                                                        fontWeight:
-                                                                            FontWeight.bold),
-                                                                    decoration: InputDecoration(
-                                                                        hintText:
-                                                                            "Comentario de Rechazado"),
-                                                                  ),
+                                                            TextField(
+                                                              controller:
+                                                                  _rechazado,
+                                                              style: TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold),
+                                                              decoration:
+                                                                  InputDecoration(
+                                                                      hintText:
+                                                                          "Comentario de Rechazado"),
+                                                            ),
                                                             SizedBox(
                                                               height: 20,
                                                             ),
-                                                         TextButton(
-                                                                    onPressed:
-                                                                        () async {
-                                                                      getLoadingModal(
-                                                                          context,
-                                                                          false);
+                                                            TextButton(
+                                                                onPressed:
+                                                                    () async {
+                                                                  getLoadingModal(
+                                                                      context,
+                                                                      false);
 
-                                                                      var data = await Connections().updateOrderPayStateLogisticUserRechazado(Get
-                                                                          .parameters[
-                                                                              'id']
-                                                                          .toString(), _rechazado.text);
+                                                                  var data = await Connections().updateOrderPayStateLogisticUserRechazado(
+                                                                      widget.id,
+                                                                      _rechazado
+                                                                          .text);
 
-                                                                      Navigator.pop(
-                                                                          context);
-                                                                                
-                                                                      Navigator.pop(
-                                                                          context);
-                                                                     
-                                                                    },
-                                                                    child: Text(
-                                                                      "RECHAZADO",
-                                                                      style: TextStyle(
-                                                                          fontWeight: FontWeight
+                                                                  Navigator.pop(
+                                                                      context);
+
+                                                                  Navigator.pop(
+                                                                      context);
+                                                                },
+                                                                child: Text(
+                                                                  "RECHAZADO",
+                                                                  style: TextStyle(
+                                                                      fontWeight:
+                                                                          FontWeight
                                                                               .bold,
-                                                                          color:
-                                                                              Colors.redAccent),
-                                                                    )),
+                                                                      color: Colors
+                                                                          .redAccent),
+                                                                )),
                                                             SizedBox(
                                                               height: 20,
                                                             ),
@@ -856,8 +826,6 @@ class _TransportDeliveryHistoryDetailsState
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold),
                                             )),
-                                   
-                                  
                                       ],
                                     ),
                                   ),
@@ -989,7 +957,8 @@ class _TransportDeliveryHistoryDetailsState
                           _nombreCliente.text,
                           _productoExtra.text,
                           _observacion.text,
-                          _telefonoCliente.text);
+                          _telefonoCliente.text,
+                          widget.id);
                       Navigator.pop(context);
                       await loadData();
                     },

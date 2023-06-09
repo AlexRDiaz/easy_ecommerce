@@ -940,8 +940,51 @@ class Connections {
     }
   }
 
+Future updateOrderInfoSeller(city, name, address, phone, quantity, product,
+      extraProduct, totalPrice, observation,id ) async {
+    var request = await http.put(Uri.parse("$server/api/pedidos-shopifies/$id"),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          "data": {
+            "CiudadShipping": city,
+            "NombreShipping": name,
+            "DireccionShipping": address,
+            "TelefonoShipping": phone,
+            "Cantidad_Total": quantity,
+            "ProductoP": product,
+            "ProductoExtra": extraProduct,
+            "PrecioTotal": totalPrice,
+            "Observacion": observation,
+          }
+        }));
+    var response = await request.body;
+    var decodeData = json.decode(response);
+    if (request.statusCode != 200) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   Future updateOrderInfoNumber(phone) async {
     String id = Get.parameters['id'].toString();
+    var request = await http.put(Uri.parse("$server/api/pedidos-shopifies/$id"),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          "data": {
+            "TelefonoShipping": phone,
+          }
+        }));
+    var response = await request.body;
+    var decodeData = json.decode(response);
+    if (request.statusCode != 200) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  Future updateOrderInfoNumberOperator(phone, id) async {
     var request = await http.put(Uri.parse("$server/api/pedidos-shopifies/$id"),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
@@ -969,8 +1012,7 @@ class Connections {
       nombreCliente,
       productoExtra,
       observacion,
-      telefono) async {
-    String id = Get.parameters['id'].toString();
+      telefono, id) async {
     var request = await http.put(Uri.parse("$server/api/pedidos-shopifies/$id"),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
@@ -1058,10 +1100,54 @@ class Connections {
       return true;
     }
   }
+    Future updateOrderStatusOperatorEntregadoHistorial(
+      status, tipoDePago, comentario, archivo,id ) async {
+    var request = await http.put(Uri.parse("$server/api/pedidos-shopifies/$id"),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          "data": {
+            "Status": status,
+            "Comentario": comentario,
+            "TipoPago": tipoDePago,
+            "Archivo": archivo,
+            "Fecha_Entrega":
+                "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}"
+          }
+        }));
+    var response = await request.body;
+    var decodeData = json.decode(response);
+    if (request.statusCode != 200) {
+      return false;
+    } else {
+      return true;
+    }
+  }
 
   Future updateOrderStatusOperatorNoEntregado(
       status, comentario, archivo) async {
     String id = Get.parameters['id'].toString();
+    var request = await http.put(Uri.parse("$server/api/pedidos-shopifies/$id"),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          "data": {
+            "Status": status,
+            "Comentario": comentario,
+            "Archivo": archivo,
+            "Fecha_Entrega":
+                "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}"
+          }
+        }));
+    var response = await request.body;
+    var decodeData = json.decode(response);
+    if (request.statusCode != 200) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  Future updateOrderStatusOperatorNoEntregadoHistorial(
+      status, comentario, archivo, id) async {
     var request = await http.put(Uri.parse("$server/api/pedidos-shopifies/$id"),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
@@ -1104,9 +1190,52 @@ class Connections {
     }
   }
 
+
+    Future updateOrderStatusOperatorGeneralHistorial(status, comentario,id) async {
+    var request = await http.put(Uri.parse("$server/api/pedidos-shopifies/$id"),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          "data": {
+            "Status": status,
+            "Comentario": comentario,
+            "Archivo": "",
+            "Fecha_Entrega":
+                "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}"
+          }
+        }));
+    var response = await request.body;
+    var decodeData = json.decode(response);
+    if (request.statusCode != 200) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   Future updateOrderStatusOperatorPedidoProgramado(
       status, comentario, date) async {
     String id = Get.parameters['id'].toString();
+    var request = await http.put(Uri.parse("$server/api/pedidos-shopifies/$id"),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          "data": {
+            "Status": status,
+            "Comentario": comentario,
+            "Archivo": "",
+            "Fecha_Entrega": date
+          }
+        }));
+    var response = await request.body;
+    var decodeData = json.decode(response);
+    if (request.statusCode != 200) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+Future updateOrderStatusOperatorPedidoProgramadoHistorial(
+      status, comentario, date,id) async {
     var request = await http.put(Uri.parse("$server/api/pedidos-shopifies/$id"),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
@@ -1352,6 +1481,85 @@ class Connections {
 
   Future getOrdersByID() async {
     String id = Get.parameters['id'].toString();
+    var request = await http.get(
+      Uri.parse(
+          "$server/api/pedidos-shopifies/$id?populate=users&populate=users.vendedores&populate=producto_shopifies&populate=pedido_fecha&populate=ruta&populate=transportadora&populate=operadore&populate=operadore.user&populate=sub_ruta"),
+      headers: {'Content-Type': 'application/json'},
+    );
+    var response = await request.body;
+    var decodeData = json.decode(response);
+
+    return decodeData['data'];
+  }
+   Future getOrdersByIDTransportC(id) async {
+    var request = await http.get(
+      Uri.parse(
+          "$server/api/pedidos-shopifies/$id?populate=users&populate=users.vendedores&populate=producto_shopifies&populate=pedido_fecha&populate=ruta&populate=transportadora&populate=operadore&populate=operadore.user&populate=sub_ruta"),
+      headers: {'Content-Type': 'application/json'},
+    );
+    var response = await request.body;
+    var decodeData = json.decode(response);
+
+    return decodeData['data'];
+  }
+  Future getOrdersByIDOperator(id) async {
+    var request = await http.get(
+      Uri.parse(
+          "$server/api/pedidos-shopifies/$id?populate=users&populate=users.vendedores&populate=producto_shopifies&populate=pedido_fecha&populate=ruta&populate=transportadora&populate=operadore&populate=operadore.user&populate=sub_ruta"),
+      headers: {'Content-Type': 'application/json'},
+    );
+    var response = await request.body;
+    var decodeData = json.decode(response);
+
+    return decodeData['data'];
+  }
+   Future getOrdersByIDTransport(id) async {
+    var request = await http.get(
+      Uri.parse(
+          "$server/api/pedidos-shopifies/$id?populate=users&populate=users.vendedores&populate=producto_shopifies&populate=pedido_fecha&populate=ruta&populate=transportadora&populate=operadore&populate=operadore.user&populate=sub_ruta"),
+      headers: {'Content-Type': 'application/json'},
+    );
+    var response = await request.body;
+    var decodeData = json.decode(response);
+
+    return decodeData['data'];
+  }
+    Future getOrdersByIDSeller(id) async {
+    var request = await http.get(
+      Uri.parse(
+          "$server/api/pedidos-shopifies/$id?populate=users&populate=users.vendedores&populate=producto_shopifies&populate=pedido_fecha&populate=ruta&populate=transportadora&populate=operadore&populate=operadore.user&populate=sub_ruta"),
+      headers: {'Content-Type': 'application/json'},
+    );
+    var response = await request.body;
+    var decodeData = json.decode(response);
+
+    return decodeData['data'];
+  }
+
+  Future getOrdersByIDLogistic(id) async {
+    var request = await http.get(
+      Uri.parse(
+          "$server/api/pedidos-shopifies/$id?populate=users&populate=users.vendedores&populate=producto_shopifies&populate=pedido_fecha&populate=ruta&populate=transportadora&populate=operadore&populate=operadore.user&populate=sub_ruta"),
+      headers: {'Content-Type': 'application/json'},
+    );
+    var response = await request.body;
+    var decodeData = json.decode(response);
+
+    return decodeData['data'];
+  }
+
+  Future getOrdersByIDHistorialTransport(id) async {
+    var request = await http.get(
+      Uri.parse(
+          "$server/api/pedidos-shopifies/$id?populate=users&populate=users.vendedores&populate=producto_shopifies&populate=pedido_fecha&populate=ruta&populate=transportadora&populate=operadore&populate=operadore.user&populate=sub_ruta"),
+      headers: {'Content-Type': 'application/json'},
+    );
+    var response = await request.body;
+    var decodeData = json.decode(response);
+
+    return decodeData['data'];
+  }
+    Future getOrdersByIDHistorial(id) async {
     var request = await http.get(
       Uri.parse(
           "$server/api/pedidos-shopifies/$id?populate=users&populate=users.vendedores&populate=producto_shopifies&populate=pedido_fecha&populate=ruta&populate=transportadora&populate=operadore&populate=operadore.user&populate=sub_ruta"),
@@ -1655,7 +1863,7 @@ class Connections {
     try {
       var request = await http.get(
         Uri.parse(
-            "$server/api/pedidos-shopifies?populate=transportadora&populate=pedido_fecha&populate=sub_ruta&populate=operadore&populate=operadore.user&filters[transportadora][id][\$eq]=${sharedPrefs!.getString("idTransportadora").toString()}&filters[\$or][0][NumeroOrden][\$contains]=$code&filters[\$or][1][Marca_Tiempo_Envio][\$contains]=$code&filters[\$or][2][Fecha_Entrega][\$contains]=$code&filters[\$or][3][NombreShipping][\$contains]=$code&filters[\$or][4][CiudadShipping][\$contains]=$code&filters[\$or][5][DireccionShipping][\$contains]=$code&filters[\$or][6][TelefonoShipping][\$contains]=$code&filters[\$or][7][Cantidad_Total][\$contains]=$code&filters[\$or][8][ProductoP][\$contains]=$code&filters[\$or][9][ProductoExtra][\$contains]=$code&filters[\$or][10][PrecioTotal][\$contains]=$code&filters[\$or][11][Observacion][\$contains]=$code&filters[\$or][12][Comentario][\$contains]=$code&filters[\$or][13][TipoPago][\$contains]=$code&filters[\$or][14][sub_ruta][Titulo][\$contains]=$code&filters[\$or][15][operadore][user][username][\$contains]=$code&filters[\$or][16][Estado_Pagado][\$contains]=$code&filters[\$or][17][Estado_Devolucion][\$contains]=$code&filters[\$or][18][DO][\$contains]=$code&filters[\$or][19][DL][\$contains]=$code&filters[\$or][20][Marca_T_D][\$contains]=$code&filters[\$or][21][Marca_T_I][\$contains]=$code&filters[\$or][22][Estado_Pagado][\$contains]=$code&filters[Status][\$ne]=PEDIDO PROGRAMADO&pagination[limit]=-1"),
+            "$server/api/pedidos-shopifies?populate=transportadora&populate=pedido_fecha&populate=sub_ruta&populate=operadore&populate=operadore.user&filters[transportadora][id][\$eq]=${sharedPrefs!.getString("idTransportadora").toString()}&filters[\$or][0][NumeroOrden][\$contains]=$code&filters[\$or][1][Marca_Tiempo_Envio][\$contains]=$code&filters[\$or][2][Fecha_Entrega][\$contains]=$code&filters[\$or][3][NombreShipping][\$eq]=$code&filters[\$or][4][CiudadShipping][\$contains]=$code&filters[\$or][5][DireccionShipping][\$eq]=$code&filters[\$or][6][TelefonoShipping][\$contains]=$code&filters[\$or][7][Cantidad_Total][\$contains]=$code&filters[\$or][8][ProductoP][\$contains]=$code&filters[\$or][9][ProductoExtra][\$contains]=$code&filters[\$or][10][PrecioTotal][\$contains]=$code&filters[\$or][11][Observacion][\$contains]=$code&filters[\$or][12][Comentario][\$contains]=$code&filters[\$or][13][TipoPago][\$contains]=$code&filters[\$or][14][sub_ruta][Titulo][\$contains]=$code&filters[\$or][15][operadore][user][username][\$contains]=$code&filters[\$or][16][Estado_Pagado][\$contains]=$code&filters[\$or][17][Estado_Devolucion][\$contains]=$code&filters[\$or][18][DO][\$contains]=$code&filters[\$or][19][DL][\$contains]=$code&filters[\$or][20][Marca_T_D][\$contains]=$code&filters[\$or][21][Marca_T_I][\$contains]=$code&filters[\$or][22][Estado_Pagado][\$contains]=$code&filters[Status][\$ne]=PEDIDO PROGRAMADO&pagination[limit]=-1"),
         headers: {'Content-Type': 'application/json'},
       );
       var response = await request.body;
@@ -2761,5 +2969,43 @@ class Connections {
     } else {
       return true;
     }
+  }
+
+
+
+  //TEST
+
+  Future getOrdersTest1() async {
+    var request = await http.get(
+      Uri.parse(
+          "$server/api/pedidos-shopifies?populate=users&populate=users.vendedores&populate=pedido_fecha&populate=transportadora&filters[Status][\$eq]=ENTREGADO&filters[Fecha_Entrega][\$eq]=24/5/2023&pagination[limit]=-1"),
+      headers: {'Content-Type': 'application/json'},
+    );
+    var response = await request.body;
+    var decodeData = json.decode(response);
+
+    return decodeData['data'];
+  }
+    Future getOrdersTest2() async {
+    var request = await http.get(
+      Uri.parse(
+          "$server/api/pedidos-shopifies?populate=users&populate=users.vendedores&populate=pedido_fecha&populate=transportadora&filters[Status][\$eq]=NO ENTREGADO&filters[Fecha_Entrega][\$eq]=24/5/2023&pagination[limit]=-1"),
+      headers: {'Content-Type': 'application/json'},
+    );
+    var response = await request.body;
+    var decodeData = json.decode(response);
+
+    return decodeData['data'];
+  }
+      Future getOrdersTest3() async {
+    var request = await http.get(
+      Uri.parse(
+          "$server/api/pedidos-shopifies?populate=users&populate=users.vendedores&populate=pedido_fecha&filters[\$or][0][Estado_Devolucion][\$eq]=DEVOLUCION EN RUTA&filters[\$or][1][Estado_Devolucion][\$eq]=ENTREGADO EN OFICINA&filters[Fecha_Entrega][\$eq]=24/5/2023&pagination[limit]=-1"),
+      headers: {'Content-Type': 'application/json'},
+    );
+    var response = await request.body;
+    var decodeData = json.decode(response);
+
+    return decodeData['data'];
   }
 }

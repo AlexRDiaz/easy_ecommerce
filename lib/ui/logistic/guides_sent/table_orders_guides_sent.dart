@@ -140,6 +140,29 @@ class _TableOrdersGuidesSentState extends State<TableOrdersGuidesSent> {
         width: double.infinity,
         child: Column(
           children: [
+                         SizedBox(height: 10,),
+             Align(
+              alignment: Alignment.centerRight,
+               child: GestureDetector(
+                      onTap: ()async{
+                       await loadData();
+                      },
+                      child: Container(
+                        color: Colors.transparent,
+                        
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                          Icon(Icons.replay_outlined, color: Colors.green,),
+                          SizedBox(width: 10,),
+                          Text("Recargar Información", style: TextStyle(decoration: TextDecoration.underline, color: Colors.green),),                          SizedBox(width: 10,),
+
+                        ],),
+                      ),
+                    ),
+             ),
+                  SizedBox(height: 10,),
             Container(
               width: double.infinity,
               child: Row(

@@ -13,6 +13,7 @@ import 'package:frontend/helpers/navigators.dart';
 import 'package:frontend/helpers/server.dart';
 import 'package:frontend/main.dart';
 import 'package:frontend/ui/transport/my_orders_prv/controllers/controllers.dart';
+import 'package:frontend/ui/transport/payment_vouchers_transport/info_payment_voucher.dart';
 import 'package:frontend/ui/widgets/loading.dart';
 import 'package:frontend/ui/widgets/routes/sub_routes.dart';
 import 'package:image_picker/image_picker.dart';
@@ -69,8 +70,9 @@ class _PaymentVouchersTransportState extends State<PaymentVouchersTransport> {
     setState(() {});
     for (var i = 0; i < response.length; i++) {
       if (response[i]['attributes']['Status'].toString() == "ENTREGADO") {
-        suma +=
-            double.parse(response[i]['attributes']['PrecioTotal'].toString());
+        suma += double.parse(response[i]['attributes']['PrecioTotal']
+            .toString()
+            .replaceAll(",", "."));
       }
     }
     for (var i = 0; i < response.length; i++) {
@@ -78,7 +80,8 @@ class _PaymentVouchersTransportState extends State<PaymentVouchersTransport> {
           response[i]['attributes']['Status'].toString() == "NO ENTREGADO") {
         sumaCosto += double.parse(response[i]['attributes']['transportadora']
                 ['data']['attributes']['Costo_Transportadora']
-            .toString());
+            .toString()
+            .replaceAll(",", "."));
       }
     }
 
@@ -244,7 +247,6 @@ class _PaymentVouchersTransportState extends State<PaymentVouchersTransport> {
                                       .updateOrderPayStateLogistic(
                                           data[i]['id'], responseI[1]);
                                 }
-                                
                               }
                               await loadData();
                               setState(() {});
@@ -268,9 +270,12 @@ class _PaymentVouchersTransportState extends State<PaymentVouchersTransport> {
               width: double.infinity,
               height: 800,
               child: DataTable2(
-                  headingTextStyle: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-                  dataTextStyle:
-                      TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black),
+                  headingTextStyle: TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.black),
+                  dataTextStyle: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black),
                   columnSpacing: 12,
                   horizontalMargin: 12,
                   minWidth: 2500,
@@ -407,7 +412,7 @@ class _PaymentVouchersTransportState extends State<PaymentVouchersTransport> {
                         sortFunc("Estado_Pagado");
                       },
                     ),
-                        DataColumn2(
+                    DataColumn2(
                       label: Text('Est. Pago Logistica'),
                       size: ColumnSize.M,
                       onSort: (columnIndex, ascending) {
@@ -423,99 +428,92 @@ class _PaymentVouchersTransportState extends State<PaymentVouchersTransport> {
                                         ['Marca_Tiempo_Envio']
                                     .toString()
                                     .split(" ")[0]), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/vouchers/info?id=${data[index]['id']}');
+                              info(context, index);
                             }),
-                            DataCell(Text(data[index]['attributes']
-                                    ['Fecha_Entrega']
-                                .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/vouchers/info?id=${data[index]['id']}');
+                            DataCell(
+                                Text(data[index]['attributes']['Fecha_Entrega']
+                                    .toString()), onTap: () {
+                              info(context, index);
                             }),
-                            DataCell(Text(
-                                '${data[index]['attributes']['Name_Comercial'].toString()}-${data[index]['attributes']['NumeroOrden'].toString()}'), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/vouchers/info?id=${data[index]['id']}');
+                            DataCell(
+                                Text(
+                                    '${data[index]['attributes']['Name_Comercial'].toString()}-${data[index]['attributes']['NumeroOrden'].toString()}'),
+                                onTap: () {
+                              info(context, index);
                             }),
-                            DataCell(Text(data[index]['attributes']
-                                    ['NombreShipping']
-                                .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/vouchers/info?id=${data[index]['id']}');
+                            DataCell(
+                                Text(data[index]['attributes']['NombreShipping']
+                                    .toString()), onTap: () {
+                              info(context, index);
                             }),
-                            DataCell(Text(data[index]['attributes']
-                                    ['CiudadShipping']
-                                .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/vouchers/info?id=${data[index]['id']}');
+                            DataCell(
+                                Text(data[index]['attributes']['CiudadShipping']
+                                    .toString()), onTap: () {
+                              info(context, index);
                             }),
-                            DataCell(Text(data[index]['attributes']
-                                    ['DireccionShipping']
-                                .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/vouchers/info?id=${data[index]['id']}');
+                            DataCell(
+                                Text(data[index]['attributes']
+                                        ['DireccionShipping']
+                                    .toString()), onTap: () {
+                              info(context, index);
                             }),
-                            DataCell(Text(data[index]['attributes']
-                                    ['TelefonoShipping']
-                                .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/vouchers/info?id=${data[index]['id']}');
+                            DataCell(
+                                Text(data[index]['attributes']
+                                        ['TelefonoShipping']
+                                    .toString()), onTap: () {
+                              info(context, index);
                             }),
-                            DataCell(Text(data[index]['attributes']
-                                    ['Cantidad_Total']
-                                .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/vouchers/info?id=${data[index]['id']}');
+                            DataCell(
+                                Text(data[index]['attributes']['Cantidad_Total']
+                                    .toString()), onTap: () {
+                              info(context, index);
                             }),
-                            DataCell(Text(data[index]['attributes']['ProductoP']
-                                .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/vouchers/info?id=${data[index]['id']}');
+                            DataCell(
+                                Text(data[index]['attributes']['ProductoP']
+                                    .toString()), onTap: () {
+                              info(context, index);
                             }),
-                            DataCell(Text(data[index]['attributes']
-                                    ['ProductoExtra']
-                                .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/vouchers/info?id=${data[index]['id']}');
+                            DataCell(
+                                Text(data[index]['attributes']['ProductoExtra']
+                                    .toString()), onTap: () {
+                              info(context, index);
                             }),
-                            DataCell(Text(data[index]['attributes']
-                                    ['PrecioTotal']
-                                .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/vouchers/info?id=${data[index]['id']}');
+                            DataCell(
+                                Text(data[index]['attributes']['PrecioTotal']
+                                    .toString()), onTap: () {
+                              info(context, index);
                             }),
-                            DataCell(Text(data[index]['attributes']['Status']
-                                .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/vouchers/info?id=${data[index]['id']}');
+                            DataCell(
+                                Text(data[index]['attributes']['Status']
+                                    .toString()), onTap: () {
+                              info(context, index);
                             }),
-                            DataCell(Text(data[index]['attributes']['operadore']
-                                        ['data'] !=
-                                    null
-                                ? data[index]['attributes']['operadore']['data']
-                                        ['attributes']['user']['data']
-                                    ['attributes']['username']
-                                : "".toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/vouchers/info?id=${data[index]['id']}');
+                            DataCell(
+                                Text(data[index]['attributes']['operadore']
+                                            ['data'] !=
+                                        null
+                                    ? data[index]['attributes']['operadore']
+                                            ['data']['attributes']['user']
+                                        ['data']['attributes']['username']
+                                    : "".toString()), onTap: () {
+                              info(context, index);
                             }),
-                            DataCell(Text(data[index]['attributes']
-                                    ['Estado_Devolucion']
-                                .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/vouchers/info?id=${data[index]['id']}');
+                            DataCell(
+                                Text(data[index]['attributes']
+                                        ['Estado_Devolucion']
+                                    .toString()), onTap: () {
+                              info(context, index);
                             }),
-                            DataCell(Text(data[index]['attributes']
-                                    ['Estado_Pagado']
-                                .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/vouchers/info?id=${data[index]['id']}');
+                            DataCell(
+                                Text(data[index]['attributes']['Estado_Pagado']
+                                    .toString()), onTap: () {
+                              info(context, index);
                             }),
-                                    DataCell(Text(data[index]['attributes']
-                                    ['Estado_Pago_Logistica']
-                                .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/vouchers/info?id=${data[index]['id']}');
+                            DataCell(
+                                Text(data[index]['attributes']
+                                        ['Estado_Pago_Logistica']
+                                    .toString()), onTap: () {
+                              info(context, index);
                             }),
                           ]))),
             ),
@@ -645,5 +643,35 @@ class _PaymentVouchersTransportState extends State<PaymentVouchersTransport> {
           .toString()
           .compareTo(b['attributes'][name].toString()));
     }
+  }
+
+  Future<dynamic> info(BuildContext context, int index) {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            content: Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              child: Column(
+                children: [
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: Icon(Icons.close),
+                    ),
+                  ),
+                  Expanded(
+                      child: InfoPaymentVoucher(
+                    id: data[index]['id'].toString(),
+                  ))
+                ],
+              ),
+            ),
+          );
+        });
   }
 }

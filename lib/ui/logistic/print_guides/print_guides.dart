@@ -276,7 +276,7 @@ class _PrintGuidesState extends State<PrintGuides> {
                                       optionsCheckBox[index]['id'] =
                                           data[index]['id'].toString();
                                       optionsCheckBox[index]['numPedido'] =
-                                          "${data[index]['attributes']['Tienda_Temporal'].toString()}-${data[index]['attributes']['NumeroOrden']}"
+                                          "${data[index]['attributes']['users']['data']!=null?data[index]['attributes']['users']['data'][0]['attributes']['vendedores']['data'][0]['attributes']['Nombre_Comercial']:data[index]['attributes']['Tienda_Temporal'].toString()}-${data[index]['attributes']['NumeroOrden']}"
                                               .toString();
                                       optionsCheckBox[index]['date'] =
                                           data[index]['attributes']

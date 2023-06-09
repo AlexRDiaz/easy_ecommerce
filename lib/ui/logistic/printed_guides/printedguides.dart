@@ -8,6 +8,7 @@ import 'package:frontend/helpers/navigators.dart';
 import 'package:frontend/ui/logistic/print_guides/model_guide/model_guide.dart';
 import 'package:frontend/ui/logistic/printed_guides/controllers/controllers.dart';
 import 'package:flutter_barcode_listener/flutter_barcode_listener.dart';
+import 'package:frontend/ui/logistic/printed_guides/printedguides_info.dart';
 import 'package:frontend/ui/widgets/loading.dart';
 import 'package:frontend/ui/widgets/logistic/scanner_printed.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -93,6 +94,29 @@ class _PrintedGuidesState extends State<PrintedGuides> {
           padding: const EdgeInsets.all(12.0),
           child: Column(
             children: [
+                           SizedBox(height: 10,),
+             Align(
+              alignment: Alignment.centerRight,
+               child: GestureDetector(
+                      onTap: ()async{
+                       await loadData();
+                      },
+                      child: Container(
+                        color: Colors.transparent,
+                        
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                          Icon(Icons.replay_outlined, color: Colors.green,),
+                          SizedBox(width: 10,),
+                          Text("Recargar Información", style: TextStyle(decoration: TextDecoration.underline, color: Colors.green),),                          SizedBox(width: 10,),
+
+                        ],),
+                      ),
+                    ),
+             ),
+                  SizedBox(height: 10,),
               Container(
                 width: double.infinity,
                 child: Row(
@@ -145,13 +169,15 @@ class _PrintedGuidesState extends State<PrintedGuides> {
               ),
               Expanded(
                 child: DataTable2(
-                    headingTextStyle: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-                    dataTextStyle:TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black),
+                    headingTextStyle: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.black),
+                    dataTextStyle: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black),
                     columnSpacing: 12,
                     horizontalMargin: 12,
-                    
                     minWidth: 2500,
-                    
                     columns: [
                       DataColumn2(
                         label: Text(''),
@@ -247,7 +273,7 @@ class _PrintedGuidesState extends State<PrintedGuides> {
                                         optionsCheckBox[index]['id'] =
                                             data[index]['id'].toString();
                                         optionsCheckBox[index]['numPedido'] =
-                                            "${data[index]['attributes']['Tienda_Temporal'].toString()}-${data[index]['attributes']['NumeroOrden']}"
+                                            "${data[index]['attributes']['users']['data'] != null ? data[index]['attributes']['users']['data'][0]['attributes']['vendedores']['data'][0]['attributes']['Nombre_Comercial'] : data[index]['attributes']['Tienda_Temporal'].toString()}-${data[index]['attributes']['NumeroOrden']}"
                                                 .toString();
                                         optionsCheckBox[index]
                                             ['date'] = data[index]['attributes']
@@ -313,38 +339,66 @@ class _PrintedGuidesState extends State<PrintedGuides> {
                                   Text(
                                       "${data[index]['attributes']['Name_Comercial'].toString()}-${data[index]['attributes']['NumeroOrden']}"
                                           .toString()), onTap: () {
-                                Navigators().pushNamed(context,
-                                    '/layout/logistic/print/info?id=${data[index]['id']}');
+                                info(context, index);
                               }),
-                              DataCell(Text(data[index]['attributes']
-                                      ['CiudadShipping']
-                                  .toString())),
-                              DataCell(Text(data[index]['attributes']
-                                      ['NombreShipping']
-                                  .toString())),
-                              DataCell(Text(data[index]['attributes']
-                                      ['DireccionShipping']
-                                  .toString())),
-                              DataCell(Text(data[index]['attributes']
-                                      ['Cantidad_Total']
-                                  .toString())),
-                              DataCell(Text(data[index]['attributes']
-                                      ['ProductoP']
-                                  .toString())),
-                              DataCell(Text(data[index]['attributes']
-                                      ['ProductoExtra']
-                                  .toString())),
-                              DataCell(Text(data[index]['attributes']
-                                      ['PrecioTotal']
-                                  .toString())),
-                              DataCell(Text(data[index]['attributes']
-                                      ['Estado_Interno']
-                                  .toString())),
-                              DataCell(Text(data[index]['attributes']
-                                      ['Estado_Logistico']
-                                  .toString())),
-                              DataCell(Text(
-                                  "${data[index]['attributes']['transportadora']['data'] != null ? data[index]['attributes']['transportadora']['data']['attributes']['Nombre'].toString() : ''}")),
+                              DataCell(
+                                  Text(data[index]['attributes']
+                                          ['CiudadShipping']
+                                      .toString()), onTap: () {
+                                  info(context, index);
+                              }),
+                              DataCell(
+                                  Text(data[index]['attributes']
+                                          ['NombreShipping']
+                                      .toString()), onTap: () {
+                              info(context, index);
+                              }),
+                              DataCell(
+                                  Text(data[index]['attributes']
+                                          ['DireccionShipping']
+                                      .toString()), onTap: () {
+                                info(context, index);
+                              }),
+                              DataCell(
+                                  Text(data[index]['attributes']
+                                          ['Cantidad_Total']
+                                      .toString()), onTap: () {
+                          info(context, index);
+                              }),
+                              DataCell(
+                                  Text(data[index]['attributes']['ProductoP']
+                                      .toString()), onTap: () {
+                                   info(context, index);
+                              }),
+                              DataCell(
+                                  Text(data[index]['attributes']
+                                          ['ProductoExtra']
+                                      .toString()), onTap: () {
+                            info(context, index);
+                              }),
+                              DataCell(
+                                  Text(data[index]['attributes']['PrecioTotal']
+                                      .toString()), onTap: () {
+                                info(context, index);
+                              }),
+                              DataCell(
+                                  Text(data[index]['attributes']
+                                          ['Estado_Interno']
+                                      .toString()), onTap: () {
+                             info(context, index);
+                              }),
+                              DataCell(
+                                  Text(data[index]['attributes']
+                                          ['Estado_Logistico']
+                                      .toString()), onTap: () {
+                                  info(context, index);
+                              }),
+                              DataCell(
+                                  Text(
+                                      "${data[index]['attributes']['transportadora']['data'] != null ? data[index]['attributes']['transportadora']['data']['attributes']['Nombre'].toString() : ''}"),
+                                  onTap: () {
+                               info(context, index);
+                              }),
                             ]))),
               ),
             ],
@@ -363,7 +417,7 @@ class _PrintedGuidesState extends State<PrintedGuides> {
       ),
       child: TextField(
         controller: controller,
-        onSubmitted: (value) {
+        onSubmitted: (value) async{
           getLoadingModal(context, false);
 
           setState(() {
@@ -442,6 +496,7 @@ class _PrintedGuidesState extends State<PrintedGuides> {
                     setState(() {
                       data = dataTemporal;
                     });
+                    
                     Navigator.pop(context);
                   },
                   child: Icon(Icons.close))
@@ -499,7 +554,7 @@ class _PrintedGuidesState extends State<PrintedGuides> {
                       transport: optionsCheckBox[i]['transport'],
                     )));
 
-                        doc.addPage(pw.Page(
+                    doc.addPage(pw.Page(
                         pageFormat: PdfPageFormat.a4,
                         orientation: pw.PageOrientation.portrait,
                         build: (pw.Context context) {
@@ -629,5 +684,35 @@ class _PrintedGuidesState extends State<PrintedGuides> {
                   ['Nombre']
               .toString()));
     }
+  }
+
+  Future<dynamic> info(BuildContext context, int index) {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            content: Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              child: Column(
+                children: [
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: Icon(Icons.close),
+                    ),
+                  ),
+                  Expanded(
+                      child: PrintedGuideInfo(
+                    id: data[index]['id'].toString(),
+                  ))
+                ],
+              ),
+            ),
+          );
+        });
   }
 }

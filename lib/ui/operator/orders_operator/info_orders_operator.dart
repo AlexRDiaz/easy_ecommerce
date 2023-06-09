@@ -5,9 +5,11 @@ import 'package:frontend/helpers/navigators.dart';
 import 'package:frontend/ui/operator/orders_operator/controllers/controllers.dart';
 import 'package:frontend/ui/widgets/loading.dart';
 import 'package:frontend/ui/widgets/update_status_operator/update_status_operator.dart';
+import 'package:frontend/ui/widgets/update_status_operator/update_status_operator_historial.dart';
 
 class InfoOrdersOperator extends StatefulWidget {
-  const InfoOrdersOperator({super.key});
+  final String id;
+  const InfoOrdersOperator({super.key, required this.id});
 
   @override
   State<InfoOrdersOperator> createState() => _InfoOrdersOperatorState();
@@ -28,7 +30,7 @@ class _InfoOrdersOperatorState extends State<InfoOrdersOperator> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getLoadingModal(context, false);
     });
-    var response = await Connections().getOrdersByID();
+    var response = await Connections().getOrdersByIDOperator(widget.id);
     // data = response;
     data = response;
     _controllers.editControllers(response);
@@ -50,12 +52,7 @@ class _InfoOrdersOperatorState extends State<InfoOrdersOperator> {
         backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.white,
-          leading: GestureDetector(
-              onTap: () {
-                Navigators()
-                    .pushNamedAndRemoveUntil(context, "/layout/operator");
-              },
-              child: Icon(Icons.arrow_back_ios, color: Colors.black)),
+          leading: Container(),
           centerTitle: true,
           title: Text(
             "Información Pedido",
@@ -89,7 +86,7 @@ class _InfoOrdersOperatorState extends State<InfoOrdersOperator> {
                                   await showDialog(
                                       context: context,
                                       builder: (context) {
-                                        return UpdateStatusOperator(
+                                        return UpdateStatusOperatorHistorial(
                                           numberTienda: response['vendedores']
                                                   [0]['Telefono2']
                                               .toString(),
@@ -97,6 +94,7 @@ class _InfoOrdersOperatorState extends State<InfoOrdersOperator> {
                                               "${data['attributes']['Name_Comercial']}-${data['attributes']['NumeroOrden']}",
                                           numberCliente:
                                               "${data['attributes']['TelefonoShipping']}",
+                                              id: widget.id,
                                         );
                                       });
                                   await loadData();
@@ -166,7 +164,7 @@ class _InfoOrdersOperatorState extends State<InfoOrdersOperator> {
                             onPressed: () async {
                               getLoadingModal(context, false);
                               var reponse = await Connections()
-                                  .updateOrderInfoNumber(_numerController.text);
+                                  .updateOrderInfoNumberOperator(_numerController.text, widget.id);
                               Navigator.pop(context);
                               await loadData();
                             },

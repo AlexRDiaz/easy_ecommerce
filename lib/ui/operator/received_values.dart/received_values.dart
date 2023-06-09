@@ -2,6 +2,7 @@ import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:frontend/ui/operator/received_values.dart/info_received_orders.dart';
 import 'package:intl/intl.dart';
 
 import 'package:data_table_2/data_table_2.dart';
@@ -441,8 +442,7 @@ class _ReceivedValuesState extends State<ReceivedValues> {
                       data.isNotEmpty ? data.length : [].length,
                       (index) => DataRow(
                               onSelectChanged: (value) {
-                                Navigators().pushNamed(context,
-                                    '/layout/operator/received/order?id=${data[index]['id']}');
+                                 info(context, index);
                               },
                               cells: [
                                 DataCell(Text(data[index]['attributes']
@@ -984,5 +984,34 @@ class _ReceivedValuesState extends State<ReceivedValues> {
         }
       });
     }
+  }
+    Future<dynamic> info(BuildContext context, int index) {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            content: Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              child: Column(
+                children: [
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: Icon(Icons.close),
+                    ),
+                  ),
+                  Expanded(
+                      child: InfoReceivedValuesOperator(
+                    id: data[index]['id'].toString(),
+                  ))
+                ],
+              ),
+            ),
+          );
+        });
   }
 }

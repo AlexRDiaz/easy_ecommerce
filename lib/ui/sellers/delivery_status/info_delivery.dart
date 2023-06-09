@@ -8,7 +8,8 @@ import 'package:frontend/ui/widgets/loading.dart';
 import 'package:frontend/ui/widgets/update_status_operator/update_status_operator.dart';
 
 class DeliveryStatusSellerInfo extends StatefulWidget {
-  const DeliveryStatusSellerInfo({super.key});
+  final String id;
+  const DeliveryStatusSellerInfo({super.key, required this.id});
 
   @override
   State<DeliveryStatusSellerInfo> createState() => _DeliveryStatusSellerInfo();
@@ -29,7 +30,7 @@ class _DeliveryStatusSellerInfo extends State<DeliveryStatusSellerInfo> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getLoadingModal(context, false);
     });
-    var response = await Connections().getOrdersByID();
+    var response = await Connections().getOrdersByIDHistorial(widget.id);
     // data = response;
     data = response;
     _controllers.editControllers(response);
@@ -49,12 +50,7 @@ class _DeliveryStatusSellerInfo extends State<DeliveryStatusSellerInfo> {
         backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.white,
-          leading: GestureDetector(
-              onTap: () {
-                Navigators()
-                    .pushNamedAndRemoveUntil(context, "/layout/sellers");
-              },
-              child: Icon(Icons.arrow_back_ios, color: Colors.black)),
+          leading: Container(),
           centerTitle: true,
           title: Text(
             "Información Pedido",
@@ -117,12 +113,12 @@ class _DeliveryStatusSellerInfo extends State<DeliveryStatusSellerInfo> {
                                 : ""),
                         _modelText(
                             "Costo Devolución",
-                            data['attributes']['users'] != null
+                       data['attributes']['Estado_Devolucion'].toString()!="PENDIENTE"?     data['attributes']['users'] != null
                                 ? data['attributes']['users']['data'][0]
                                             ['attributes']['vendedores']['data']
                                         [0]['attributes']['CostoDevolucion']
                                     .toString()
-                                : ""),
+                                : "":""),
                         _modelText("Fecha Ingreso",
                             data['attributes']['Marca_T_I'].toString()),
                         data['attributes']['Archivo'].toString().isEmpty ||

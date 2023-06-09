@@ -89,11 +89,11 @@ getRoutes() {
       ),
       middlewares: [AuthMiddleware()],
     ),
-    GetPage(
-      name: '/layout/logistic/print/info',
-      page: () => const PrintedGuideInfo(),
-      middlewares: [AuthMiddleware()],
-    ),
+    // GetPage(
+    //   name: '/layout/logistic/print/info',
+    //   page: () => const PrintedGuideInfo(),
+    //   middlewares: [AuthMiddleware()],
+    // ),
 
     /// End Add Carrier
     /// income - expenses
@@ -204,11 +204,11 @@ getRoutes() {
       page: () => const TransportDeliveryHistoryByTransport(),
       middlewares: [AuthMiddleware()],
     ),
-    GetPage(
-      name: '/layout/logistic/transport-delivery-history/details',
-      page: () => const TransportDeliveryHistoryDetails(),
-      middlewares: [AuthMiddleware()],
-    ),
+    // GetPage(
+    //   name: '/layout/logistic/transport-delivery-history/details',
+    //   page: () => const TransportDeliveryHistoryDetails(),
+    //   middlewares: [AuthMiddleware()],
+    // ),
 
     /// end delivery history transport
 
@@ -246,10 +246,10 @@ getRoutes() {
         name: '/layout/logistic/logistic-date/table',
         page: () => TableOrdersGuidesSent(),
         middlewares: [AuthMiddleware()]),
-    GetPage(
-        name: '/layout/logistic/delivery-status/info',
-        page: () => DeliveryStatusInfo(),
-        middlewares: [AuthMiddleware()]),
+    // GetPage(
+    //     name: '/layout/logistic/delivery-status/info',
+    //     page: () => DeliveryStatusInfo(),
+    //     middlewares: [AuthMiddleware()]),
 
     //SELLERS
     /// Start Add Sellers
@@ -298,52 +298,52 @@ getRoutes() {
       middlewares: [AuthMiddleware()],
     ),
 
-    GetPage(
-      name: '/layout/sellers/delivery-status/info',
-      page: () => const DeliveryStatusSellerInfo(),
-      middlewares: [AuthMiddleware()],
-    ),
+    // GetPage(
+    //   name: '/layout/sellers/delivery-status/info',
+    //   page: () => const DeliveryStatusSellerInfo(),
+    //   middlewares: [AuthMiddleware()],
+    // ),
 
     /// End sellers returns
     GetPage(
         name: '/layout/sellers',
         page: () => LayoutSellersPage(),
         middlewares: [AuthMiddleware()]),
-    GetPage(
-        name: '/layout/sellers/order/info',
-        page: () => OrderInfo(),
-        middlewares: [AuthMiddleware()]),
+    // GetPage(
+    //     name: '/layout/sellers/order/info',
+    //     page: () => OrderInfo(),
+    //     middlewares: [AuthMiddleware()]),
 
     //TRANSPORT
     GetPage(
         name: '/layout/transport',
         page: () => LayoutTransportPage(),
         middlewares: [AuthMiddleware()]),
-    GetPage(
-        name: '/layout/transport/prv/info',
-        page: () => MyOrdersPRVInfo(),
-        middlewares: [AuthMiddleware()]),
+    // GetPage(
+    //     name: '/layout/transport/prv/info',
+    //     page: () => MyOrdersPRVInfo(),
+    //     middlewares: [AuthMiddleware()]),
     GetPage(
         name: '/layout/transport/operator/info',
         page: () => EditOperatorTransport(),
         middlewares: [AuthMiddleware()]),
 
-    GetPage(
-        name: '/layout/transport/billing/info',
-        page: () => InfoTransportationBilling(),
-        middlewares: [AuthMiddleware()]),
+    // GetPage(
+    //     name: '/layout/transport/billing/info',
+    //     page: () => InfoTransportationBilling(),
+    //     middlewares: [AuthMiddleware()]),
 
-    GetPage(
-        name: '/layout/transport/vouchers/info',
-        page: () => InfoPaymentVoucher(),
-        middlewares: [AuthMiddleware()]),
+    // GetPage(
+    //     name: '/layout/transport/vouchers/info',
+    //     page: () => InfoPaymentVoucher(),
+    //     middlewares: [AuthMiddleware()]),
 
     /// Start delivery status
-    GetPage(
-      name: '/layout/transport/delivery-status/details',
-      page: () => const TransportProDeliveryHistoryDetails(),
-      middlewares: [AuthMiddleware()],
-    ),
+    // GetPage(
+    //   name: '/layout/transport/delivery-status/details',
+    //   page: () => const TransportProDeliveryHistoryDetails(),
+    //   middlewares: [AuthMiddleware()],
+    // ),
 
     /// End delivery status
     /// Start order history
@@ -382,17 +382,17 @@ getRoutes() {
         name: '/layout/operator',
         page: () => LayoutOperatorPage(),
         middlewares: [AuthMiddleware()]),
-    GetPage(
-        name: '/layout/operator/order',
-        page: () => InfoOrdersOperator(),
-        middlewares: [AuthMiddleware()]),
-    GetPage(
-        name: '/layout/operator/state/order',
-        page: () => InfoStateOrdersOperator(),
-        middlewares: [AuthMiddleware()]),
-    GetPage(
-        name: '/layout/operator/received/order',
-        page: () => InfoReceivedValuesOperator(),
-        middlewares: [AuthMiddleware()]),
+    // GetPage(
+    //     name: '/layout/operator/order',
+    //     page: () => InfoOrdersOperator(),
+    //     middlewares: [AuthMiddleware()]),
+    // GetPage(
+    //     name: '/layout/operator/state/order',
+    //     page: () => InfoStateOrdersOperator(),
+    //     middlewares: [AuthMiddleware()]),
+    // GetPage(
+    //     name: '/layout/operator/received/order',
+    //     page: () => InfoReceivedValuesOperator(),
+    //     middlewares: [AuthMiddleware()]),
   ];
 }

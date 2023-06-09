@@ -8,7 +8,8 @@ import 'package:frontend/ui/widgets/loading.dart';
 import 'package:frontend/ui/widgets/update_status_operator/update_status_operator.dart';
 
 class InfoPaymentVoucher extends StatefulWidget {
-  const InfoPaymentVoucher({super.key});
+  final String id;
+  const InfoPaymentVoucher({super.key, required this.id});
 
   @override
   State<InfoPaymentVoucher> createState() => _InfoPaymentVoucher();
@@ -29,7 +30,7 @@ class _InfoPaymentVoucher extends State<InfoPaymentVoucher> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getLoadingModal(context, false);
     });
-    var response = await Connections().getOrdersByID();
+    var response = await Connections().getOrdersByIDTransportC(widget.id);
     // data = response;
     data = response;
     _controllers.editControllers(response);
@@ -49,12 +50,7 @@ class _InfoPaymentVoucher extends State<InfoPaymentVoucher> {
         backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.white,
-          leading: GestureDetector(
-              onTap: () {
-                Navigators()
-                    .pushNamedAndRemoveUntil(context, "/layout/transport");
-              },
-              child: Icon(Icons.arrow_back_ios, color: Colors.black)),
+          leading: Container(),
           centerTitle: true,
           title: Text(
             "Información Pedido",

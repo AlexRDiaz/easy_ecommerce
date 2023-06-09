@@ -245,13 +245,15 @@ class _AddOrderSellersState extends State<AddOrderSellers> {
                           }
                           var dateC = await Connections().createDateOrder(
                               "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}");
+                              String priceTotal = _precioT.text.replaceAll(",", ".");
+
 
                           var response = await Connections().createOrder(
                               _codigo.text,
                               _direccion.text,
                               _nombre.text,
                               _telefono.text,
-                              _precioT.text,
+                              priceTotal,
                               _observacion.text,
                               _ciudad.text,
                               valueState,

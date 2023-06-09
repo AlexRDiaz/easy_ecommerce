@@ -7,10 +7,12 @@ import 'package:frontend/ui/operator/orders_operator/controllers/controllers.dar
 import 'package:frontend/ui/widgets/loading.dart';
 import 'package:frontend/ui/widgets/routes/sub_routes.dart';
 import 'package:frontend/ui/widgets/update_status_operator/update_status_operator.dart';
+import 'package:frontend/ui/widgets/update_status_operator/update_status_operator_historial.dart';
 import 'package:get/route_manager.dart';
 
 class TransportProDeliveryHistoryDetails extends StatefulWidget {
-  const TransportProDeliveryHistoryDetails({super.key});
+  final String id;
+  const TransportProDeliveryHistoryDetails({super.key, required this.id});
 
   @override
   State<TransportProDeliveryHistoryDetails> createState() =>
@@ -33,7 +35,7 @@ class _TransportProDeliveryHistoryDetails
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getLoadingModal(context, false);
     });
-    var response = await Connections().getOrdersByID();
+    var response = await Connections().getOrdersByIDHistorialTransport(widget.id);
     // data = response;
     data = response;
     _controllers.editControllers(response);
@@ -53,12 +55,7 @@ class _TransportProDeliveryHistoryDetails
         backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.white,
-          leading: GestureDetector(
-              onTap: () {
-                Navigators()
-                    .pushNamedAndRemoveUntil(context, "/layout/transport");
-              },
-              child: Icon(Icons.arrow_back_ios, color: Colors.black)),
+          leading: Container(),
           centerTitle: true,
           title: Text(
             "Información Pedido",
@@ -96,9 +93,7 @@ class _TransportProDeliveryHistoryDetails
                                                 context: context,
                                                 builder: (context) {
                                                   return SubRoutesModal(
-                                                    idOrder: Get
-                                                        .parameters['id']
-                                                        .toString(),
+                                                    idOrder: widget.id,
                                                     someOrders: false,
                                                   );
                                                 });
@@ -119,20 +114,23 @@ class _TransportProDeliveryHistoryDetails
                                             var response = await Connections()
                                                 .getSellersByIdMasterOnly(
                                                     "${data['attributes']['IdComercial'].toString()}");
-                                            await showDialog(
-                                                context: context,
-                                                builder: (context) {
-                                                  return UpdateStatusOperator(
-                                                    numberTienda:
-                                                        response['vendedores']
-                                                                [0]['Telefono2']
-                                                            .toString(),
-                                                    codigo:
-                                                        "${data['attributes']['Name_Comercial']}-${data['attributes']['NumeroOrden']}",
-                                                    numberCliente:
-                                                        "${data['attributes']['TelefonoShipping']}",
-                                                  );
-                                                });
+                                         
+                                                         await showDialog(
+                                                  context: context,
+                                                  builder: (context) {
+                                                    return UpdateStatusOperatorHistorial(
+                                                      numberTienda:
+                                                          response['vendedores']
+                                                                      [0]
+                                                                  ['Telefono2']
+                                                              .toString(),
+                                                      codigo:
+                                                          "${data['attributes']['Name_Comercial']}-${data['attributes']['NumeroOrden']}",
+                                                      numberCliente:
+                                                          "${data['attributes']['TelefonoShipping']}",
+                                                          id: widget.id,
+                                                    );
+                                                  });
                                             await loadData();
                                           },
                                           child: Text(

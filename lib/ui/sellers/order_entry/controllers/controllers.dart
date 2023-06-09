@@ -47,8 +47,8 @@ class OrderEntryControllers extends ChangeNotifier {
     notifyListeners();
   }
 
-  updateInfo({success, error}) async {
-    var responseGeneralSeller = await Connections().updateOrderInfo(
+  updateInfo({success, error, id}) async {
+    var responseGeneralSeller = await Connections().updateOrderInfoSeller(
         ciudadEditController.text,
         nombreEditController.text,
         direccionEditController.text,
@@ -57,7 +57,7 @@ class OrderEntryControllers extends ChangeNotifier {
         productoEditController.text,
         productoExtraEditController.text,
         precioTotalEditController.text,
-        observacionEditController.text);
+        observacionEditController.text, id);
 
     if (responseGeneralSeller) {
       success();

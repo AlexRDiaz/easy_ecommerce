@@ -35,7 +35,8 @@ class _WalletSellersState extends State<WalletSellers> {
     var responseWalletValue = await Connections().getWalletValue();
 
     setState(() {
-      valueWallet = responseWalletValue.toString();
+      var tempWallet = double.parse(responseWalletValue.toString());
+      valueWallet = tempWallet.toStringAsFixed(2) ;
       data = response;
     });
     Future.delayed(Duration(milliseconds: 500), () {

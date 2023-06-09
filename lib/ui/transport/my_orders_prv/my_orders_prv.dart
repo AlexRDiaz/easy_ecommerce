@@ -5,6 +5,7 @@ import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:frontend/connections/connections.dart';
 import 'package:frontend/helpers/navigators.dart';
 import 'package:frontend/ui/transport/my_orders_prv/controllers/controllers.dart';
+import 'package:frontend/ui/transport/my_orders_prv/prv_info.dart';
 import 'package:frontend/ui/widgets/loading.dart';
 import 'package:frontend/ui/widgets/routes/sub_routes.dart';
 import 'package:intl/intl.dart';
@@ -31,10 +32,11 @@ class _MyOrdersPRVTransportState extends State<MyOrdersPRVTransport> {
   }
 
   loadData() async {
-    var response = [];
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getLoadingModal(context, false);
     });
+        var response = [];
+
 
     response = await Connections()
         .getOrdersForTransportPRV(_controllers.searchController.text);
@@ -44,6 +46,7 @@ class _MyOrdersPRVTransportState extends State<MyOrdersPRVTransport> {
       optionsCheckBox = [];
       counterChecks = 0;
     });
+    sortFuncDate("Marca_Tiempo_Envio");
     for (var i = 0; i < (data.isNotEmpty ? data.length : [].length); i++) {
       optionsCheckBox.add({
         "check": false,
@@ -76,6 +79,29 @@ class _MyOrdersPRVTransportState extends State<MyOrdersPRVTransport> {
         width: double.infinity,
         child: Column(
           children: [
+                        SizedBox(height: 10,),
+             Align(
+              alignment: Alignment.centerRight,
+               child: GestureDetector(
+                      onTap: ()async{
+                       await loadData();
+                      },
+                      child: Container(
+                        color: Colors.transparent,
+                        
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                          Icon(Icons.replay_outlined, color: Colors.green,),
+                          SizedBox(width: 10,),
+                          Text("Recargar Información", style: TextStyle(decoration: TextDecoration.underline, color: Colors.green),),                          SizedBox(width: 10,),
+
+                        ],),
+                      ),
+                    ),
+             ),
+                  SizedBox(height: 10,),
             Container(
               width: double.infinity,
               child: counterChecks != 0
@@ -244,34 +270,29 @@ class _MyOrdersPRVTransportState extends State<MyOrdersPRVTransport> {
                                 Text(data[index]['attributes']
                                         ['Marca_Tiempo_Envio']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/prv/info?id=${data[index]['id']}');
+                        info(context, index);
                             }),
                             DataCell(
                                 Text(
                                     '${data[index]['attributes']['Name_Comercial'].toString()}-${data[index]['attributes']['NumeroOrden'].toString()}'),
                                 onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/prv/info?id=${data[index]['id']}');
+                            info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['CiudadShipping']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/prv/info?id=${data[index]['id']}');
+                            info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['NombreShipping']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/prv/info?id=${data[index]['id']}');
+                              info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']
                                         ['DireccionShipping']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/prv/info?id=${data[index]['id']}');
+                                 info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['sub_ruta']
@@ -280,8 +301,7 @@ class _MyOrdersPRVTransportState extends State<MyOrdersPRVTransport> {
                                     ? data[index]['attributes']['sub_ruta']
                                         ['data']['attributes']['Titulo']
                                     : "".toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/prv/info?id=${data[index]['id']}');
+                        info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['operadore']
@@ -291,58 +311,49 @@ class _MyOrdersPRVTransportState extends State<MyOrdersPRVTransport> {
                                             ['data']['attributes']['user']
                                         ['data']['attributes']['username']
                                     : "".toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/prv/info?id=${data[index]['id']}');
+                                info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']
                                         ['TelefonoShipping']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/prv/info?id=${data[index]['id']}');
+                                 info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['Cantidad_Total']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/prv/info?id=${data[index]['id']}');
+                          info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['ProductoP']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/prv/info?id=${data[index]['id']}');
+                          info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['ProductoExtra']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/prv/info?id=${data[index]['id']}');
+                                  info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['PrecioTotal']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/prv/info?id=${data[index]['id']}');
+                             info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['Status']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/prv/info?id=${data[index]['id']}');
+                            info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['Estado_Interno']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/prv/info?id=${data[index]['id']}');
+                             info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']
                                         ['Estado_Logistico']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/prv/info?id=${data[index]['id']}');
+                         info(context, index);
                             }),
                           ]))),
             ),
@@ -405,10 +416,11 @@ class _MyOrdersPRVTransportState extends State<MyOrdersPRVTransport> {
           prefixIcon: Icon(Icons.search),
           suffixIcon: _controllers.searchController.text.isNotEmpty
               ? GestureDetector(
-                  onTap: () {
+                  onTap: () async{
                     setState(() {
                       _controllers.searchController.clear();
                     });
+                   await loadData();
                   },
                   child: Icon(Icons.close))
               : null,
@@ -495,7 +507,7 @@ class _MyOrdersPRVTransportState extends State<MyOrdersPRVTransport> {
   }
 
   sortFuncDate(name) {
-    if (sort) {
+    if (!sort) {
       setState(() {
         sort = false;
       });
@@ -538,5 +550,34 @@ class _MyOrdersPRVTransportState extends State<MyOrdersPRVTransport> {
         }
       });
     }
+  }
+   Future<dynamic> info(BuildContext context, int index) {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            content: Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              child: Column(
+                children: [
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: Icon(Icons.close),
+                    ),
+                  ),
+                  Expanded(
+                      child: MyOrdersPRVInfo(
+                    id: data[index]['id'].toString(),
+                  ))
+                ],
+              ),
+            ),
+          );
+        });
   }
 }

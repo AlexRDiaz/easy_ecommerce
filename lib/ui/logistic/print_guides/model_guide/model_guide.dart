@@ -42,7 +42,7 @@ class ModelGuide extends StatefulWidget {
   State<ModelGuide> createState() => _ModelGuideState();
 }
 
-double size = 12.0;
+double size = 14.0;
 double multi = 3.0;
 
 class _ModelGuideState extends State<ModelGuide> {

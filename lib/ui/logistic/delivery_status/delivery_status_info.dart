@@ -8,7 +8,8 @@ import 'package:frontend/ui/widgets/loading.dart';
 import 'package:frontend/ui/widgets/update_status_operator/update_status_operator.dart';
 
 class DeliveryStatusInfo extends StatefulWidget {
-  const DeliveryStatusInfo({super.key});
+  final String id;
+  const DeliveryStatusInfo({super.key, required this.id});
 
   @override
   State<DeliveryStatusInfo> createState() => _DeliveryStatusInfo();
@@ -29,7 +30,7 @@ class _DeliveryStatusInfo extends State<DeliveryStatusInfo> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getLoadingModal(context, false);
     });
-    var response = await Connections().getOrdersByID();
+    var response = await Connections().getOrdersByIDLogistic(widget.id);
     // data = response;
     data = response;
     _controllers.editControllers(response);
@@ -49,12 +50,7 @@ class _DeliveryStatusInfo extends State<DeliveryStatusInfo> {
         backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.white,
-          leading: GestureDetector(
-              onTap: () {
-                Navigators()
-                    .pushNamedAndRemoveUntil(context, "/layout/logistic");
-              },
-              child: Icon(Icons.arrow_back_ios, color: Colors.black)),
+          leading: Container(),
           centerTitle: true,
           title: Text(
             "Información Pedido",
@@ -266,59 +262,5 @@ class _DeliveryStatusInfo extends State<DeliveryStatusInfo> {
         )));
   }
 
-  _modelTextField({text, controller}) {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10.0),
-        color: Color.fromARGB(255, 245, 244, 244),
-      ),
-      margin: EdgeInsets.only(bottom: 10),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              SizedBox(
-                width: 10,
-              ),
-              Text(
-                "$text: ",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-              ),
-              SizedBox(
-                width: 10,
-              ),
-              Expanded(
-                child: TextField(
-                  controller: controller,
-                  onChanged: (value) {
-                    setState(() {});
-                  },
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                  decoration: InputDecoration(
-                    hintText: text,
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                          width: 1, color: Color.fromRGBO(237, 241, 245, 1.0)),
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                          width: 1, color: Color.fromRGBO(237, 241, 245, 1.0)),
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    focusColor: Colors.black,
-                    iconColor: Colors.black,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 10,
-          )
-        ],
-      ),
-    );
-  }
+
 }

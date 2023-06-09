@@ -10,6 +10,7 @@ import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:frontend/connections/connections.dart';
 import 'package:frontend/helpers/navigators.dart';
 import 'package:frontend/main.dart';
+import 'package:frontend/ui/transport/delivery_status_transport/delivery_details.dart';
 import 'package:frontend/ui/transport/my_orders_prv/controllers/controllers.dart';
 import 'package:frontend/ui/widgets/loading.dart';
 import 'package:frontend/ui/widgets/routes/sub_routes.dart';
@@ -37,10 +38,10 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
   }
 
   loadData() async {
-    var response = [];
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getLoadingModal(context, false);
     });
+    var response = [];
 
     if (_controllers.searchController.text.isEmpty) {
       response = await Connections()
@@ -131,9 +132,12 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
                 )),
             Expanded(
               child: DataTable2(
-                  headingTextStyle: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-                  dataTextStyle:
-                      TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black),
+                  headingTextStyle: TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.black),
+                  dataTextStyle: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black),
                   columnSpacing: 12,
                   horizontalMargin: 12,
                   minWidth: 2500,
@@ -312,90 +316,515 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
                                         ['Marca_Tiempo_Envio']
                                     .toString()
                                     .split(" ")[0]), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/delivery-status/details?id=${data[index]['id']}');
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      content: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        height:
+                                            MediaQuery.of(context).size.height,
+                                        child: Column(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Icon(Icons.close),
+                                              ),
+                                            ),
+                                            Expanded(
+                                                child:
+                                                    TransportProDeliveryHistoryDetails(
+                                              id: data[index]['id'].toString(),
+                                            ))
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  });
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['Fecha_Entrega']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/delivery-status/details?id=${data[index]['id']}');
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      content: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        height:
+                                            MediaQuery.of(context).size.height,
+                                        child: Column(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Icon(Icons.close),
+                                              ),
+                                            ),
+                                            Expanded(
+                                                child:
+                                                    TransportProDeliveryHistoryDetails(
+                                              id: data[index]['id'].toString(),
+                                            ))
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  });
                             }),
-                            DataCell(Text(
-                                '${data[index]['attributes']['Name_Comercial'].toString()}-${data[index]['attributes']['NumeroOrden'].toString()}')),
+                            DataCell(
+                                Text(
+                                    '${data[index]['attributes']['Name_Comercial'].toString()}-${data[index]['attributes']['NumeroOrden'].toString()}'),
+                                onTap: () {
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      content: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        height:
+                                            MediaQuery.of(context).size.height,
+                                        child: Column(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Icon(Icons.close),
+                                              ),
+                                            ),
+                                            Expanded(
+                                                child:
+                                                    TransportProDeliveryHistoryDetails(
+                                              id: data[index]['id'].toString(),
+                                            ))
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  });
+                            }),
                             DataCell(
                                 Text(data[index]['attributes']['NombreShipping']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/delivery-status/details?id=${data[index]['id']}');
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      content: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        height:
+                                            MediaQuery.of(context).size.height,
+                                        child: Column(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Icon(Icons.close),
+                                              ),
+                                            ),
+                                            Expanded(
+                                                child:
+                                                    TransportProDeliveryHistoryDetails(
+                                              id: data[index]['id'].toString(),
+                                            ))
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  });
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['CiudadShipping']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/delivery-status/details?id=${data[index]['id']}');
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      content: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        height:
+                                            MediaQuery.of(context).size.height,
+                                        child: Column(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Icon(Icons.close),
+                                              ),
+                                            ),
+                                            Expanded(
+                                                child:
+                                                    TransportProDeliveryHistoryDetails(
+                                              id: data[index]['id'].toString(),
+                                            ))
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  });
                             }),
                             DataCell(
                                 Text(data[index]['attributes']
                                         ['DireccionShipping']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/delivery-status/details?id=${data[index]['id']}');
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      content: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        height:
+                                            MediaQuery.of(context).size.height,
+                                        child: Column(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Icon(Icons.close),
+                                              ),
+                                            ),
+                                            Expanded(
+                                                child:
+                                                    TransportProDeliveryHistoryDetails(
+                                              id: data[index]['id'].toString(),
+                                            ))
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  });
                             }),
                             DataCell(
                                 Text(data[index]['attributes']
                                         ['TelefonoShipping']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/delivery-status/details?id=${data[index]['id']}');
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      content: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        height:
+                                            MediaQuery.of(context).size.height,
+                                        child: Column(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Icon(Icons.close),
+                                              ),
+                                            ),
+                                            Expanded(
+                                                child:
+                                                    TransportProDeliveryHistoryDetails(
+                                              id: data[index]['id'].toString(),
+                                            ))
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  });
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['Cantidad_Total']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/delivery-status/details?id=${data[index]['id']}');
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      content: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        height:
+                                            MediaQuery.of(context).size.height,
+                                        child: Column(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Icon(Icons.close),
+                                              ),
+                                            ),
+                                            Expanded(
+                                                child:
+                                                    TransportProDeliveryHistoryDetails(
+                                              id: data[index]['id'].toString(),
+                                            ))
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  });
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['ProductoP']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/delivery-status/details?id=${data[index]['id']}');
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      content: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        height:
+                                            MediaQuery.of(context).size.height,
+                                        child: Column(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Icon(Icons.close),
+                                              ),
+                                            ),
+                                            Expanded(
+                                                child:
+                                                    TransportProDeliveryHistoryDetails(
+                                              id: data[index]['id'].toString(),
+                                            ))
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  });
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['ProductoExtra']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/delivery-status/details?id=${data[index]['id']}');
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      content: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        height:
+                                            MediaQuery.of(context).size.height,
+                                        child: Column(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Icon(Icons.close),
+                                              ),
+                                            ),
+                                            Expanded(
+                                                child:
+                                                    TransportProDeliveryHistoryDetails(
+                                              id: data[index]['id'].toString(),
+                                            ))
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  });
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['PrecioTotal']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/delivery-status/details?id=${data[index]['id']}');
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      content: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        height:
+                                            MediaQuery.of(context).size.height,
+                                        child: Column(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Icon(Icons.close),
+                                              ),
+                                            ),
+                                            Expanded(
+                                                child:
+                                                    TransportProDeliveryHistoryDetails(
+                                              id: data[index]['id'].toString(),
+                                            ))
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  });
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['Observacion']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/delivery-status/details?id=${data[index]['id']}');
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      content: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        height:
+                                            MediaQuery.of(context).size.height,
+                                        child: Column(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Icon(Icons.close),
+                                              ),
+                                            ),
+                                            Expanded(
+                                                child:
+                                                    TransportProDeliveryHistoryDetails(
+                                              id: data[index]['id'].toString(),
+                                            ))
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  });
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['Comentario']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/delivery-status/details?id=${data[index]['id']}');
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      content: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        height:
+                                            MediaQuery.of(context).size.height,
+                                        child: Column(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Icon(Icons.close),
+                                              ),
+                                            ),
+                                            Expanded(
+                                                child:
+                                                    TransportProDeliveryHistoryDetails(
+                                              id: data[index]['id'].toString(),
+                                            ))
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  });
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['Status']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/delivery-status/details?id=${data[index]['id']}');
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      content: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        height:
+                                            MediaQuery.of(context).size.height,
+                                        child: Column(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Icon(Icons.close),
+                                              ),
+                                            ),
+                                            Expanded(
+                                                child:
+                                                    TransportProDeliveryHistoryDetails(
+                                              id: data[index]['id'].toString(),
+                                            ))
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  });
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['TipoPago']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/delivery-status/details?id=${data[index]['id']}');
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      content: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        height:
+                                            MediaQuery.of(context).size.height,
+                                        child: Column(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Icon(Icons.close),
+                                              ),
+                                            ),
+                                            Expanded(
+                                                child:
+                                                    TransportProDeliveryHistoryDetails(
+                                              id: data[index]['id'].toString(),
+                                            ))
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  });
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['sub_ruta']
@@ -405,8 +834,36 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
                                             ['data']['attributes']['Titulo']
                                         .toString()
                                     : ""), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/delivery-status/details?id=${data[index]['id']}');
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      content: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        height:
+                                            MediaQuery.of(context).size.height,
+                                        child: Column(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Icon(Icons.close),
+                                              ),
+                                            ),
+                                            Expanded(
+                                                child:
+                                                    TransportProDeliveryHistoryDetails(
+                                              id: data[index]['id'].toString(),
+                                            ))
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  });
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['operadore']
@@ -416,45 +873,241 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
                                             ['data']['attributes']['user']
                                         ['data']['attributes']['username']
                                     : "".toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/delivery-status/details?id=${data[index]['id']}');
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      content: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        height:
+                                            MediaQuery.of(context).size.height,
+                                        child: Column(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Icon(Icons.close),
+                                              ),
+                                            ),
+                                            Expanded(
+                                                child:
+                                                    TransportProDeliveryHistoryDetails(
+                                              id: data[index]['id'].toString(),
+                                            ))
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  });
                             }),
                             DataCell(
                                 Text(data[index]['attributes']
                                         ['Estado_Devolucion']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/delivery-status/details?id=${data[index]['id']}');
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      content: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        height:
+                                            MediaQuery.of(context).size.height,
+                                        child: Column(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Icon(Icons.close),
+                                              ),
+                                            ),
+                                            Expanded(
+                                                child:
+                                                    TransportProDeliveryHistoryDetails(
+                                              id: data[index]['id'].toString(),
+                                            ))
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  });
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['Marca_T_D']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/delivery-status/details?id=${data[index]['id']}');
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      content: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        height:
+                                            MediaQuery.of(context).size.height,
+                                        child: Column(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Icon(Icons.close),
+                                              ),
+                                            ),
+                                            Expanded(
+                                                child:
+                                                    TransportProDeliveryHistoryDetails(
+                                              id: data[index]['id'].toString(),
+                                            ))
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  });
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['Marca_T_D_L']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/delivery-status/details?id=${data[index]['id']}');
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      content: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        height:
+                                            MediaQuery.of(context).size.height,
+                                        child: Column(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Icon(Icons.close),
+                                              ),
+                                            ),
+                                            Expanded(
+                                                child:
+                                                    TransportProDeliveryHistoryDetails(
+                                              id: data[index]['id'].toString(),
+                                            ))
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  });
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['Marca_T_D_T']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/delivery-status/details?id=${data[index]['id']}');
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      content: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        height:
+                                            MediaQuery.of(context).size.height,
+                                        child: Column(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Icon(Icons.close),
+                                              ),
+                                            ),
+                                            Expanded(
+                                                child:
+                                                    TransportProDeliveryHistoryDetails(
+                                              id: data[index]['id'].toString(),
+                                            ))
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  });
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['Marca_T_I']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/delivery-status/details?id=${data[index]['id']}');
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      content: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        height:
+                                            MediaQuery.of(context).size.height,
+                                        child: Column(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Icon(Icons.close),
+                                              ),
+                                            ),
+                                            Expanded(
+                                                child:
+                                                    TransportProDeliveryHistoryDetails(
+                                              id: data[index]['id'].toString(),
+                                            ))
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  });
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['Estado_Pagado']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/transport/delivery-status/details?id=${data[index]['id']}');
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      content: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        height:
+                                            MediaQuery.of(context).size.height,
+                                        child: Column(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Icon(Icons.close),
+                                              ),
+                                            ),
+                                            Expanded(
+                                                child:
+                                                    TransportProDeliveryHistoryDetails(
+                                              id: data[index]['id'].toString(),
+                                            ))
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  });
                             }),
                           ]))),
             ),

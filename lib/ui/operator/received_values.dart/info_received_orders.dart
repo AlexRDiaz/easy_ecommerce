@@ -8,7 +8,8 @@ import 'package:frontend/ui/widgets/loading.dart';
 import 'package:frontend/ui/widgets/update_status_operator/update_status_operator.dart';
 
 class InfoReceivedValuesOperator extends StatefulWidget {
-  const InfoReceivedValuesOperator({super.key});
+  final String id;
+  const InfoReceivedValuesOperator({super.key, required this.id});
 
   @override
   State<InfoReceivedValuesOperator> createState() =>
@@ -31,7 +32,7 @@ class _InfoReceivedValuesOperatorState
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getLoadingModal(context, false);
     });
-    var response = await Connections().getOrdersByID();
+    var response = await Connections().getOrdersByIDOperator(widget.id);
     // data = response;
     data = response;
     _controllers.editControllers(response);
@@ -51,12 +52,7 @@ class _InfoReceivedValuesOperatorState
         backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.white,
-          leading: GestureDetector(
-              onTap: () {
-                Navigators()
-                    .pushNamedAndRemoveUntil(context, "/layout/operator");
-              },
-              child: Icon(Icons.arrow_back_ios, color: Colors.black)),
+          leading: Container(),
           centerTitle: true,
           title: Text(
             "Información Pedido",
@@ -307,4 +303,5 @@ class _InfoReceivedValuesOperatorState
       ),
     );
   }
+  
 }

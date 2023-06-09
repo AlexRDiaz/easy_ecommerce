@@ -13,7 +13,8 @@ import 'package:get/route_manager.dart';
 import 'package:frontend/main.dart';
 
 class OrderInfo extends StatefulWidget {
-  const OrderInfo({super.key});
+  final String id;
+  const OrderInfo({super.key, required this.id});
 
   @override
   State<OrderInfo> createState() => _OrderInfoState();
@@ -36,7 +37,7 @@ class _OrderInfoState extends State<OrderInfo> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getLoadingModal(context, false);
     });
-    var response = await Connections().getOrdersByID();
+    var response = await Connections().getOrdersByIDSeller(widget.id);
     // data = response;
     data = response;
     _controllers.editControllers(response);
@@ -59,12 +60,7 @@ class _OrderInfoState extends State<OrderInfo> {
         backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.white,
-          leading: GestureDetector(
-              onTap: () {
-                Navigators()
-                    .pushNamedAndRemoveUntil(context, "/layout/sellers");
-              },
-              child: Icon(Icons.arrow_back_ios, color: Colors.black)),
+          leading: Container(),
           centerTitle: true,
           title: Text(
             "Información Pedido",
@@ -91,7 +87,7 @@ class _OrderInfoState extends State<OrderInfo> {
                                   onPressed: () async {
                                     var response = await Connections()
                                         .updateOrderInteralStatus("NO DESEA",
-                                            Get.parameters['id'].toString());
+                                           widget.id);
                                     setState(() {});
                                     loadData();
                                   },
@@ -107,14 +103,14 @@ class _OrderInfoState extends State<OrderInfo> {
                               onPressed: () async {
                                 var response = await Connections()
                                     .updateOrderInteralStatus("CONFIRMADO",
-                                        Get.parameters['id'].toString());
+                                         widget.id);
                                 setState(() {});
                                 await showDialog(
                                     context: context,
                                     builder: (context) {
                                       return RoutesModal(
                                         idOrder:
-                                            Get.parameters['id'].toString(),
+                                           widget.id,
                                         someOrders: false,
                                       );
                                     });
@@ -132,6 +128,7 @@ class _OrderInfoState extends State<OrderInfo> {
                                 getLoadingModal(context, false);
 
                                 await _controllers.updateInfo(
+                                  id: widget.id,
                                     success: () async {
                                   Navigator.pop(context);
                                   AwesomeDialog(
@@ -156,7 +153,7 @@ class _OrderInfoState extends State<OrderInfo> {
                                     context: context,
                                     dialogType: DialogType.error,
                                     animType: AnimType.rightSlide,
-                                    title: 'Credenciales Incorrectas',
+                                    title: 'Data Incorrecta',
                                     desc: 'Vuelve a intentarlo',
                                     btnCancel: Container(),
                                     btnOkText: "Aceptar",

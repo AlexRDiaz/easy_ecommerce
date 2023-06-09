@@ -2,6 +2,7 @@ import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:frontend/ui/operator/state_orders/info_state_orders.dart';
 import 'package:intl/intl.dart';
 
 import 'package:data_table_2/data_table_2.dart';
@@ -75,10 +76,11 @@ class _StateOrdersOperatorState extends State<StateOrdersOperator> {
   }
 
   loadData() async {
-    var response = [];
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getLoadingModal(context, false);
     });
+        var response = [];
+
 
     if (_controllers.searchController.text.isEmpty) {
       response = await Connections()
@@ -104,6 +106,29 @@ class _StateOrdersOperatorState extends State<StateOrdersOperator> {
         width: double.infinity,
         child: Column(
           children: [
+                        SizedBox(height: 10,),
+             Align(
+              alignment: Alignment.centerRight,
+               child: GestureDetector(
+                      onTap: ()async{
+                       await loadData();
+                      },
+                      child: Container(
+                        color: Colors.transparent,
+                        
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                          Icon(Icons.replay_outlined, color: Colors.green,),
+                          SizedBox(width: 10,),
+                          Text("Recargar Información", style: TextStyle(decoration: TextDecoration.underline, color: Colors.green),),                          SizedBox(width: 10,),
+
+                        ],),
+                      ),
+                    ),
+             ),
+                  SizedBox(height: 10,),
             Container(
                 width: double.infinity,
                 child: Row(
@@ -330,21 +355,21 @@ class _StateOrdersOperatorState extends State<StateOrdersOperator> {
                                         ['Marca_Tiempo_Envio']
                                     .toString()
                                     .split(" ")[0]), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/operator/state/order?id=${data[index]['id']}');
+                                                                info(context, index);
+
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['Fecha_Entrega']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/operator/state/order?id=${data[index]['id']}');
+                                                            info(context, index);
+
                             }),
                             DataCell(
                                 Text(
                                     '${data[index]['attributes']['Name_Comercial'].toString()}-${data[index]['attributes']['NumeroOrden'].toString()}'),
                                 onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/operator/state/order?id=${data[index]['id']}');
+                                                          info(context, index);
+
                             }),
                             DataCell(Row(
                               children: [
@@ -382,101 +407,101 @@ class _StateOrdersOperatorState extends State<StateOrdersOperator> {
                             DataCell(
                                 Text(data[index]['attributes']['NombreShipping']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/operator/state/order?id=${data[index]['id']}');
+                                                            info(context, index);
+
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['CiudadShipping']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/operator/state/order?id=${data[index]['id']}');
+                                                            info(context, index);
+
                             }),
                             DataCell(
                                 Text(data[index]['attributes']
                                         ['DireccionShipping']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/operator/state/order?id=${data[index]['id']}');
+                                                                info(context, index);
+
                             }),
                             DataCell(
                                 Text(data[index]['attributes']
                                         ['TelefonoShipping']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/operator/state/order?id=${data[index]['id']}');
+                                                               info(context, index);
+
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['Cantidad_Total']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/operator/state/order?id=${data[index]['id']}');
+                                                                  info(context, index);
+
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['ProductoP']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/operator/state/order?id=${data[index]['id']}');
+                                                          info(context, index);
+
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['ProductoExtra']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/operator/state/order?id=${data[index]['id']}');
+                                                               info(context, index);
+
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['PrecioTotal']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/operator/state/order?id=${data[index]['id']}');
+                                                             info(context, index);
+
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['Observacion']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/operator/state/order?id=${data[index]['id']}');
+                                                               info(context, index);
+
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['Comentario']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/operator/state/order?id=${data[index]['id']}');
+                                                            info(context, index);
+
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['Status']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/operator/state/order?id=${data[index]['id']}');
+                                                                  info(context, index);
+
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['TipoPago']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/operator/state/order?id=${data[index]['id']}');
+                                                              info(context, index);
+
                             }),
                             DataCell(
                                 Text(data[index]['attributes']
                                         ['Estado_Devolucion']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/operator/state/order?id=${data[index]['id']}');
+                                                                 info(context, index);
+
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['Marca_T_D']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/operator/state/order?id=${data[index]['id']}');
+                                                              info(context, index);
+
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['Marca_T_I']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/operator/state/order?id=${data[index]['id']}');
+                                                       info(context, index);
+
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['Estado_Pagado']
                                     .toString()), onTap: () {
-                              Navigators().pushNamed(context,
-                                  '/layout/operator/state/order?id=${data[index]['id']}');
+                                                              info(context, index);
+
                             }),
                           ]))),
             ),
@@ -1268,5 +1293,34 @@ class _StateOrdersOperatorState extends State<StateOrdersOperator> {
         }
       });
     }
+  }
+   Future<dynamic> info(BuildContext context, int index) {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            content: Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              child: Column(
+                children: [
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: Icon(Icons.close),
+                    ),
+                  ),
+                  Expanded(
+                      child: InfoStateOrdersOperator(
+                    id: data[index]['id'].toString(),
+                  ))
+                ],
+              ),
+            ),
+          );
+        });
   }
 }

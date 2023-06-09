@@ -102,13 +102,10 @@ class _MyOperatorAccountState extends State<MyOperatorAccount> {
                 height: 20,
               ),
               Text(
-                "Costo:",
+                "Costo: ${_costo.text}",
                 style: TextStyle(fontSize: 16),
               ),
-              TextField(
-                style: TextStyle(fontWeight: FontWeight.bold),
-                controller: _costo,
-              ),
+           
               SizedBox(
                 height: 20,
               ),

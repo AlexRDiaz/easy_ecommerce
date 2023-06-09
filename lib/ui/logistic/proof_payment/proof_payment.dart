@@ -5,6 +5,7 @@ import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:frontend/config/exports.dart';
 import 'package:frontend/connections/connections.dart';
 import 'package:frontend/helpers/server.dart';
+import 'package:frontend/main.dart';
 import 'package:frontend/ui/logistic/vendor_invoices/controllers/controllers.dart';
 import 'package:frontend/ui/utils/utils.dart';
 import 'package:frontend/ui/widgets/amount_row.dart';
@@ -63,32 +64,65 @@ class _ProofPaymentState extends State<ProofPayment> {
       List<Map<String, dynamic>> data = [...daysM];
 
       data.sort((a, b) => a['dia'].compareTo(b['dia']));
-
 // Crear un mapa para almacenar la información de cada día
       Map<String, dynamic> mapData = {};
-
       for (var item in data) {
         String day = item["dia"];
-        double total = double.parse(item["total"]);
-        double costoTrans = double.parse(item["CostoTrans"]);
+        double total = 0.0;
+        double costoTrans = 0.0;
         String id = item["id"];
-        String status = item["Status"];
 
+        try {
+          if (item["total"].toString() == "null") {
+            total = double.parse("0");
+          } else {
+            total = double.parse(item["total"].replaceAll(",", "."));
+          }
+          if (item["CostoTrans"].toString() == "null") {
+            costoTrans = double.parse("0");
+          } else {
+            costoTrans = double.parse(item["CostoTrans"].replaceAll(",", "."));
+          }
+        } catch (e) {
+          print(total);
+          print("--------------");
+
+          print(costoTrans);
+          print("--------------");
+          print(id);
+        }
+
+        String status = item["Status"];
         // Actualizar los valores del mapa si el día ya está en el mapa
         if (mapData.containsKey(day)) {
-          if (status == "ENTREGADO") {
-            mapData[day]["total"] += total;
-          }
-          if (status == "ENTREGADO" || status == "NO ENTREGADO") {
-            mapData[day]["CostoTrans"] += costoTrans;
-          }
+          setState(() {
+            if (status == "ENTREGADO") {
+              mapData[day]["Status"] = status;
+              mapData[day]["total"] += total;
+            }
+            if (status == "ENTREGADO" || status == "NO ENTREGADO") {
+              mapData[day]["CostoTrans"] += costoTrans;
+            }
+          });
         } else {
-          mapData[day] = {
-            "total": 0.0,
-            "CostoTrans": 0.0,
-            "id": id,
-            "Status": status
-          };
+          if (mapData[day] == null) {
+            mapData[day] = {
+              "total": 0.0,
+              "CostoTrans": 0.0,
+              "id": id,
+              "Status": status
+            };
+            setState(() {
+              if (status == "ENTREGADO") {
+                mapData[day]["Status"] = status;
+
+                mapData[day]["total"] += total;
+              }
+              if (status == "ENTREGADO" || status == "NO ENTREGADO") {
+                mapData[day]["CostoTrans"] += costoTrans;
+              }
+            });
+          }
         }
       }
 
@@ -107,14 +141,6 @@ class _ProofPaymentState extends State<ProofPayment> {
       setState(() {
         totalesPrecio = result;
       });
-
-      // for (var i = 0; i < response.length; i++) {
-      //   if (response[i]['Status'].toString() == "ENTREGADO" ||
-      //       response[i]['Status'].toString() == "NO ENTREGADO") {
-      //     sumaCosto += double.parse(
-      //         response[i]['transportadora']['Costo_Transportadora'].toString());
-      //   }
-      // }
 
       for (var i = 0; i < response.length; i++) {
         temp.add({
@@ -155,6 +181,7 @@ class _ProofPaymentState extends State<ProofPayment> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getLoadingModal(context, false);
     });
+
     meses.clear();
 
     List transportatorList = [];
@@ -178,10 +205,21 @@ class _ProofPaymentState extends State<ProofPayment> {
         }
       });
     }
+    if (sharedPrefs!.getString("transportadoraComprobante") != null) {
+      selectedValueTransportator =
+          sharedPrefs!.getString("transportadoraComprobante");
+    }
+    if (sharedPrefs!.getString("mesComprobante") != null) {
+      selectedValueMonth = sharedPrefs!.getString("mesComprobante");
+    }
+    if (sharedPrefs!.getString("mesComprobante") != null &&
+        sharedPrefs!.getString("transportadoraComprobante") != null) {
+      await getOrders();
+    }
     Future.delayed(Duration(milliseconds: 500), () {
+      setState(() {});
       Navigator.pop(context);
     });
-    setState(() {});
   }
 
   @override
@@ -221,6 +259,8 @@ class _ProofPaymentState extends State<ProofPayment> {
                     onChanged: (value) async {
                       setState(() {
                         selectedValueTransportator = value as String;
+                        sharedPrefs!.setString(
+                            "transportadoraComprobante", value as String);
                       });
                     },
 
@@ -254,6 +294,8 @@ class _ProofPaymentState extends State<ProofPayment> {
                     onChanged: (value) async {
                       setState(() {
                         selectedValueMonth = value as String;
+                        sharedPrefs!
+                            .setString("mesComprobante", value as String);
                       });
                     },
 
@@ -369,12 +411,14 @@ class _ProofPaymentState extends State<ProofPayment> {
                                                     "MARCAR RECIBIDO",
                                                     style: TextStyle(
                                                         fontWeight:
-                                                            FontWeight.bold, color: Colors.greenAccent),
+                                                            FontWeight.bold,
+                                                        color:
+                                                            Colors.greenAccent),
                                                   )),
                                           SizedBox(
                                             height: 20,
-                                          ),                                          Divider(),
-
+                                          ),
+                                          Divider(),
                                           resultValidation == "PENDIENTE"
                                               ? Container()
                                               : Text(
@@ -401,8 +445,7 @@ class _ProofPaymentState extends State<ProofPayment> {
                                                 ),
                                           SizedBox(
                                             height: 20,
-                                          ),                                
-
+                                          ),
                                           resultValidation == "PENDIENTE"
                                               ? Container()
                                               : TextButton(
@@ -413,30 +456,25 @@ class _ProofPaymentState extends State<ProofPayment> {
                                                         i < dataGeneral.length;
                                                         i++) {
                                                       if (dataGeneral[i][
-                                                                      'Fecha_Entrega']
-                                                                  .toString()
-                                                                  .split("/")[0]
-                                                                  .toString() ==
-                                                              (index + 1)
-                                                                  .toString() 
-                                                          ) {
-                                                            if (dataGeneral[i]
-                                                                      ['Status']
-                                                                  .toString() ==
-                                                              "ENTREGADO") {
-                                                                  var data =
-                                                            await Connections()
-                                                                .updateOrderPayStateLogisticUserRechazado(
-                                                                    dataGeneral[
-                                                                            i]
-                                                                        ['id'],
-                                                                    _rechazado
-                                                                        .text);
-                                                                        print(_rechazado
-                                                                        .text);
-                                                              
-                                                            }
-                                                      
+                                                                  'Fecha_Entrega']
+                                                              .toString()
+                                                              .split("/")[0]
+                                                              .toString() ==
+                                                          (index + 1)
+                                                              .toString()) {
+                                                        if (dataGeneral[i]
+                                                                    ['Status']
+                                                                .toString() ==
+                                                            "ENTREGADO") {
+                                                          var data = await Connections()
+                                                              .updateOrderPayStateLogisticUserRechazado(
+                                                                  dataGeneral[i]
+                                                                      ['id'],
+                                                                  _rechazado
+                                                                      .text);
+                                                          print(
+                                                              _rechazado.text);
+                                                        }
                                                       }
                                                     }
                                                     Navigator.pop(context);
@@ -453,8 +491,8 @@ class _ProofPaymentState extends State<ProofPayment> {
                                                   )),
                                           SizedBox(
                                             height: 20,
-                                          ),                                          Divider(),
-
+                                          ),
+                                          Divider(),
                                           TextButton(
                                               onPressed: () {
                                                 Navigator.pop(context);
