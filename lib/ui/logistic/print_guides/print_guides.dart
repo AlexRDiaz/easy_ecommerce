@@ -36,7 +36,7 @@ class _PrintGuidesState extends State<PrintGuides> {
   Uint8List? _imageFile = null;
   bool sort = false;
   List dataTemporal = [];
-
+  bool selectAll = false;
   //Create an instance of ScreenshotController
   ScreenshotController screenshotController = ScreenshotController();
 
@@ -147,15 +147,31 @@ class _PrintGuidesState extends State<PrintGuides> {
             ),
             Expanded(
               child: DataTable2(
-                  headingTextStyle: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-                  dataTextStyle:
-                      TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black),
+                  headingTextStyle: TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.black),
+                  dataTextStyle: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black),
                   columnSpacing: 12,
                   horizontalMargin: 12,
                   minWidth: 2500,
                   columns: [
                     DataColumn2(
-                      label: Text(''),
+                      label: Row(
+                        children: [
+                          Checkbox(
+                            value: selectAll,
+                            onChanged: (bool? value) {
+                              setState(() {
+                                selectAll = value ?? false;
+                                addAllValues();
+                              });
+                            },
+                          ),
+                          const Text('Todo'),
+                        ],
+                      ),
                       size: ColumnSize.S,
                     ),
                     DataColumn2(
@@ -270,13 +286,15 @@ class _PrintGuidesState extends State<PrintGuides> {
                             DataCell(Checkbox(
                                 value: optionsCheckBox[index]['check'],
                                 onChanged: (value) {
+                                  
                                   setState(() {
+                                    selectAll=false;
                                     if (value!) {
                                       optionsCheckBox[index]['check'] = value;
                                       optionsCheckBox[index]['id'] =
                                           data[index]['id'].toString();
                                       optionsCheckBox[index]['numPedido'] =
-                                          "${data[index]['attributes']['users']['data']!=null?data[index]['attributes']['users']['data'][0]['attributes']['vendedores']['data'][0]['attributes']['Nombre_Comercial']:data[index]['attributes']['Tienda_Temporal'].toString()}-${data[index]['attributes']['NumeroOrden']}"
+                                          "${data[index]['attributes']['users']['data'] != null ? data[index]['attributes']['users']['data'][0]['attributes']['vendedores']['data'][0]['attributes']['Nombre_Comercial'] : data[index]['attributes']['Tienda_Temporal'].toString()}-${data[index]['attributes']['NumeroOrden']}"
                                               .toString();
                                       optionsCheckBox[index]['date'] =
                                           data[index]['attributes']
@@ -435,6 +453,7 @@ class _PrintGuidesState extends State<PrintGuides> {
                 final doc = pw.Document();
 
                 for (var i = 0; i < optionsCheckBox.length; i++) {
+                 // print(optionsCheckBox[i]);
                   if (optionsCheckBox[i]['id'].toString().isNotEmpty &&
                       optionsCheckBox[i]['id'].toString() != '' &&
                       optionsCheckBox[i]['check'] == true) {
@@ -769,4 +788,64 @@ class _PrintGuidesState extends State<PrintGuides> {
               .toString()));
     }
   }
+
+  addAllValues() {
+    
+    if (selectAll == true) {
+      //deleteValues();
+      print("se ha seleccionado todo");
+      //optionsCheckBox[index]['check']
+      for (var i = 0; i < data.length; i++) {
+        setState(() {
+          if( optionsCheckBox[i]['check']!=true){
+          optionsCheckBox[i]['check'] = true;
+          optionsCheckBox[i]['id'] = data[i]['id'].toString();
+          optionsCheckBox[i]['numPedido'] =
+              "${data[i]['attributes']['users']['data'] != null ? data[i]['attributes']['users']['data'][0]['attributes']['vendedores']['data'][0]['attributes']['Nombre_Comercial'] : data[i]['attributes']['Tienda_Temporal'].toString()}-${data[i]['attributes']['NumeroOrden']}"
+                  .toString();
+          optionsCheckBox[i]['date'] = data[i]['attributes']['pedido_fecha']
+                  ['data']['attributes']['Fecha']
+              .toString();
+          optionsCheckBox[i]['city'] =
+              data[i]['attributes']['CiudadShipping'].toString();
+          optionsCheckBox[i]['product'] =
+              data[i]['attributes']['ProductoP'].toString();
+          optionsCheckBox[i]['extraProduct'] =
+              data[i]['attributes']['ProductoExtra'].toString();
+          optionsCheckBox[i]['quantity'] =
+              data[i]['attributes']['Cantidad_Total'].toString();
+          optionsCheckBox[i]['phone'] =
+              data[i]['attributes']['TelefonoShipping'].toString();
+          optionsCheckBox[i]['price'] =
+              data[i]['attributes']['PrecioTotal'].toString();
+          optionsCheckBox[i]['name'] =
+              data[i]['attributes']['NombreShipping'].toString();
+          optionsCheckBox[i]['transport'] =
+              "${data[i]['attributes']['transportadora']['data'] != null ? data[i]['attributes']['transportadora']['data']['attributes']['Nombre'].toString() : ''}";
+          optionsCheckBox[i]['address'] =
+              data[i]['attributes']['DireccionShipping'].toString();
+          optionsCheckBox[i]['obervation'] =
+              data[i]['attributes']['Observacion'].toString();
+          optionsCheckBox[i]['qrLink'] = data[i]['attributes']['users']['data']
+                      [0]['attributes']['vendedores']['data'][0]['attributes']
+                  ['Url_Tienda']
+              .toString();
+
+          counterChecks += 1;
+          }
+        });
+      }
+    } else {
+      deleteValues();
+    }
+  }
+
+   deleteValues(){
+    for (var i = 0; i < optionsCheckBox.length; i++) {
+        optionsCheckBox[i]['check'] = false;
+        optionsCheckBox[i]['id'] = '';
+        counterChecks -= 1;
+      }
+   }
+
 }
