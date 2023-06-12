@@ -352,6 +352,8 @@ class _PrintGuidesState extends State<PrintGuides> {
                                       optionsCheckBox[index]['id'] = '';
                                       counterChecks -= 1;
                                     }
+                                               //   print("tamanio a imprimir"+optionsCheckBox.length.toString());
+
                                   });
                                 })),
                             DataCell(
@@ -511,7 +513,7 @@ class _PrintGuidesState extends State<PrintGuides> {
 
                 loadData();
               },
-              child: Text(
+              child: const Text(
                 "IMPRIMIR",
                 style: TextStyle(fontWeight: FontWeight.bold),
               )),
@@ -832,7 +834,10 @@ class _PrintGuidesState extends State<PrintGuides> {
               .toString();
 
           counterChecks += 1;
+          
           }
+               //   print("tamanio a imprimir"+optionsCheckBox.length.toString());
+
         });
       }
     } else {
@@ -846,6 +851,8 @@ class _PrintGuidesState extends State<PrintGuides> {
         optionsCheckBox[i]['id'] = '';
         counterChecks -= 1;
       }
+             // print("tamanio a imprimir"+optionsCheckBox.length.toString());
+
    }
 
 }
