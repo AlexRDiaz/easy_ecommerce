@@ -1263,6 +1263,26 @@ Future updateOrderInfoSeller(city, name, address, phone, quantity, product,
     }
   }
 
+   Future updateOrderFechaEntrega(id,date) async {
+  //  String id = Get.parameters['id'].toString();
+   print("id de pedido="+id);
+    var request = await http.put(Uri.parse("$server/api/pedidos-shopifies/$id"),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          "data": {
+            "Fecha_Confirmacion": date
+          }
+        }));
+    var response = await request.body;
+    var decodeData = json.decode(response);
+    if (request.statusCode != 200) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+
 Future updateOrderStatusOperatorPedidoProgramadoHistorial(
       status, comentario, date,id) async {
     var request = await http.put(Uri.parse("$server/api/pedidos-shopifies/$id"),

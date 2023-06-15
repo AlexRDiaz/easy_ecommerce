@@ -39,6 +39,8 @@ class _OrderEntryState extends State<OrderEntry> {
   int total = 0;
   bool isSearch = false;
   String search = '';
+  bool buttonLeft = false;
+  bool buttonRigth = false;
 
   @override
   void didChangeDependencies() {
@@ -88,8 +90,7 @@ class _OrderEntryState extends State<OrderEntry> {
     setState(() {});
   }
 
-
-    paginateData(search) async {
+  paginateData(search) async {
     // print("Pagina Actual="+currentPage.toString());
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getLoadingModal(context, false);
@@ -107,15 +108,23 @@ class _OrderEntryState extends State<OrderEntry> {
     setState(() {
       pageCount = response[0]['meta']['pagination']['pageCount'];
       total = response[0]['meta']['pagination']['total'];
-
+      
       // print("metadatar"+pageCount.toString());
     });
-   
+
     Future.delayed(Duration(milliseconds: 500), () {
       Navigator.pop(context);
     });
     setState(() {});
   }
+
+  Future UpdateFecha(id) async {
+    print("llego aqui");
+   var m=await Connections().updateOrderFechaEntrega(id.toString(),"6/15/2023");
+      paginateData(search);
+   
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -526,9 +535,15 @@ class _OrderEntryState extends State<OrderEntry> {
                               info(context, index);
                             }),
                             DataCell(
-                                Text(data[index]['attributes']
-                                        ['Fecha_Confirmacion']
-                                    .toString()), onTap: () {
+                                Row(
+                                  children: [
+                                    Text(data[index]['attributes']
+                                            ['Fecha_Confirmacion']
+                                        .toString()),
+                                    TextButton(onPressed: ()=>UpdateFecha(data[index]['id']), child: Text("editar")),
+                                    
+                                  ],
+                                ), onTap: () {
                               info(context, index);
                             }),
                           ]))),
@@ -554,6 +569,16 @@ class _OrderEntryState extends State<OrderEntry> {
   }
 
   Future<dynamic> info(BuildContext context, int index) {
+    if (index - 1 >= 0) {
+      buttonLeft = true;
+    } else {
+      buttonLeft = false;
+    }
+    if (index + 1 < data.length) {
+      buttonRigth = true;
+    } else {
+      buttonRigth = false;
+    }
     return showDialog(
         context: context,
         builder: (context) {
@@ -561,10 +586,59 @@ class _OrderEntryState extends State<OrderEntry> {
             content: Container(
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height,
-              child: Column(
+              child: Stack(
                 children: [
-                  Align(
-                    alignment: Alignment.centerRight,
+                  Expanded(
+                      child: OrderInfo(
+                    id: data[index]['id'].toString(),
+                  )),
+                  Visibility(
+                    visible: buttonLeft,
+                    child: Positioned(
+                      bottom: 220, // Ajusta la posición vertical del botón
+                      left: 2,
+                      child: IconButton(
+                        iconSize: 60,
+                        onPressed: () => {
+                          // if (index - 1 > 1)
+                          //   {
+                              Navigator.pop(context),
+                              info(context, index - 1),
+                          //     buttonLeft = true
+                          //   }
+                          // else
+                          //   {
+                          //     setState(() {
+                          //       buttonLeft = false;
+                          //     })
+                          //   }
+                        },
+                        icon: Icon(Icons.arrow_circle_left),
+                      ),
+                    ),
+                  ),
+                  Visibility(
+                    visible: buttonRigth,
+                    child: Positioned(
+                      bottom: 220, // Ajusta la posición vertical del botón
+                      right:2,
+                      child: IconButton(
+                        iconSize: 60,
+                        onPressed: () => {
+                          Navigator.pop(context),
+                          // index + 1 <= total
+                           info(context, index + 1)
+                          //     : setState(() {
+                          //         buttonRigth = false;
+                          //       })
+                        },
+                        icon: Icon(Icons.arrow_circle_right),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    top: 10, // Ajusta la posición vertical del botón
+                    right: 10,
                     child: GestureDetector(
                       onTap: () {
                         Navigator.pop(context);
@@ -572,10 +646,6 @@ class _OrderEntryState extends State<OrderEntry> {
                       child: Icon(Icons.close),
                     ),
                   ),
-                  Expanded(
-                      child: OrderInfo(
-                    id: data[index]['id'].toString(),
-                  ))
                 ],
               ),
             ),
@@ -647,7 +717,8 @@ class _OrderEntryState extends State<OrderEntry> {
 
   bool verificarIndice(int index) {
     try {
-      dynamic elemento = optionsCheckBox.elementAt(index+((currentPage-1)*pageSize));
+      dynamic elemento =
+          optionsCheckBox.elementAt(index + ((currentPage - 1) * pageSize));
       // print("elemento="+elemento.toString());
       if (elemento['id'] != data[index]['id']) {
         return false;
