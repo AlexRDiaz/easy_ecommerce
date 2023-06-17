@@ -57,6 +57,7 @@ dependencies:
   image_picker: ^0.8.7+3
   d_chart: ^2.2.11
   number_paginator: ^0.2.3
+  table_calendar: ^3.0.0
 
 
 

@@ -539,31 +539,71 @@ class Connections {
     return decodeData['data'];
   }
 
-  Future getOrdersSellersByCode(code,currentPage,pageSize,String? search) async {
-   // print("code="+code.toString());
-    //print("shared="+sharedPrefs!.getString("idComercialMasterSeller").toString());
-   var url="$server/api/pedidos-shopifies?populate=users&populate=pedido_fecha&filters[\$and][0][NumeroOrden][\$contains]=$code&filters[\$and][1][IdComercial][\$eq]=${sharedPrefs!.getString("idComercialMasterSeller").toString()}&filters[\$and][3][Estado_Interno][\$ne]=NO DESEA&sort=id%3Adesc&filters[\$and][4][Status][\$eq]=PEDIDO PROGRAMADO&sort=id%3Adesc&pagination[page]=${currentPage}&pagination[pageSize]=${pageSize}";
+  Future getOrdersSellersByCode(code, currentPage, pageSize, String? search,
+      pedido, confirmado, logistico) async {
+    print("currentPage=" + currentPage.toString());
+    print("pageSize=" + pageSize.toString());
+    print("pedido=" + pedido!);
+    print("confirmado=" + confirmado!);
+    print("logistico=" + logistico!);
 
-   if(search!=''){
-       url="$server/api/pedidos-shopifies?populate=users&populate=pedido_fecha&filters[\$and][0][NumeroOrden][\$contains]=&filters[\$and][1][IdComercial][\$eq]=${sharedPrefs!.getString("idComercialMasterSeller").toString()}&filters[\$and][3][Estado_Interno][\$ne]=NO DESEA&sort=id%3Adesc&filters[\$and][4][Status][\$eq]=PEDIDO PROGRAMADO&filters[\$or][0][CiudadShipping][\$contains]=$search&filters[\$or][1][NombreShipping][\$contains]=$search&sort=id%3Adesc&pagination[page]=${currentPage}&pagination[pageSize]=${pageSize}";
-   }
+    var url = "";
+    if (pedido == "" && confirmado == "" && logistico == "") {
+      url =
+          "$server/api/pedidos-shopifies?populate=users&populate=pedido_fecha&filters[\$and][0][NumeroOrden][\$contains]=$code&filters[\$and][1][IdComercial][\$eq]=${sharedPrefs!.getString("idComercialMasterSeller").toString()}&filters[\$and][3][Estado_Interno][\$ne]=NO DESEA&sort=id%3Adesc&filters[\$and][4][Status][\$eq]=PEDIDO PROGRAMADO&sort=id%3Adesc&pagination[page]=${currentPage}&pagination[pageSize]=${pageSize}";
+
+      if (search != '') {
+        url =
+            "$server/api/pedidos-shopifies?populate=users&populate=pedido_fecha&filters[\$and][0][NumeroOrden][\$contains]=&filters[\$and][1][IdComercial][\$eq]=${sharedPrefs!.getString("idComercialMasterSeller").toString()}&filters[\$and][3][Estado_Interno][\$ne]=NO DESEA&sort=id%3Adesc&filters[\$and][4][Status][\$eq]=PEDIDO PROGRAMADO&filters[\$or][0][CiudadShipping][\$contains]=$search&filters[\$or][1][NombreShipping][\$contains]=$search&sort=id%3Adesc&pagination[page]=${currentPage}&pagination[pageSize]=${pageSize}";
+      }
+    } else {
+      if (logistico != "") {
+        url =
+            "$server/api/pedidos-shopifies?populate=users&populate=pedido_fecha&filters[\$and][0][NumeroOrden][\$contains]=&filters[\$and][1][IdComercial][\$eq]=${sharedPrefs!.getString("idComercialMasterSeller").toString()}&filters[\$and][3][Estado_Interno][\$ne]=NO DESEA&filters[\$and][3][Estado_Logistico][\$eq]=$logistico&sort=id%3Adesc&filters[\$and][4][Status][\$eq]=PEDIDO PROGRAMADO&sort=id%3Adesc&pagination[page]=1&pagination[pageSize]=10";
+      } else if (confirmado != '') {
+        url =
+            "$server/api/pedidos-shopifies?populate=users&populate=pedido_fecha&filters[\$and][0][NumeroOrden][\$contains]=&filters[\$and][1][IdComercial][\$eq]=${sharedPrefs!.getString("idComercialMasterSeller").toString()}&filters[\$and][3][Estado_Interno][\$ne]=NO DESEA&filters[\$and][3][Estado_Interno][\$eq]=$confirmado&sort=id%3Adesc&filters[\$and][4][Status][\$eq]=PEDIDO PROGRAMADO&sort=id%3Adesc&pagination[page]=1&pagination[pageSize]=10";
+      }
+    }
 
     var request = await http.get(
-
       Uri.parse(url),
       headers: {'Content-Type': 'application/json'},
     );
     var response = await request.body;
     var decodeData = json.decode(response);
-   // print("meta="+decodeData['meta'].toString());  
-    return [{
-    'data':  decodeData['data'],
-    'meta':  decodeData['meta']
-    } ];
+    // print("meta="+decodeData['meta'].toString());
+    return [
+      {'data': decodeData['data'], 'meta': decodeData['meta']}
+    ];
   }
-  Future getOrdersSellersSearch(code,currentPage,pageSize,search) async {
-    print("code="+code.toString());
-    print("shared="+sharedPrefs!.getString("idComercialMasterSeller").toString());
+
+  Future getOrdersSellersByState(code, currentPage, pageSize, String? pedido,
+      confirmado, logistico) async {
+    print("currentPage=" + currentPage.toString());
+    print("pageSize=" + pageSize.toString());
+    print("pedido=" + pedido!);
+    print("confirmado=" + confirmado!);
+    print("logistico=" + logistico!);
+
+    String url = "";
+    print("url:" + url);
+    var request = await http.get(
+      Uri.parse(url),
+      headers: {'Content-Type': 'application/json'},
+    );
+    var response = await request.body;
+    var decodeData = json.decode(response);
+    // print("meta="+decodeData['meta'].toString());
+    return [
+      {'data': decodeData['data'], 'meta': decodeData['meta']}
+    ];
+  }
+
+  Future getOrdersSellersSearch(code, currentPage, pageSize, search) async {
+    print("code=" + code.toString());
+    print("shared=" +
+        sharedPrefs!.getString("idComercialMasterSeller").toString());
     var request = await http.get(
       Uri.parse(
           "$server/api/pedidos-shopifies?populate=users&populate=pedido_fecha&filters[\$and][0][NumeroOrden][\$contains]=&filters[\$and][1][IdComercial][\$eq]=${sharedPrefs!.getString("idComercialMasterSeller").toString()}&filters[\$and][3][Estado_Interno][\$ne]=NO DESEA&sort=id%3Adesc&filters[\$and][4][Status][\$eq]=PEDIDO PROGRAMADO&filters[\$or][0][CiudadShipping][\$contains]=$search&filters[\$or][1][NombreShipping][\$contains]=$search&sort=id%3Adesc&pagination[page]=${currentPage}&pagination[pageSize]=${pageSize}"),
@@ -571,13 +611,12 @@ class Connections {
     );
     var response = await request.body;
     var decodeData = json.decode(response);
-    print("meta="+decodeData['meta'].toString());
-     //print ("url=$server/api/pedidos-shopifies?populate=users&populate=pedido_fecha&filters[\$and][0][NumeroOrden][\$contains]=$code&filters[\$and][1][IdComercial][\$eq]=${sharedPrefs!.getString("idComercialMasterSeller").toString()}&filters[\$and][3][Estado_Interno][\$ne]=NO DESEA&sort=id%3Adesc&filters[\$and][4][Status][\$eq]=PEDIDO PROGRAMADO&sort=id%3Adesc&pagination[limit]=-1");
-  
-    return [{
-    'data':  decodeData['data'],
-    'meta':  decodeData['meta']
-    } ];
+    print("meta=" + decodeData['meta'].toString());
+    //print ("url=$server/api/pedidos-shopifies?populate=users&populate=pedido_fecha&filters[\$and][0][NumeroOrden][\$contains]=$code&filters[\$and][1][IdComercial][\$eq]=${sharedPrefs!.getString("idComercialMasterSeller").toString()}&filters[\$and][3][Estado_Interno][\$ne]=NO DESEA&sort=id%3Adesc&filters[\$and][4][Status][\$eq]=PEDIDO PROGRAMADO&sort=id%3Adesc&pagination[limit]=-1");
+
+    return [
+      {'data': decodeData['data'], 'meta': decodeData['meta']}
+    ];
   }
 
   getUnwantedOrdersSellers(code) async {
@@ -653,7 +692,6 @@ class Connections {
   }
 
   getOrdersForHistorialTransportByDates() async {
-
     var request = await http.post(
         Uri.parse("$server/api/history/transport?pagination[limit]=-1"),
         headers: {'Content-Type': 'application/json'},
@@ -969,8 +1007,8 @@ class Connections {
     }
   }
 
-Future updateOrderInfoSeller(city, name, address, phone, quantity, product,
-      extraProduct, totalPrice, observation,id ) async {
+  Future updateOrderInfoSeller(city, name, address, phone, quantity, product,
+      extraProduct, totalPrice, observation, id) async {
     var request = await http.put(Uri.parse("$server/api/pedidos-shopifies/$id"),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
@@ -1041,7 +1079,8 @@ Future updateOrderInfoSeller(city, name, address, phone, quantity, product,
       nombreCliente,
       productoExtra,
       observacion,
-      telefono, id) async {
+      telefono,
+      id) async {
     var request = await http.put(Uri.parse("$server/api/pedidos-shopifies/$id"),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
@@ -1129,8 +1168,9 @@ Future updateOrderInfoSeller(city, name, address, phone, quantity, product,
       return true;
     }
   }
-    Future updateOrderStatusOperatorEntregadoHistorial(
-      status, tipoDePago, comentario, archivo,id ) async {
+
+  Future updateOrderStatusOperatorEntregadoHistorial(
+      status, tipoDePago, comentario, archivo, id) async {
     var request = await http.put(Uri.parse("$server/api/pedidos-shopifies/$id"),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
@@ -1219,8 +1259,8 @@ Future updateOrderInfoSeller(city, name, address, phone, quantity, product,
     }
   }
 
-
-    Future updateOrderStatusOperatorGeneralHistorial(status, comentario,id) async {
+  Future updateOrderStatusOperatorGeneralHistorial(
+      status, comentario, id) async {
     var request = await http.put(Uri.parse("$server/api/pedidos-shopifies/$id"),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
@@ -1263,15 +1303,13 @@ Future updateOrderInfoSeller(city, name, address, phone, quantity, product,
     }
   }
 
-   Future updateOrderFechaEntrega(id,date) async {
-  //  String id = Get.parameters['id'].toString();
-   print("id de pedido="+id);
+  Future updateOrderFechaEntrega(id, date) async {
+    //  String id = Get.parameters['id'].toString();
+    print("id de pedido=" + id);
     var request = await http.put(Uri.parse("$server/api/pedidos-shopifies/$id"),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
-          "data": {
-            "Fecha_Confirmacion": date
-          }
+          "data": {"Fecha_Confirmacion": date}
         }));
     var response = await request.body;
     var decodeData = json.decode(response);
@@ -1282,9 +1320,8 @@ Future updateOrderInfoSeller(city, name, address, phone, quantity, product,
     }
   }
 
-
-Future updateOrderStatusOperatorPedidoProgramadoHistorial(
-      status, comentario, date,id) async {
+  Future updateOrderStatusOperatorPedidoProgramadoHistorial(
+      status, comentario, date, id) async {
     var request = await http.put(Uri.parse("$server/api/pedidos-shopifies/$id"),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
@@ -1439,7 +1476,6 @@ Future updateOrderStatusOperatorPedidoProgramadoHistorial(
               body: json.encode({
                 "data": {
                   "Estado_Pago_Logistica": "RECIBIDO",
-                  
                   "ComentarioRechazado": ""
                 }
               }));
@@ -1455,7 +1491,8 @@ Future updateOrderStatusOperatorPedidoProgramadoHistorial(
       print(e);
     }
   }
-    Future updateOrderPendienteStateLogisticUser(id) async {
+
+  Future updateOrderPendienteStateLogisticUser(id) async {
     try {
       var request =
           await http.put(Uri.parse("$server/api/pedidos-shopifies/$id"),
@@ -1463,7 +1500,6 @@ Future updateOrderStatusOperatorPedidoProgramadoHistorial(
               body: json.encode({
                 "data": {
                   "Estado_Pago_Logistica": "PENDIENTE",
-                  
                   "ComentarioRechazado": ""
                 }
               }));
@@ -1540,7 +1576,8 @@ Future updateOrderStatusOperatorPedidoProgramadoHistorial(
 
     return decodeData['data'];
   }
-   Future getOrdersByIDTransportC(id) async {
+
+  Future getOrdersByIDTransportC(id) async {
     var request = await http.get(
       Uri.parse(
           "$server/api/pedidos-shopifies/$id?populate=users&populate=users.vendedores&populate=producto_shopifies&populate=pedido_fecha&populate=ruta&populate=transportadora&populate=operadore&populate=operadore.user&populate=sub_ruta"),
@@ -1551,6 +1588,7 @@ Future updateOrderStatusOperatorPedidoProgramadoHistorial(
 
     return decodeData['data'];
   }
+
   Future getOrdersByIDOperator(id) async {
     var request = await http.get(
       Uri.parse(
@@ -1562,7 +1600,8 @@ Future updateOrderStatusOperatorPedidoProgramadoHistorial(
 
     return decodeData['data'];
   }
-   Future getOrdersByIDTransport(id) async {
+
+  Future getOrdersByIDTransport(id) async {
     var request = await http.get(
       Uri.parse(
           "$server/api/pedidos-shopifies/$id?populate=users&populate=users.vendedores&populate=producto_shopifies&populate=pedido_fecha&populate=ruta&populate=transportadora&populate=operadore&populate=operadore.user&populate=sub_ruta"),
@@ -1573,7 +1612,8 @@ Future updateOrderStatusOperatorPedidoProgramadoHistorial(
 
     return decodeData['data'];
   }
-    Future getOrdersByIDSeller(id) async {
+
+  Future getOrdersByIDSeller(id) async {
     var request = await http.get(
       Uri.parse(
           "$server/api/pedidos-shopifies/$id?populate=users&populate=users.vendedores&populate=producto_shopifies&populate=pedido_fecha&populate=ruta&populate=transportadora&populate=operadore&populate=operadore.user&populate=sub_ruta"),
@@ -1608,7 +1648,8 @@ Future updateOrderStatusOperatorPedidoProgramadoHistorial(
 
     return decodeData['data'];
   }
-    Future getOrdersByIDHistorial(id) async {
+
+  Future getOrdersByIDHistorial(id) async {
     var request = await http.get(
       Uri.parse(
           "$server/api/pedidos-shopifies/$id?populate=users&populate=users.vendedores&populate=producto_shopifies&populate=pedido_fecha&populate=ruta&populate=transportadora&populate=operadore&populate=operadore.user&populate=sub_ruta"),
@@ -2593,8 +2634,7 @@ Future updateOrderStatusOperatorPedidoProgramadoHistorial(
     }
   }
 
-
-    //RETURNS
+  //RETURNS
   Future updateOrderReturnAll(id) async {
     var request = await http.put(Uri.parse("$server/api/pedidos-shopifies/$id"),
         headers: {'Content-Type': 'application/json'},
@@ -2602,12 +2642,11 @@ Future updateOrderStatusOperatorPedidoProgramadoHistorial(
           "data": {
             "Estado_Devolucion": "PENDIENTE",
             "DO": "PENDIENTE",
-            "DT":"PENDIENTE",
-            "DL":"PENDIENTE",
-            "Marca_T_D":"",
-                "Marca_T_D_T":"",
-                "Marca_T_D_L":""
-
+            "DT": "PENDIENTE",
+            "DL": "PENDIENTE",
+            "Marca_T_D": "",
+            "Marca_T_D_T": "",
+            "Marca_T_D_L": ""
           }
         }));
     var response = await request.body;
@@ -3020,8 +3059,6 @@ Future updateOrderStatusOperatorPedidoProgramadoHistorial(
     }
   }
 
-
-
   //TEST
 
   Future getOrdersTest1() async {
@@ -3035,7 +3072,8 @@ Future updateOrderStatusOperatorPedidoProgramadoHistorial(
 
     return decodeData['data'];
   }
-    Future getOrdersTest2() async {
+
+  Future getOrdersTest2() async {
     var request = await http.get(
       Uri.parse(
           "$server/api/pedidos-shopifies?populate=users&populate=users.vendedores&populate=pedido_fecha&populate=transportadora&filters[Status][\$eq]=NO ENTREGADO&filters[Fecha_Entrega][\$eq]=24/5/2023&pagination[limit]=-1"),
@@ -3046,7 +3084,8 @@ Future updateOrderStatusOperatorPedidoProgramadoHistorial(
 
     return decodeData['data'];
   }
-      Future getOrdersTest3() async {
+
+  Future getOrdersTest3() async {
     var request = await http.get(
       Uri.parse(
           "$server/api/pedidos-shopifies?populate=users&populate=users.vendedores&populate=pedido_fecha&filters[\$or][0][Estado_Devolucion][\$eq]=DEVOLUCION EN RUTA&filters[\$or][1][Estado_Devolucion][\$eq]=ENTREGADO EN OFICINA&filters[Fecha_Entrega][\$eq]=24/5/2023&pagination[limit]=-1"),

@@ -6,6 +6,7 @@ import 'package:frontend/config/exports.dart';
 import 'package:frontend/connections/connections.dart';
 import 'package:frontend/helpers/navigators.dart';
 import 'package:frontend/providers/filters_orders/filters_orders.dart';
+import 'package:frontend/ui/sellers/order_entry/calendar_modal.dart';
 import 'package:frontend/ui/sellers/order_entry/controllers/controllers.dart';
 import 'package:frontend/ui/sellers/order_entry/order_info.dart';
 import 'package:frontend/ui/widgets/filters_orders.dart';
@@ -41,6 +42,26 @@ class _OrderEntryState extends State<OrderEntry> {
   String search = '';
   bool buttonLeft = false;
   bool buttonRigth = false;
+  String pedido = "";
+  String confirmado = "";
+  String logistico = "";
+  List<String> optEstadPedido = [
+    'TODO',
+    'PROGRAMADO',
+    'ENTREGADO',
+    'NO ENTREGADO',
+    'NOVEDAD',
+    'EN RUTA',
+    'EN OFICINA'
+  ];
+  List<String> optEstadoConfirmado = ['', 'PENDIENTE', 'CONFIRMADO'];
+  List<String> optEstadoLogistico = [
+    '',
+    'TODO',
+    'PENDIENTE',
+    'IMPRESO',
+    'ENVIADO'
+  ];
 
   @override
   void didChangeDependencies() {
@@ -71,7 +92,8 @@ class _OrderEntryState extends State<OrderEntry> {
     });
 
     response = await Connections().getOrdersSellersByCode(
-        _controllers.searchController.text, currentPage, pageSize, search);
+        _controllers.searchController.text, currentPage, pageSize, search,pedido,
+      confirmado, logistico);
 
     data = response[0]['data'];
     dataTemporal = response[0]['data'];
@@ -90,6 +112,39 @@ class _OrderEntryState extends State<OrderEntry> {
     setState(() {});
   }
 
+  // paginateDataStatus() async {
+  //   WidgetsBinding.instance.addPostFrameCallback((_) {
+  //     getLoadingModal(context, false);
+  //   });
+  //   var response = [];
+  //   setState(() {
+  //     data.clear();
+  //   });
+
+  //   response = await Connections().getOrdersSellersByState(
+  //       _controllers.searchController.text,
+  //       currentPage,
+  //       pageSize,
+  //       pedido,
+  //       confirmado,
+  //       logistico);
+
+  //   data = response[0]['data'];
+  //   print("datos:" + data.toString());
+  //   dataTemporal = response[0]['data'];
+  //   setState(() {
+  //     pageCount = response[0]['meta']['pagination']['pageCount'];
+  //     total = response[0]['meta']['pagination']['total'];
+
+  //     // print("metadatar"+pageCount.toString());
+  //   });
+
+  //   Future.delayed(Duration(milliseconds: 500), () {
+  //     Navigator.pop(context);
+  //   });
+  //   setState(() {});
+  // }
+
   paginateData(search) async {
     // print("Pagina Actual="+currentPage.toString());
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -101,14 +156,16 @@ class _OrderEntryState extends State<OrderEntry> {
     });
 
     response = await Connections().getOrdersSellersByCode(
-        _controllers.searchController.text, currentPage, pageSize, search);
+        _controllers.searchController.text, currentPage, pageSize, search, pedido,
+        confirmado,
+        logistico);
 
     data = response[0]['data'];
     dataTemporal = response[0]['data'];
     setState(() {
       pageCount = response[0]['meta']['pagination']['pageCount'];
       total = response[0]['meta']['pagination']['total'];
-      
+
       // print("metadatar"+pageCount.toString());
     });
 
@@ -118,15 +175,11 @@ class _OrderEntryState extends State<OrderEntry> {
     setState(() {});
   }
 
-  Future UpdateFecha(id) async {
-    print("llego aqui");
-   var m=await Connections().updateOrderFechaEntrega(id.toString(),"6/15/2023");
-      paginateData(search);
-   
-  }
-
   @override
   Widget build(BuildContext context) {
+    logistico = optEstadoLogistico.first;
+    confirmado = optEstadoConfirmado.first;
+
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
@@ -138,7 +191,7 @@ class _OrderEntryState extends State<OrderEntry> {
           await loadData(search);
         },
         backgroundColor: colors.colorGreen,
-        child: Center(
+        child: const Center(
           child: Icon(
             Icons.add,
             color: Colors.white,
@@ -150,7 +203,7 @@ class _OrderEntryState extends State<OrderEntry> {
         width: double.infinity,
         child: Column(
           children: [
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             Align(
@@ -165,7 +218,7 @@ class _OrderEntryState extends State<OrderEntry> {
                 },
                 child: Container(
                   color: Colors.transparent,
-                  child: Row(
+                  child: const Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
@@ -190,7 +243,7 @@ class _OrderEntryState extends State<OrderEntry> {
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             Container(
@@ -238,6 +291,7 @@ class _OrderEntryState extends State<OrderEntry> {
                       fontWeight: FontWeight.bold,
                       color: Colors.black),
                   columnSpacing: 12,
+                  headingRowHeight: 80,
                   horizontalMargin: 12,
                   minWidth: 3500,
                   columns: [
@@ -319,26 +373,70 @@ class _OrderEntryState extends State<OrderEntry> {
                         sortFunc("PrecioTotal");
                       },
                     ),
-                    DataColumn2(
+                    const DataColumn2(
                       label: Text('Observación'),
                       size: ColumnSize.M,
                     ),
                     DataColumn2(
-                      label: Text('Estado Pedido'),
+                      label: const Text('Estado Pedido'),
                       size: ColumnSize.M,
                       onSort: (columnIndex, ascending) {
                         sortFunc("Status");
                       },
                     ),
                     DataColumn2(
-                      label: Text('Estado Confirmado'),
+                      label: Column(
+                        children: [
+                          const Text('Estado Confirmado'),
+                          DropdownButton<String>(
+                            value: confirmado,
+                            elevation: 16,
+                            onChanged: (String? value) {
+                              setState(() {
+                                confirmado = value!;
+                                logistico = "";
+                              });
+                              paginateData(search);
+                            },
+                            items: optEstadoConfirmado
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                          ),
+                        ],
+                      ),
                       size: ColumnSize.M,
                       onSort: (columnIndex, ascending) {
                         sortFunc("Estado_Interno");
                       },
                     ),
                     DataColumn2(
-                      label: Text('Estado Logístico'),
+                      label: Column(
+                        children: [
+                          const Text('Estado Logistico'),
+                          DropdownButton<String>(
+                            value: logistico,
+                            elevation: 16,
+                            onChanged: (String? value) {
+                              setState(() {
+                                logistico = value!;
+                                confirmado = "";
+                              });
+                              paginateData(search);
+                            },
+                            items: optEstadoLogistico
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                          ),
+                        ],
+                      ),
                       size: ColumnSize.M,
                       onSort: (columnIndex, ascending) {
                         sortFunc("Estado_Logistico");
@@ -371,8 +469,13 @@ class _OrderEntryState extends State<OrderEntry> {
                                           ['id'] = data[index]['id'];
                                       counterChecks += 1;
                                     } else {
-                                      optionsCheckBox[index]['check'] = value;
-                                      optionsCheckBox[index]['id'] = '';
+                                      optionsCheckBox[index +
+                                              ((currentPage - 1) * pageSize)]
+                                          ['check'] = value;
+
+                                      optionsCheckBox[index +
+                                              (currentPage - 1) * pageSize]
+                                          ['id'] = '';
                                       counterChecks -= 1;
                                     }
                                   });
@@ -537,11 +640,25 @@ class _OrderEntryState extends State<OrderEntry> {
                             DataCell(
                                 Row(
                                   children: [
-                                    Text(data[index]['attributes']
-                                            ['Fecha_Confirmacion']
-                                        .toString()),
-                                    TextButton(onPressed: ()=>UpdateFecha(data[index]['id']), child: Text("editar")),
-                                    
+                                    Container(
+                                      width: 80,
+                                      child: Text(data[index]['attributes']
+                                              ['Fecha_Confirmacion']
+                                          .toString()),
+                                    ),
+                                    data[index]['attributes']
+                                                ['Estado_Interno'] ==
+                                            "PENDIENTE"
+                                        ? TextButton(
+                                            onPressed: () {
+                                              Calendar(data[index]['id']
+                                                      .toString())
+                                                  .then((value) =>
+                                                      paginateData(search));
+                                            },
+                                            child: Icon(Icons.calendar_today),
+                                          )
+                                        : Container(),
                                   ],
                                 ), onTap: () {
                               info(context, index);
@@ -566,6 +683,34 @@ class _OrderEntryState extends State<OrderEntry> {
         ),
       ),
     );
+  }
+
+  Future<dynamic> Calendar(String id) {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            content: Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              child: Stack(
+                children: [
+                  Expanded(child: CalendarModal(id: id)),
+                  Positioned(
+                    top: 10, // Ajusta la posición vertical del botón
+                    right: 10,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: Icon(Icons.close),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
   }
 
   Future<dynamic> info(BuildContext context, int index) {
@@ -602,8 +747,8 @@ class _OrderEntryState extends State<OrderEntry> {
                         onPressed: () => {
                           // if (index - 1 > 1)
                           //   {
-                              Navigator.pop(context),
-                              info(context, index - 1),
+                          Navigator.pop(context),
+                          info(context, index - 1),
                           //     buttonLeft = true
                           //   }
                           // else
@@ -621,13 +766,13 @@ class _OrderEntryState extends State<OrderEntry> {
                     visible: buttonRigth,
                     child: Positioned(
                       bottom: 220, // Ajusta la posición vertical del botón
-                      right:2,
+                      right: 2,
                       child: IconButton(
                         iconSize: 60,
                         onPressed: () => {
                           Navigator.pop(context),
                           // index + 1 <= total
-                           info(context, index + 1)
+                          info(context, index + 1)
                           //     : setState(() {
                           //         buttonRigth = false;
                           //       })
@@ -662,54 +807,82 @@ class _OrderEntryState extends State<OrderEntry> {
         children: [
           ElevatedButton(
               onPressed: () async {
-                for (var i = 0; i < optionsCheckBox.length; i++) {
-                  if (optionsCheckBox[i]['id'].toString().isNotEmpty &&
-                      optionsCheckBox[i]['id'].toString() != '' &&
-                      optionsCheckBox[i]['check'] == true) {
-                    var response = await Connections().updateOrderInteralStatus(
-                        "NO DESEA", optionsCheckBox[i]['id'].toString());
-                  }
-                }
-                setState(() {});
-                loadData(search);
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Text('Confirmación'),
+                      content: Text('¿Estás seguro de realizar esta acción?'),
+                      actions: [
+                        TextButton(
+                          child: Text('Cancelar'),
+                          onPressed: () {
+                            // Acción al presionar el botón de cancelar
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                        TextButton(
+                          child: Text('Aceptar'),
+                          onPressed: () async {
+                            for (var i = 0; i < optionsCheckBox.length; i++) {
+                              if (optionsCheckBox[i]['id']
+                                      .toString()
+                                      .isNotEmpty &&
+                                  optionsCheckBox[i]['id'].toString() != '' &&
+                                  optionsCheckBox[i]['check'] == true) {
+                                var response = await Connections()
+                                    .updateOrderInteralStatus("NO DESEA",
+                                        optionsCheckBox[i]['id'].toString());
+                                        counterChecks=0;
+                              }
+                            }
+                            setState(() {});
+                            loadData(search);
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                );
               },
-              child: Text(
+              child: const Text(
                 "No Desea",
                 style: TextStyle(fontWeight: FontWeight.bold),
               )),
-          SizedBox(
+          const SizedBox(
             width: 20,
           ),
-          ElevatedButton(
-              onPressed: () async {
-                print("opcionesa confirmar" + optionsCheckBox.toString());
-                // for (var i = 0; i < optionsCheckBox.length; i++) {
-                //   if (optionsCheckBox[i]['id'].toString().isNotEmpty &&
-                //       optionsCheckBox[i]['id'].toString() != '' &&
-                //       optionsCheckBox[i]['check'] == true) {
-                //     var response = await Connections().updateOrderInteralStatus(
-                //         "CONFIRMADO", optionsCheckBox[i]['id'].toString());
-                //   }
-                // }
-                // await showDialog(
-                //     context: context,
-                //     builder: (context) {
-                //       return RoutesModal(
-                //         idOrder: optionsCheckBox,
-                //         someOrders: true,
-                //       );
-                //     });
+          // ElevatedButton(
+          //     onPressed: () async {
+          //       print("opcionesa confirmar" + optionsCheckBox.toString());
+          //       // for (var i = 0; i < optionsCheckBox.length; i++) {
+          //       //   if (optionsCheckBox[i]['id'].toString().isNotEmpty &&
+          //       //       optionsCheckBox[i]['id'].toString() != '' &&
+          //       //       optionsCheckBox[i]['check'] == true) {
+          //       //     var response = await Connections().updateOrderInteralStatus(
+          //       //         "CONFIRMADO", optionsCheckBox[i]['id'].toString());
+          //       //   }
+          //       // }
+          //       // await showDialog(
+          //       //     context: context,
+          //       //     builder: (context) {
+          //       //       return RoutesModal(
+          //       //         idOrder: optionsCheckBox,
+          //       //         someOrders: true,
+          //       //       );
+          //       //     });
 
-                // setState(() {});
-                // loadData(search);
-              },
-              child: Text(
-                "Confirmar",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              )),
-          SizedBox(
-            width: 20,
-          ),
+          //       // setState(() {});
+          //       // loadData(search);
+          //     },
+          //     child: Text(
+          //       "Confirmar",
+          //       style: TextStyle(fontWeight: FontWeight.bold),
+          //     )),
+          // SizedBox(
+          //   width: 20,
+          // ),
         ],
       ),
     );
@@ -757,7 +930,8 @@ class _OrderEntryState extends State<OrderEntry> {
           });
 
           var respon = await Connections().getOrdersSellersByCode(
-              _controllers.searchController.text, currentPage, pageSize, value);
+              _controllers.searchController.text, currentPage, pageSize, value,pedido,
+      confirmado, logistico);
           var data2 = respon[0]['data'];
           //dataTemporal = respon[0]['data'];
           //   print("datos de busqueda"+data2.toString());
