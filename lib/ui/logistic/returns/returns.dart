@@ -7,6 +7,7 @@ import 'package:frontend/ui/logistic/income_and_expenses/controllers/controllers
 import 'package:frontend/ui/utils/utils.dart';
 import 'package:frontend/ui/widgets/loading.dart';
 import 'package:frontend/helpers/navigators.dart';
+import 'package:frontend/ui/widgets/logistic/scanner_printed_devoluciones.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 
@@ -95,6 +96,22 @@ class _ReturnsState extends State<Returns> {
               child: _modelTextField(
                   text: "Busqueda", controller: _controllers.searchController),
             ),
+               Align(
+                    alignment: Alignment.centerRight,
+                    child: ElevatedButton(
+                        onPressed: () async {
+                          await showDialog(
+                              context: context,
+                              builder: (context) {
+                                return ScannerPrintedDevoluciones();
+                              });
+                          await loadData();
+                        },
+                        child: Text(
+                          "SCANNER",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        )),
+                  ),
             // _filters(context),
             Expanded(
               child: DataTable2(
