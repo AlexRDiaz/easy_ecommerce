@@ -51,21 +51,21 @@ class _ScannerPrintedDevolucionesState
                       if (!visible) return;
                       getLoadingModal(context, false);
 
-                      var responseOrder =
+                     var responseOrder =
                           await Connections().getOrderByID(barcode);
+                      print("print barcode"+barcode.toString());
+                      // if (responseOrder['attributes']['Estado_Devolucion']
+                      //         .toString() !=
+                      //     "EN BODEGA") {
+                      //   var response = await Connections()
+                      //       .updateOrderReturnLogistic(barcode.toString());
+                      // }
 
-                      if (responseOrder['attributes']['Estado_Devolucion']
-                              .toString() !=
-                          "EN BODEGA") {
-                        var response = await Connections()
-                            .updateOrderReturnLogistic(barcode.toString());
-                      }
-
-                      setState(() {
-                        _barcode =
-                            "${responseOrder['attributes']['Name_Comercial']}-${responseOrder['attributes']['NumeroOrden']}";
-                      });
-                      Navigator.pop(context);
+                      // setState(() {
+                      //   _barcode =
+                      //       "${responseOrder['attributes']['Name_Comercial']}-${responseOrder['attributes']['NumeroOrden']}";
+                      // });
+                      // Navigator.pop(context);
                     },
                   ).show();
                 },
