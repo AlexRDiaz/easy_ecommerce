@@ -35,7 +35,7 @@ class _CalendarModalState extends State<CalendarModal> {
           backgroundColor: Colors.white,
           leading: Container(),
           centerTitle: true,
-          title: Text(
+          title: const Text(
             "Fecha confirmación",
             style: TextStyle(
                 fontWeight: FontWeight.bold, color: Colors.black, fontSize: 20),

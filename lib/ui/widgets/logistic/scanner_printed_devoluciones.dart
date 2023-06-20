@@ -1,4 +1,3 @@
-import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
@@ -11,12 +10,10 @@ class ScannerPrintedDevoluciones extends StatefulWidget {
   const ScannerPrintedDevoluciones({super.key});
 
   @override
-  State<ScannerPrintedDevoluciones> createState() =>
-      _ScannerPrintedDevolucionesState();
+  State<ScannerPrintedDevoluciones> createState() => _ScannerPrintedDevolucionesState();
 }
 
-class _ScannerPrintedDevolucionesState
-    extends State<ScannerPrintedDevoluciones> {
+class _ScannerPrintedDevolucionesState extends State<ScannerPrintedDevoluciones> {
   String? _barcode;
   late bool visible;
   @override
@@ -35,53 +32,33 @@ class _ScannerPrintedDevolucionesState
               child: BarcodeKeyboardListener(
                 bufferDuration: Duration(milliseconds: 200),
                 onBarcodeScanned: (barcode) async {
-                  
-                  AwesomeDialog(
-                    width: 500,
-                    context: context,
-                    dialogType: DialogType.info,
-                    animType: AnimType.rightSlide,
-                    title: '¿Estás seguro de devolver este pedido a BODEGA?',
-                    desc: '',
-                    btnOkText: "Confirmar",
-                    btnCancelText: "Cancelar",
-                    btnOkColor: Colors.blueAccent,
-                    btnCancelOnPress: () {},
-                    btnOkOnPress: () async {
-                      if (!visible) return;
-                      getLoadingModal(context, false);
+                  if (!visible) return;
+                  getLoadingModal(context, false);
+                  print(barcode);
+                  // var response = await Connections()
+                  //     .updateOrderLogisticStatusPrint(
+                  //         "ENVIADO", barcode.toString());
+                  // var responseOrder = await Connections().getOrderByID(barcode);
 
-                     var responseOrder =
-                          await Connections().getOrderByID(barcode);
-                      print("print barcode"+barcode.toString());
-                      // if (responseOrder['attributes']['Estado_Devolucion']
-                      //         .toString() !=
-                      //     "EN BODEGA") {
-                      //   var response = await Connections()
-                      //       .updateOrderReturnLogistic(barcode.toString());
-                      // }
-
-                      // setState(() {
-                      //   _barcode =
-                      //       "${responseOrder['attributes']['Name_Comercial']}-${responseOrder['attributes']['NumeroOrden']}";
-                      // });
-                      // Navigator.pop(context);
-                    },
-                  ).show();
+                  // setState(() {
+                  //   _barcode =
+                  //       "${responseOrder['attributes']['Name_Comercial']}-${responseOrder['attributes']['NumeroOrden']}";
+                  // });
+                  //Navigator.pop(context);
                 },
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    const Text("MARCAR ORDENES COMO DEVUELTAS",
+                    Text("MARCAR ORDENES COMO ENVIADAS",
                         style: TextStyle(fontWeight: FontWeight.bold)),
-                    const SizedBox(
+                    SizedBox(
                       height: 30,
                     ),
                     Text(
                         _barcode == null
                             ? 'SCANNER VACIO'
-                            : 'ORDEN DEVUELTA A BODEGA: $_barcode',
+                            : 'ORDEN PROCESADA: $_barcode',
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: _barcode == null

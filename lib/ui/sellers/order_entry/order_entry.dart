@@ -41,25 +41,15 @@ class _OrderEntryState extends State<OrderEntry> {
   String search = '';
   bool buttonLeft = false;
   bool buttonRigth = false;
-  String pedido = "";
-  String confirmado = "";
-  String logistico = "";
+  String pedido = '';
+  String confirmado = 'TODO';
+  String logistico = 'TODO';
   bool enabledBusqueda = true;
   List filters = [];
   List filtersAndEq = [];
 
-  List<String> optEstadPedido = [
-    "",
-    'TODO',
-    'PROGRAMADO',
-    'ENTREGADO',
-    'NO ENTREGADO',
-    'NOVEDAD',
-    'EN RUTA',
-    'EN OFICINA'
-  ];
-  List<String> optEstadoConfirmado = ["", 'PENDIENTE', 'CONFIRMADO'];
-  List<String> optEstadoLogistico = ['', 'PENDIENTE', 'IMPRESO', 'ENVIADO'];
+  List<String> optEstadoConfirmado = ["TODO", 'PENDIENTE', 'CONFIRMADO'];
+  List<String> optEstadoLogistico = ['TODO', 'PENDIENTE', 'IMPRESO', 'ENVIADO'];
 
   @override
   void didChangeDependencies() {
@@ -127,16 +117,18 @@ class _OrderEntryState extends State<OrderEntry> {
 
       // print("metadatar"+pageCount.toString());
     });
+    optionsCheckBox = [];
     for (var i = 0; i < total; i++) {
       optionsCheckBox.add({"check": false, "id": "", "NumeroOrden": ""});
     }
+
     Future.delayed(Duration(milliseconds: 500), () {
       Navigator.pop(context);
     });
     setState(() {});
   }
 
-  paginateData(search) async {
+  paginateData() async {
     // print("Pagina Actual="+currentPage.toString());
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getLoadingModal(context, false);
@@ -146,7 +138,7 @@ class _OrderEntryState extends State<OrderEntry> {
       data.clear();
     });
 
-    print("actual pagina valor" + currentPage.toString());
+    // print("actual pagina valor" + currentPage.toString());
 
     response = await Connections().getOrdersSellersByCode(
         _controllers.searchController.text,
@@ -184,12 +176,12 @@ class _OrderEntryState extends State<OrderEntry> {
       total = response[0]['meta']['pagination']['total'];
     });
     if (confirmado != '' || logistico != '') {
-      counterChecks = 0;
-      optionsCheckBox = [];
+      // counterChecks = 0;
+      //  optionsCheckBox = [];
 
-      for (var i = 0; i < total; i++) {
-        optionsCheckBox.add({"check": false, "id": "", "NumeroOrden": ""});
-      }
+      // for (var i = 0; i < total; i++) {
+      //   optionsCheckBox.add({"check": false, "id": "", "NumeroOrden": ""});
+      // }
     }
     Future.delayed(Duration(milliseconds: 500), () {
       Navigator.pop(context);
@@ -300,13 +292,27 @@ class _OrderEntryState extends State<OrderEntry> {
                             ),
                             Container(
                               padding: const EdgeInsets.only(left: 5, right: 5),
-                              child: Text(
-                                counterChecks > 0
-                                    ? "Seleccionados: ${counterChecks}"
-                                    : "",
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    counterChecks > 0
+                                        ? "Seleccionados: ${counterChecks}"
+                                        : "",
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black),
+                                  ),
+                                  counterChecks > 0
+                                      ? Visibility(
+                                          visible: true,
+                                          child: IconButton(
+                                            iconSize: 20,
+                                            onPressed: () => {clearSelected()},
+                                            icon: Icon(Icons.close_rounded),
+                                          ),
+                                        )
+                                      : Container(),
+                                ],
                               ),
                             ),
                           ],
@@ -371,8 +377,9 @@ class _OrderEntryState extends State<OrderEntry> {
                                                         counterChecks = 0;
                                                       }
                                                     }
-                                                    setState(() {});
+
                                                     loadData();
+                                                    setState(() {});
                                                     enabledBusqueda = true;
                                                     Navigator.of(context).pop();
                                                   },
@@ -406,7 +413,7 @@ class _OrderEntryState extends State<OrderEntry> {
                             currentPage = index + 1;
                           });
 
-                          await paginateData(search);
+                          await paginateData();
                         },
                       )),
                     ],
@@ -543,7 +550,7 @@ class _OrderEntryState extends State<OrderEntry> {
                             currentPage = index + 1;
                           });
 
-                          await paginateData(search);
+                          await paginateData();
                         },
                       )),
                     ],
@@ -686,7 +693,8 @@ class _OrderEntryState extends State<OrderEntry> {
                                   "valor actual confirmado" + value.toString());
 
                               setState(() {
-                                if (value != '') {
+                                confirmado = value!;
+                                if (value != 'TODO') {
                                   bool contains = false;
 
                                   for (var filter in filtersAndEq) {
@@ -725,7 +733,7 @@ class _OrderEntryState extends State<OrderEntry> {
                                 currentPage = 1;
                                 print("a " + currentPage.toString());
                               });
-                              paginateData(search);
+                              paginateData();
                             },
                             items: optEstadoConfirmado
                                 .map<DropdownMenuItem<String>>((String value) {
@@ -754,7 +762,9 @@ class _OrderEntryState extends State<OrderEntry> {
                                   "valor actual logistico" + value.toString());
 
                               setState(() {
-                                if (value != '') {
+                                logistico = value!;
+
+                                if (value != 'TODO') {
                                   bool contains = false;
 
                                   for (var filter in filtersAndEq) {
@@ -792,7 +802,7 @@ class _OrderEntryState extends State<OrderEntry> {
                                 // confirmado = "";
                                 // currentPage = 1;
                               });
-                              paginateData(search);
+                              paginateData();
                             },
                             items: optEstadoLogistico
                                 .map<DropdownMenuItem<String>>((String value) {
@@ -1030,7 +1040,7 @@ class _OrderEntryState extends State<OrderEntry> {
                                               Calendar(data[index]['id']
                                                       .toString())
                                                   .then((value) =>
-                                                      paginateData(search));
+                                                      paginateData());
                                             },
                                             child: Icon(Icons.calendar_today),
                                           )
@@ -1049,6 +1059,7 @@ class _OrderEntryState extends State<OrderEntry> {
 
   String listToDelete() {
     String res = "";
+
     for (var i = 0; i < optionsCheckBox.length; i++) {
       if (optionsCheckBox[i]['check'] == true) {
         res += sharedPrefs!.getString("NameComercialSeller").toString() +
@@ -1188,156 +1199,96 @@ class _OrderEntryState extends State<OrderEntry> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            content: Container(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              child: Column(
-                children: [
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: Icon(Icons.close),
-                    ),
-                  ),
-                  Expanded(
-                      child: OrderInfo(
-                    id: data[index]['id'].toString(),
-                  )),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+            content: responsive(
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: Column(
                     children: [
-                      Visibility(
-                        visible: buttonLeft,
-                        child: IconButton(
-                          iconSize: 60,
-                          onPressed: () => {
-                            // if (index - 1 > 1)
-                            //   {
-                            Navigator.pop(context),
-                            info(context, index - 1),
-                            //     buttonLeft = true
-                            //   }
-                            // else
-                            //   {
-                            //     setState(() {
-                            //       buttonLeft = false;
-                            //     })
-                            //   }
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
                           },
-                          icon: Icon(Icons.arrow_circle_left),
+                          child: Icon(Icons.close),
                         ),
                       ),
-                      Visibility(
-                        visible: buttonRigth,
-                        child: IconButton(
-                          iconSize: 60,
-                          onPressed: () => {
-                            Navigator.pop(context),
-                            // index + 1 <= total
-                            info(context, index + 1)
-                            //     : setState(() {
-                            //         buttonRigth = false;
-                            //       })
-                          },
-                          icon: Icon(Icons.arrow_circle_right),
-                        ),
-                      ),
+                      Expanded(
+                          child: OrderInfo(
+                        id: data[index]['id'].toString(),
+                      )),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Visibility(
+                            visible: buttonLeft,
+                            child: IconButton(
+                              iconSize: 60,
+                              onPressed: () => {
+                                Navigator.pop(context),
+                                info(context, index - 1),
+                              },
+                              icon: Icon(Icons.arrow_circle_left),
+                            ),
+                          ),
+                          SizedBox(
+                            width: 70,
+                          ),
+                          Visibility(
+                            visible: buttonRigth,
+                            child: IconButton(
+                              iconSize: 60,
+                              onPressed: () => {
+                                Navigator.pop(context),
+                                info(context, index + 1)
+                              },
+                              icon: Icon(Icons.arrow_circle_right),
+                            ),
+                          ),
+                        ],
+                      )
                     ],
-                  )
-                ],
-              ),
-            ),
+                  ),
+                ),
+                GestureDetector(
+                  onPanUpdate: (details) {
+                    if (details.delta.dx > 0) {
+                     Navigator.pop(context);
+                                info(context, index + 1);
+                    } else if (details.delta.dx < 0) {
+                         Navigator.pop(context);
+                                info(context, index - 1);
+                      print('Deslizamiento hacia la izquierda');
+                    }
+                  },
+                  child:  Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Icon(Icons.close),
+                        ),
+                      ),
+                      Expanded(
+                          child: OrderInfo(
+                        id: data[index]['id'].toString(),
+                      )),
+                    
+                    ],
+                  ),
+                ),
+                ),
+                context),
           );
         });
   }
-
-  // Future<dynamic> info(BuildContext context, int index) {
-  //   if (index - 1 >= 0) {
-  //     buttonLeft = true;
-  //   } else {
-  //     buttonLeft = false;
-  //   }
-  //   if (index + 1 < data.length) {
-  //     buttonRigth = true;
-  //   } else {
-  //     buttonRigth = false;
-  //   }
-  //   return showDialog(
-  //       context: context,
-  //       builder: (context) {
-  //         return AlertDialog(
-  //           content: Container(
-  //             width: MediaQuery.of(context).size.width,
-  //             height: MediaQuery.of(context).size.height,
-  //             child: Stack(
-  //               children: [
-  //                 Expanded(
-  //                     child: OrderInfo(
-  //                   id: data[index]['id'].toString(),
-  //                 )),
-  //                 Visibility(
-  //                   visible: buttonLeft,
-  //                   child: Positioned(
-  //                     bottom: 220, // Ajusta la posición vertical del botón
-  //                     left: 2,
-  //                     child: IconButton(
-  //                       iconSize: 60,
-  //                       onPressed: () => {
-  //                         // if (index - 1 > 1)
-  //                         //   {
-  //                         Navigator.pop(context),
-  //                         info(context, index - 1),
-  //                         //     buttonLeft = true
-  //                         //   }
-  //                         // else
-  //                         //   {
-  //                         //     setState(() {
-  //                         //       buttonLeft = false;
-  //                         //     })
-  //                         //   }
-  //                       },
-  //                       icon: Icon(Icons.arrow_circle_left),
-  //                     ),
-  //                   ),
-  //                 ),
-  //                 Visibility(
-  //                   visible: buttonRigth,
-  //                   child: Positioned(
-  //                     bottom: 220, // Ajusta la posición vertical del botón
-  //                     right: 2,
-  //                     child: IconButton(
-  //                       iconSize: 60,
-  //                       onPressed: () => {
-  //                         Navigator.pop(context),
-  //                         // index + 1 <= total
-  //                         info(context, index + 1)
-  //                         //     : setState(() {
-  //                         //         buttonRigth = false;
-  //                         //       })
-  //                       },
-  //                       icon: Icon(Icons.arrow_circle_right),
-  //                     ),
-  //                   ),
-  //                 ),
-  //                 Positioned(
-  //                   top: 10, // Ajusta la posición vertical del botón
-  //                   right: 10,
-  //                   child: GestureDetector(
-  //                     onTap: () {
-  //                       Navigator.pop(context);
-  //                     },
-  //                     child: Icon(Icons.close),
-  //                   ),
-  //                 ),
-  //               ],
-  //             ),
-  //           ),
-  //         );
-  //       });
-  // }
 
   Container _buttons() {
     return Container(
@@ -1369,6 +1320,16 @@ class _OrderEntryState extends State<OrderEntry> {
     }
   }
 
+  clearSelected() {
+    optionsCheckBox = [];
+    for (var i = 0; i < total; i++) {
+      optionsCheckBox.add({"check": false, "id": "", "NumeroOrden": ""});
+    }
+    setState(() {
+      counterChecks = 0;
+    });
+  }
+
   _modelTextField({text, controller}) {
     return Container(
       width: double.infinity,
@@ -1383,8 +1344,6 @@ class _OrderEntryState extends State<OrderEntry> {
           setState(() {
             search = value;
             pedido = "";
-            confirmado = "";
-            logistico = "";
           });
 
           getLoadingModal(context, false);
@@ -1450,6 +1409,9 @@ class _OrderEntryState extends State<OrderEntry> {
                     setState(() {
                       _controllers.searchController.clear();
                       search = '';
+                      filtersAndEq = [];
+                      confirmado = "TODO";
+                      logistico = "TODO";
                     });
 
                     setState(() {
@@ -1463,16 +1425,6 @@ class _OrderEntryState extends State<OrderEntry> {
           border: OutlineInputBorder(
             borderSide: BorderSide(color: Colors.grey),
           ),
-          // enabledBorder: OutlineInputBorder(
-          //   borderSide:
-          //       BorderSide(width: 1, color: Color.fromRGBO(237, 241, 245, 1.0)),
-          //   borderRadius: BorderRadius.circular(10.0),
-          // ),
-          // focusedBorder: OutlineInputBorder(
-          //   borderSide:
-          //       BorderSide(width: 1, color: Color.fromRGBO(237, 241, 245, 1.0)),
-          //   borderRadius: BorderRadius.circular(10.0),
-          // ),
           focusColor: Colors.black,
           iconColor: Colors.black,
         ),
