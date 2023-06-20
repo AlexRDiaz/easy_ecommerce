@@ -539,40 +539,47 @@ class Connections {
     return decodeData['data'];
   }
 
-  Future getOrdersSellersByCode(code, currentPage, pageSize, String? search,
-      pedido, confirmado, logistico) async {
+  Future getOrdersSellersByCode(code, currentPage, pageSize,  search,arrayFiltersOrCont,arrayFiltersAndEq) async {
     print("currentPage=" + currentPage.toString());
     print("pageSize=" + pageSize.toString());
-    print("pedido=" + pedido!);
-    print("confirmado=" + confirmado!);
-    print("logistico=" + logistico!);
+    // print("pedido=" + pedido!);
+    // print("confirmado=" + confirmado!);
+    // print("logistico=" + logistico!);
 
-    var url = "";
-    if (pedido == "" && confirmado == "" && logistico == "") {
-      url =
-          "$server/api/pedidos-shopifies?populate=users&populate=pedido_fecha&filters[\$and][0][NumeroOrden][\$contains]=$code&filters[\$and][1][IdComercial][\$eq]=${sharedPrefs!.getString("idComercialMasterSeller").toString()}&filters[\$and][3][Estado_Interno][\$ne]=NO DESEA&sort=id%3Adesc&filters[\$and][4][Status][\$eq]=PEDIDO PROGRAMADO&sort=id%3Adesc&pagination[page]=${currentPage}&pagination[pageSize]=${pageSize}";
+    var url = "$server/api/pedidos-shopifies?populate=users&populate=pedido_fecha&filters[\$or][0][NumeroOrden][\$contains]=$code&filters[\$and][1][IdComercial][\$eq]=${sharedPrefs!.getString("idComercialMasterSeller").toString()}&filters[\$and][3][Estado_Interno][\$ne]=NO DESEA&sort=id%3Adesc&filters[\$and][4][Status][\$eq]=PEDIDO PROGRAMADO";
+ int numberFilter=5;
+    var filtersOrCont="";
 
-      if (search != '') {
-        url =
-            "$server/api/pedidos-shopifies?populate=users&populate=pedido_fecha&filters[\$and][0][NumeroOrden][\$contains]=&filters[\$and][1][IdComercial][\$eq]=${sharedPrefs!.getString("idComercialMasterSeller").toString()}&filters[\$and][3][Estado_Interno][\$ne]=NO DESEA&sort=id%3Adesc&filters[\$and][4][Status][\$eq]=PEDIDO PROGRAMADO&filters[\$or][0][CiudadShipping][\$contains]=$search&filters[\$or][1][NombreShipping][\$contains]=$search&filters[\$or][4][Name_Comercial][\$contains]=$search&filters[\$or][5][DireccionShipping][\$contains]=$search&sort=id%3Adesc&pagination[page]=${currentPage}&pagination[pageSize]=${pageSize}";
-      }
-    } else {
-      if (logistico != "") {
-        url =
-            "$server/api/pedidos-shopifies?populate=users&populate=pedido_fecha&filters[\$and][0][NumeroOrden][\$contains]=&filters[\$and][1][IdComercial][\$eq]=${sharedPrefs!.getString("idComercialMasterSeller").toString()}&filters[\$and][3][Estado_Interno][\$ne]=NO DESEA&filters[\$and][3][Estado_Logistico][\$eq]=$logistico&sort=id%3Adesc&filters[\$and][4][Status][\$eq]=PEDIDO PROGRAMADO&sort=id%3Adesc&pagination[page]=${currentPage}&pagination[pageSize]=${pageSize}";
-      } else if (confirmado != '') {
-        url =
-            "$server/api/pedidos-shopifies?populate=users&populate=pedido_fecha&filters[\$and][0][NumeroOrden][\$contains]=&filters[\$and][1][IdComercial][\$eq]=${sharedPrefs!.getString("idComercialMasterSeller").toString()}&filters[\$and][3][Estado_Interno][\$ne]=NO DESEA&filters[\$and][3][Estado_Interno][\$eq]=$confirmado&sort=id%3Adesc&filters[\$and][4][Status][\$eq]=PEDIDO PROGRAMADO&sort=id%3Adesc&pagination[page]=${currentPage}&pagination[pageSize]=${pageSize}";
-      }
+    if(search!=""){
+   for (var filter in arrayFiltersOrCont) {
+
+               filtersOrCont+="&filters[\$or][$numberFilter][${filter['filter']}][\$contains]=$search";
+               numberFilter++;
+    }
     }
 
+   var filtersAndEq="";
+   for (var filter in arrayFiltersAndEq) {
+               print("filter:"+filter['filter'].toString());
+                              print("value:"+filter['value'].toString());
+
+
+               filtersAndEq+="&filters[\$and][$numberFilter][${filter['filter']}][\$eq]=${filter['value']}";
+               numberFilter++;
+    }
+
+
+
+   var configPagination="&sort=id%3Adesc&pagination[page]=${currentPage}&pagination[pageSize]=${pageSize}";
+    url+=filtersOrCont+filtersAndEq +configPagination;
+
+    print(url);
     var request = await http.get(
       Uri.parse(url),
       headers: {'Content-Type': 'application/json'},
     );
     var response = await request.body;
     var decodeData = json.decode(response);
-    // print("meta="+decodeData['meta'].toString());
     return [
       {'data': decodeData['data'], 'meta': decodeData['meta']}
     ];

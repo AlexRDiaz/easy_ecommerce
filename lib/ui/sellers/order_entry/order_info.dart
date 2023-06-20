@@ -70,14 +70,13 @@ class _OrderInfoState extends State<OrderInfo> {
         ),
         body: SafeArea(
             child: Padding(
-          padding: const EdgeInsets.all(80.0),
+          padding: const EdgeInsets.all(20.0),
           child: SingleChildScrollView(
             child: loading == true
                 ? Container()
                 : Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
