@@ -96,22 +96,23 @@ class _ReturnsState extends State<Returns> {
               child: _modelTextField(
                   text: "Busqueda", controller: _controllers.searchController),
             ),
-               Align(
-                    alignment: Alignment.centerRight,
-                    child: ElevatedButton(
-                        onPressed: () async {
-                          await showDialog(
-                              context: context,
-                              builder: (context) {
-                                return ScannerPrintedDevoluciones();
-                              });
-                          await loadData();
-                        },
-                        child: Text(
-                          "SCANNER",
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        )),
-                  ),
+              //  Align(
+              //       alignment: Alignment.centerRight,
+              //       child: ElevatedButton(
+              //           onPressed: () async {
+              //             await showDialog(
+              //                 context: context,
+              //                 builder: (context) {
+              //                   return ScannerPrintedDevoluciones();
+              //                 });
+              //             await loadData();
+              //           },
+              //           child: Text(
+              //             "SCANNER",
+              //             style: TextStyle(fontWeight: FontWeight.bold),
+              //           )),
+              //     ),
+           
             // _filters(context),
             Expanded(
               child: DataTable2(

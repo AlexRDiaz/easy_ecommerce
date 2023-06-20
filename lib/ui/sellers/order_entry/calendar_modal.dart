@@ -5,12 +5,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:frontend/config/exports.dart';
 import 'package:frontend/connections/connections.dart';
-import 'package:frontend/helpers/navigators.dart';
-import 'package:frontend/ui/sellers/order_entry/controllers/controllers.dart';
-import 'package:frontend/ui/widgets/loading.dart';
-import 'package:frontend/ui/widgets/routes/routes.dart';
-import 'package:get/route_manager.dart';
-import 'package:frontend/main.dart';
+
 import 'package:table_calendar/table_calendar.dart';
 
 class CalendarModal extends StatefulWidget {
@@ -40,7 +35,7 @@ class _CalendarModalState extends State<CalendarModal> {
           backgroundColor: Colors.white,
           leading: Container(),
           centerTitle: true,
-          title: Text(
+          title: const Text(
             "Fecha confirmación",
             style: TextStyle(
                 fontWeight: FontWeight.bold, color: Colors.black, fontSize: 20),

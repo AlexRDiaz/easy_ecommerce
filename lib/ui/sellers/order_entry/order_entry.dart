@@ -34,29 +34,22 @@ class _OrderEntryState extends State<OrderEntry> {
   bool sort = false;
   List dataTemporal = [];
   int currentPage = 1;
-  int pageSize = 50;
+  int pageSize = 70;
   int pageCount = 100;
   int total = 0;
   bool isSearch = false;
   String search = '';
   bool buttonLeft = false;
   bool buttonRigth = false;
-  String pedido = "";
-  String confirmado = "";
-  String logistico = "";
+  String pedido = '';
+  String confirmado = 'TODO';
+  String logistico = 'TODO';
   bool enabledBusqueda = true;
-  List<String> optEstadPedido = [
-    "",
-    'TODO',
-    'PROGRAMADO',
-    'ENTREGADO',
-    'NO ENTREGADO',
-    'NOVEDAD',
-    'EN RUTA',
-    'EN OFICINA'
-  ];
-  List<String> optEstadoConfirmado = ["", 'PENDIENTE', 'CONFIRMADO'];
-  List<String> optEstadoLogistico = ['', 'PENDIENTE', 'IMPRESO', 'ENVIADO'];
+  List filters = [];
+  List filtersAndEq = [];
+
+  List<String> optEstadoConfirmado = ["TODO", 'PENDIENTE', 'CONFIRMADO'];
+  List<String> optEstadoLogistico = ['TODO', 'PENDIENTE', 'IMPRESO', 'ENVIADO'];
 
   @override
   void didChangeDependencies() {
@@ -72,11 +65,11 @@ class _OrderEntryState extends State<OrderEntry> {
         _controllers.searchController.clear();
       });
     }
-    loadData(search);
+    loadData();
     super.didChangeDependencies();
   }
 
-  loadData(search) async {
+  loadData() async {
     // print("Pagina Actual="+currentPage.toString());
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getLoadingModal(context, false);
@@ -91,9 +84,30 @@ class _OrderEntryState extends State<OrderEntry> {
         currentPage,
         pageSize,
         search,
-        pedido,
-        confirmado,
-        logistico);
+        [
+          {
+            'filter': 'CiudadShipping',
+          },
+          {
+            'filter': 'NombreShipping',
+          },
+          {
+            'filter': 'DireccionShipping',
+          },
+          {
+            'filter': 'TelefonoShipping',
+          },
+          {
+            'filter': 'ProductoP',
+          },
+          {
+            'filter': 'ProductoExtra',
+          },
+          {
+            'filter': 'PrecioTotal',
+          },
+        ],
+        filtersAndEq);
 
     data = response[0]['data'];
     dataTemporal = response[0]['data'];
@@ -103,16 +117,18 @@ class _OrderEntryState extends State<OrderEntry> {
 
       // print("metadatar"+pageCount.toString());
     });
+    optionsCheckBox = [];
     for (var i = 0; i < total; i++) {
       optionsCheckBox.add({"check": false, "id": "", "NumeroOrden": ""});
     }
+
     Future.delayed(Duration(milliseconds: 500), () {
       Navigator.pop(context);
     });
     setState(() {});
   }
 
-  paginateData(search) async {
+  paginateData() async {
     // print("Pagina Actual="+currentPage.toString());
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getLoadingModal(context, false);
@@ -121,30 +137,51 @@ class _OrderEntryState extends State<OrderEntry> {
     setState(() {
       data.clear();
     });
- 
+
+    // print("actual pagina valor" + currentPage.toString());
+
     response = await Connections().getOrdersSellersByCode(
         _controllers.searchController.text,
         currentPage,
         pageSize,
         search,
-        pedido,
-        confirmado,
-        logistico);
-
+        [
+          {
+            'filter': 'CiudadShipping',
+          },
+          {
+            'filter': 'NombreShipping',
+          },
+          {
+            'filter': 'DireccionShipping',
+          },
+          {
+            'filter': 'TelefonoShipping',
+          },
+          {
+            'filter': 'ProductoP',
+          },
+          {
+            'filter': 'ProductoExtra',
+          },
+          {
+            'filter': 'PrecioTotal',
+          },
+        ],
+        filtersAndEq);
     data = response[0]['data'];
     dataTemporal = response[0]['data'];
     setState(() {
       pageCount = response[0]['meta']['pagination']['pageCount'];
       total = response[0]['meta']['pagination']['total'];
     });
-    if(confirmado!='' || logistico!=''){
-      counterChecks=0;
-      optionsCheckBox=[];
-      
-        for (var i = 0; i < total; i++) {
-      optionsCheckBox.add({"check": false, "id": "", "NumeroOrden": ""});
-    }
-       
+    if (confirmado != '' || logistico != '') {
+      // counterChecks = 0;
+      //  optionsCheckBox = [];
+
+      // for (var i = 0; i < total; i++) {
+      //   optionsCheckBox.add({"check": false, "id": "", "NumeroOrden": ""});
+      // }
     }
     Future.delayed(Duration(milliseconds: 500), () {
       Navigator.pop(context);
@@ -167,7 +204,7 @@ class _OrderEntryState extends State<OrderEntry> {
               builder: (context) {
                 return AddOrderSellers();
               });
-          await loadData(search);
+          await loadData();
         },
         backgroundColor: colors.colorGreen,
         child: const Center(
@@ -194,10 +231,9 @@ class _OrderEntryState extends State<OrderEntry> {
                   setState(() {
                     optionsCheckBox = [];
                     counterChecks = 0;
-                    enabledBusqueda=true;
-           
+                    enabledBusqueda = true;
                   });
-                  await loadData(search);
+                  await loadData();
                 },
                 child: Container(
                   color: Colors.transparent,
@@ -234,298 +270,292 @@ class _OrderEntryState extends State<OrderEntry> {
               color: Colors.white,
               padding: EdgeInsets.all(5),
               child: responsive(
-                 Row(
-                  children: [
-                    Expanded(
-                      child: _modelTextField(
-                          text: "Busqueda",
-                          controller: _controllers.searchController),
-                    ),
-                    
-                    Expanded(
-                      
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.only(left: 15,right: 5),
-                            child: Text(
-                            
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _modelTextField(
+                            text: "Busqueda",
+                            controller: _controllers.searchController),
+                      ),
+                      Expanded(
+                        child: Row(
+                          children: [
+                            Container(
+                              padding:
+                                  const EdgeInsets.only(left: 15, right: 5),
+                              child: Text(
+                                "Registros: ${total}",
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black),
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.only(left: 5, right: 5),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    counterChecks > 0
+                                        ? "Seleccionados: ${counterChecks}"
+                                        : "",
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black),
+                                  ),
+                                  counterChecks > 0
+                                      ? Visibility(
+                                          visible: true,
+                                          child: IconButton(
+                                            iconSize: 20,
+                                            onPressed: () => {clearSelected()},
+                                            icon: Icon(Icons.close_rounded),
+                                          ),
+                                        )
+                                      : Container(),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 5,
+                      ),
+                      Container(
+                        padding: EdgeInsets.only(left: 10, right: 10),
+                        height: 50.0,
+                        child: Row(
+                          children: [
+                            ElevatedButton(
+                                onPressed: counterChecks > 0
+                                    ? () async {
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: Text('Atenecion'),
+                                              content: Column(
+                                                children: [
+                                                  const Text(
+                                                      '¿Estás seguro de eliminar los siguientes pedidos?'),
+                                                  Text('' + listToDelete()),
+                                                ],
+                                              ),
+                                              actions: [
+                                                TextButton(
+                                                  child: const Text('Cancelar'),
+                                                  onPressed: () {
+                                                    // Acción al presionar el botón de cancelar
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                ),
+                                                TextButton(
+                                                  child: Text('Aceptar'),
+                                                  onPressed: () async {
+                                                    for (var i = 0;
+                                                        i <
+                                                            optionsCheckBox
+                                                                .length;
+                                                        i++) {
+                                                      if (optionsCheckBox[i]
+                                                                  ['id']
+                                                              .toString()
+                                                              .isNotEmpty &&
+                                                          optionsCheckBox[i]
+                                                                      ['id']
+                                                                  .toString() !=
+                                                              '' &&
+                                                          optionsCheckBox[i]
+                                                                  ['check'] ==
+                                                              true) {
+                                                        var response = await Connections()
+                                                            .updateOrderInteralStatus(
+                                                                "NO DESEA",
+                                                                optionsCheckBox[
+                                                                        i]['id']
+                                                                    .toString());
+                                                        counterChecks = 0;
+                                                      }
+                                                    }
+
+                                                    loadData();
+                                                    setState(() {});
+                                                    enabledBusqueda = true;
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      }
+                                    : null,
+                                child: const Text(
+                                  "No Desea",
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                )),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                          child: NumberPaginator(
+                        config: NumberPaginatorUIConfig(
+                          buttonShape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                5), // Customize the button shape
+                          ),
+                        ),
+                        numberPages: pageCount > 0 ? pageCount : 1,
+                        onPageChange: (index) async {
+                          //  print("indice="+index.toString());
+
+                          setState(() {
+                            currentPage = index + 1;
+                          });
+
+                          await paginateData();
+                        },
+                      )),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Container(
+                        child: _modelTextField(
+                            text: "Busqueda",
+                            controller: _controllers.searchController),
+                      ),
+                      Container(
+                        child: Row(
+                          children: [
+                            Text(
                               "Registros: ${total}",
                               style: const TextStyle(
-                                  fontWeight: FontWeight.bold, color: Colors.black),
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black),
                             ),
-                          ),
-                         
-                          Container(
-                                                        padding: const EdgeInsets.only(left: 5,right: 5),
-
-                            child: Text(
+                            SizedBox(
+                              width: 10,
+                            ),
+                            Text(
                               counterChecks > 0
                                   ? "Seleccionados: ${counterChecks}"
                                   : "",
                               style: const TextStyle(
-                                  fontWeight: FontWeight.bold, color: Colors.black),
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-              
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    Container(
-                      padding: EdgeInsets.only(left: 10, right:10),
-                      height: 50.0,
-                      child: Row(
-                        children: [
-                          ElevatedButton(
-                              onPressed: counterChecks > 0
-                                  ? () async {
-                                      showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) {
-                                          return AlertDialog(
-                                            title: Text('Atenecion'),
-                                            content: Column(
-                                              children: [
-                                                const Text(
-                                                    '¿Estás seguro de eliminar los siguientes pedidos?'),
-                                                Text('' + listToDelete()),
-                                              ],
-                                            ),
-                                            actions: [
-                                              TextButton(
-                                                child: const Text('Cancelar'),
-                                                onPressed: () {
-                                                  // Acción al presionar el botón de cancelar
-                                                  Navigator.of(context).pop();
-
-                                                },
+                      Container(
+                        padding: EdgeInsets.only(left: 10, right: 10),
+                        height: 50.0,
+                        child: Row(
+                          children: [
+                            ElevatedButton(
+                                onPressed: counterChecks > 0
+                                    ? () async {
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: Text('Atenecion'),
+                                              content: Column(
+                                                children: [
+                                                  const Text(
+                                                      '¿Estás seguro de eliminar los siguientes pedidos?'),
+                                                  Text('' + listToDelete()),
+                                                ],
                                               ),
-                                              TextButton(
-                                                child: Text('Aceptar'),
-                                                onPressed: () async {
-                                                  for (var i = 0;
-                                                      i < optionsCheckBox.length;
-                                                      i++) {
-                                                    if (optionsCheckBox[i]['id']
-                                                            .toString()
-                                                            .isNotEmpty &&
-                                                        optionsCheckBox[i]['id']
-                                                                .toString() !=
-                                                            '' &&
-                                                        optionsCheckBox[i]
-                                                                ['check'] ==
-                                                            true) {
-                                                      var response =
-                                                          await Connections()
-                                                              .updateOrderInteralStatus(
-                                                                  "NO DESEA",
-                                                                  optionsCheckBox[
-                                                                          i]['id']
-                                                                      .toString());
-                                                      counterChecks = 0;
+                                              actions: [
+                                                TextButton(
+                                                  child: const Text('Cancelar'),
+                                                  onPressed: () {
+                                                    // Acción al presionar el botón de cancelar
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                ),
+                                                TextButton(
+                                                  child: Text('Aceptar'),
+                                                  onPressed: () async {
+                                                    for (var i = 0;
+                                                        i <
+                                                            optionsCheckBox
+                                                                .length;
+                                                        i++) {
+                                                      if (optionsCheckBox[i]
+                                                                  ['id']
+                                                              .toString()
+                                                              .isNotEmpty &&
+                                                          optionsCheckBox[i]
+                                                                      ['id']
+                                                                  .toString() !=
+                                                              '' &&
+                                                          optionsCheckBox[i]
+                                                                  ['check'] ==
+                                                              true) {
+                                                        var response = await Connections()
+                                                            .updateOrderInteralStatus(
+                                                                "NO DESEA",
+                                                                optionsCheckBox[
+                                                                        i]['id']
+                                                                    .toString());
+                                                        counterChecks = 0;
+                                                      }
                                                     }
-                                                  }
-                                                  setState(() {});
-                                                  loadData(search);
-                                                  enabledBusqueda=true;
-                                                  Navigator.of(context).pop();
-                                                },
-                                              ),
-                                            ],
-                                          );
-                                        },
-                                      );
-                                    }
-                                  : null,
-                              child: const Text(
-                                "No Desea",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              )),
-                          // ElevatedButton(
-                          //     onPressed: () async {
-                          //       await showDialog(
-                          //           context: (context),
-                          //           builder: (context) {
-                          //             return AddOrderSellers();
-                          //           });
-                          //       await loadData(search);
-                          //     },
-                          //     child: const Text(
-                          //       "Nuevo",
-                          //       style: TextStyle(fontWeight: FontWeight.bold),
-                          //     )),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      
-                        child: NumberPaginator(
-                          config: NumberPaginatorUIConfig(
-                            buttonShape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                  5), // Customize the button shape
-                            ),
-                          ),
-                          numberPages: pageCount > 0 ? pageCount : 1,
-                          onPageChange: (index) async {
-                            //  print("indice="+index.toString());
-                            setState(() {
-                              currentPage = index + 1;
-                            });
-              
-                            await paginateData(search);
-                          },
-                        )),
-                  ],
-                ),
-               
-               Column(
-                  children: [
-                    Container(
-
-                      child: _modelTextField(
-                          text: "Busqueda",
-                          controller: _controllers.searchController),
-                    ),
-                    
-                    Container(
-                      child: Row(
-                        children: [
-                          Text(
-                          
-                            "Registros: ${total}",
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold, color: Colors.black),
-                          ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          Text(
-                            counterChecks > 0
-                                ? "Seleccionados: ${counterChecks}"
-                                : "",
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold, color: Colors.black),
-                          ),
-                        ],
-                      ),
-                    ),
-              
-                 
-                    Container(
-                      padding: EdgeInsets.only(left: 10, right:10),
-                      height: 50.0,
-                      child: Row(
-                        children: [
-                          ElevatedButton(
-                              onPressed: counterChecks > 0
-                                  ? () async {
-                                      showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) {
-                                          return AlertDialog(
-                                            title: Text('Atenecion'),
-                                            content: Column(
-                                              children: [
-                                                const Text(
-                                                    '¿Estás seguro de eliminar los siguientes pedidos?'),
-                                                Text('' + listToDelete()),
+                                                    setState(() {});
+                                                    loadData();
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                ),
                                               ],
-                                            ),
-                                            actions: [
-                                              TextButton(
-                                                child: const Text('Cancelar'),
-                                                onPressed: () {
-                                                  // Acción al presionar el botón de cancelar
-                                                  Navigator.of(context).pop();
-                                                },
-                                              ),
-                                              TextButton(
-                                                child: Text('Aceptar'),
-                                                onPressed: () async {
-                                                  for (var i = 0;
-                                                      i < optionsCheckBox.length;
-                                                      i++) {
-                                                    if (optionsCheckBox[i]['id']
-                                                            .toString()
-                                                            .isNotEmpty &&
-                                                        optionsCheckBox[i]['id']
-                                                                .toString() !=
-                                                            '' &&
-                                                        optionsCheckBox[i]
-                                                                ['check'] ==
-                                                            true) {
-                                                      var response =
-                                                          await Connections()
-                                                              .updateOrderInteralStatus(
-                                                                  "NO DESEA",
-                                                                  optionsCheckBox[
-                                                                          i]['id']
-                                                                      .toString());
-                                                      counterChecks = 0;
-                                                    }
-                                                  }
-                                                  setState(() {});
-                                                  loadData(search);
-                                                  Navigator.of(context).pop();
-                                                },
-                                              ),
-                                            ],
-                                          );
-                                        },
-                                      );
-                                    }
-                                  : null,
-                              child: const Text(
-                                "No Desea",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              )),
-                          ElevatedButton(
-                              onPressed: () async {
-                                await showDialog(
-                                    context: (context),
-                                    builder: (context) {
-                                      return AddOrderSellers();
-                                    });
-                                await loadData(search);
-                              },
-                              child: const Text(
-                                "Nuevo",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              )),
-                       
-                        ],
+                                            );
+                                          },
+                                        );
+                                      }
+                                    : null,
+                                child: const Text(
+                                  "No Desea",
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                )),
+                            ElevatedButton(
+                                onPressed: () async {
+                                  await showDialog(
+                                      context: (context),
+                                      builder: (context) {
+                                        return AddOrderSellers();
+                                      });
+                                  await loadData();
+                                },
+                                child: const Text(
+                                  "Nuevo",
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                )),
+                          ],
+                        ),
                       ),
-                    ),
-                
-                    Container(
-                      
-                        child: NumberPaginator(
-                          config: NumberPaginatorUIConfig(
-                            buttonShape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                  5), // Customize the button shape
-                            ),
+                      Container(
+                          child: NumberPaginator(
+                        config: NumberPaginatorUIConfig(
+                          buttonShape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                5), // Customize the button shape
                           ),
-                          numberPages: pageCount > 0 ? pageCount : 1,
-                          onPageChange: (index) async {
-                            //  print("indice="+index.toString());
-                            setState(() {
-                              currentPage = index + 1;
-                            });
-              
-                            await paginateData(search);
-                          },
-                        )),
-                  ],
-                ),
-               
-                context
+                        ),
+                        numberPages: pageCount > 0 ? pageCount : 1,
+                        onPageChange: (index) async {
+                          //  print("indice="+index.toString());
+                          setState(() {
+                            currentPage = index + 1;
+                          });
 
-              ),
+                          await paginateData();
+                        },
+                      )),
+                    ],
+                  ),
+                  context),
             ),
             const SizedBox(
               width: 10,
@@ -659,13 +689,51 @@ class _OrderEntryState extends State<OrderEntry> {
                             value: confirmadoVal,
                             elevation: 16,
                             onChanged: (String? value) {
+                              print(
+                                  "valor actual confirmado" + value.toString());
+
                               setState(() {
-                             
-    
                                 confirmado = value!;
-                                logistico = "";
+                                if (value != 'TODO') {
+                                  bool contains = false;
+
+                                  for (var filter in filtersAndEq) {
+                                    if (filter['filter'] == 'Estado_Interno') {
+                                      contains = true;
+                                      break;
+                                    }
+                                  }
+                                  if (contains == false) {
+                                    filtersAndEq.add({
+                                      'filter': 'Estado_Interno',
+                                      'value': value
+                                    });
+                                  } else {
+                                    for (var filter in filtersAndEq) {
+                                      if (filter['filter'] ==
+                                          'Estado_Interno') {
+                                        filter['value'] = value;
+                                        break;
+                                      }
+                                    }
+                                  }
+                                } else {
+                                  for (var filter in filtersAndEq) {
+                                    if (filter['filter'] == 'Estado_Interno') {
+                                      filtersAndEq.remove(filter);
+                                      break;
+                                    }
+                                  }
+                                }
+                                // search = "";
+                                // confirmado = value!;
+                                // logistico = "";
+                                print("se cambio pagina de " +
+                                    currentPage.toString());
+                                currentPage = 1;
+                                print("a " + currentPage.toString());
                               });
-                              paginateData(search);
+                              paginateData();
                             },
                             items: optEstadoConfirmado
                                 .map<DropdownMenuItem<String>>((String value) {
@@ -690,13 +758,51 @@ class _OrderEntryState extends State<OrderEntry> {
                             value: logisticoVal,
                             elevation: 16,
                             onChanged: (String? value) {
-                              setState(() {
-                                          
+                              print(
+                                  "valor actual logistico" + value.toString());
 
+                              setState(() {
                                 logistico = value!;
-                                confirmado = "";
+
+                                if (value != 'TODO') {
+                                  bool contains = false;
+
+                                  for (var filter in filtersAndEq) {
+                                    if (filter['filter'] ==
+                                        'Estado_Logistico') {
+                                      contains = true;
+                                      break;
+                                    }
+                                  }
+                                  if (contains == false) {
+                                    filtersAndEq.add({
+                                      'filter': 'Estado_Logistico',
+                                      'value': value
+                                    });
+                                  } else {
+                                    for (var filter in filtersAndEq) {
+                                      if (filter['filter'] ==
+                                          'Estado_Logistico') {
+                                        filter['value'] = value;
+                                        break;
+                                      }
+                                    }
+                                  }
+                                } else {
+                                  for (var filter in filtersAndEq) {
+                                    if (filter['filter'] ==
+                                        'Estado_Logistico') {
+                                      filtersAndEq.remove(filter);
+                                      break;
+                                    }
+                                  }
+                                }
+                                // search = "";
+                                // logistico = value!;
+                                // confirmado = "";
+                                // currentPage = 1;
                               });
-                              paginateData(search);
+                              paginateData();
                             },
                             items: optEstadoLogistico
                                 .map<DropdownMenuItem<String>>((String value) {
@@ -779,12 +885,12 @@ class _OrderEntryState extends State<OrderEntry> {
                                       throw Exception('Could not launch $_url');
                                     }
                                   },
-                                  child: Icon(
+                                  child: const Icon(
                                     Icons.call,
                                     size: 20,
                                   ),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 10,
                                 ),
                                 GestureDetector(
@@ -818,7 +924,7 @@ class _OrderEntryState extends State<OrderEntry> {
                                             someOrders: false,
                                           );
                                         });
-                                    loadData(search);
+                                    loadData();
                                   },
                                   child: Icon(
                                     Icons.check,
@@ -839,7 +945,7 @@ class _OrderEntryState extends State<OrderEntry> {
                                                   "NO DESEA",
                                                   data[index]['id'].toString());
                                           setState(() {});
-                                          loadData(search);
+                                          loadData();
                                         },
                                         child: Icon(
                                           Icons.cancel_outlined,
@@ -934,7 +1040,7 @@ class _OrderEntryState extends State<OrderEntry> {
                                               Calendar(data[index]['id']
                                                       .toString())
                                                   .then((value) =>
-                                                      paginateData(search));
+                                                      paginateData());
                                             },
                                             child: Icon(Icons.calendar_today),
                                           )
@@ -953,9 +1059,13 @@ class _OrderEntryState extends State<OrderEntry> {
 
   String listToDelete() {
     String res = "";
+
     for (var i = 0; i < optionsCheckBox.length; i++) {
       if (optionsCheckBox[i]['check'] == true) {
-        res +=sharedPrefs!.getString("NameComercialSeller").toString()+"-"+optionsCheckBox[i]['NumeroOrden'] + '\n';
+        res += sharedPrefs!.getString("NameComercialSeller").toString() +
+            "-" +
+            optionsCheckBox[i]['NumeroOrden'] +
+            '\n';
       }
     }
     return res;
@@ -969,25 +1079,110 @@ class _OrderEntryState extends State<OrderEntry> {
             content: Container(
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height,
-              child: Stack(
+              child: Column(
                 children: [
                   Expanded(child: CalendarModal(id: id)),
-                  Positioned(
-                    top: 10, // Ajusta la posición vertical del botón
-                    right: 10,
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: Icon(Icons.close),
-                    ),
-                  ),
+                  // Positioned(
+                  //   top: 10, // Ajusta la posición vertical del botón
+                  //   right: 10,
+                  //   child: GestureDetector(
+                  //     onTap: () {
+                  //       Navigator.pop(context);
+                  //     },
+                  //     child: Icon(Icons.close),
+                  //   ),
+                  // ),
                 ],
               ),
             ),
           );
         });
   }
+
+  // Future<dynamic> info(BuildContext context, int index) {
+  //   if (index - 1 >= 0) {
+  //     buttonLeft = true;
+  //   } else {
+  //     buttonLeft = false;
+  //   }
+  //   if (index + 1 < data.length) {
+  //     buttonRigth = true;
+  //   } else {
+  //     buttonRigth = false;
+  //   }
+  //   return showDialog(
+  //       context: context,
+  //       builder: (context) {
+  //         return AlertDialog(
+  //           content: Container(
+  //             width: MediaQuery.of(context).size.width,
+  //             height: MediaQuery.of(context).size.height,
+  //             child: Stack(
+  //               children: [
+  //                 Expanded(
+  //                     child: OrderInfo(
+  //                   id: data[index]['id'].toString(),
+  //                 )),
+  //                 Visibility(
+  //                   visible: buttonLeft,
+  //                   child: Positioned(
+  //                     bottom: 220, // Ajusta la posición vertical del botón
+  //                     left: 2,
+  //                     child: IconButton(
+  //                       iconSize: 60,
+  //                       onPressed: () => {
+  //                         // if (index - 1 > 1)
+  //                         //   {
+  //                         Navigator.pop(context),
+  //                         info(context, index - 1),
+  //                         //     buttonLeft = true
+  //                         //   }
+  //                         // else
+  //                         //   {
+  //                         //     setState(() {
+  //                         //       buttonLeft = false;
+  //                         //     })
+  //                         //   }
+  //                       },
+  //                       icon: Icon(Icons.arrow_circle_left),
+  //                     ),
+  //                   ),
+  //                 ),
+  //                 Visibility(
+  //                   visible: buttonRigth,
+  //                   child: Positioned(
+  //                     bottom: 220, // Ajusta la posición vertical del botón
+  //                     right: 2,
+  //                     child: IconButton(
+  //                       iconSize: 60,
+  //                       onPressed: () => {
+  //                         Navigator.pop(context),
+  //                         // index + 1 <= total
+  //                         info(context, index + 1)
+  //                         //     : setState(() {
+  //                         //         buttonRigth = false;
+  //                         //       })
+  //                       },
+  //                       icon: Icon(Icons.arrow_circle_right),
+  //                     ),
+  //                   ),
+  //                 ),
+  //                 Positioned(
+  //                   top: 10, // Ajusta la posición vertical del botón
+  //                   right: 10,
+  //                   child: GestureDetector(
+  //                     onTap: () {
+  //                       Navigator.pop(context);
+  //                     },
+  //                     child: Icon(Icons.close),
+  //                   ),
+  //                 ),
+  //               ],
+  //             ),
+  //           ),
+  //         );
+  //       });
+  // }
 
   Future<dynamic> info(BuildContext context, int index) {
     if (index - 1 >= 0) {
@@ -1004,72 +1199,93 @@ class _OrderEntryState extends State<OrderEntry> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            content: Container(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              child: Stack(
-                children: [
-                  Expanded(
-                      child: OrderInfo(
-                    id: data[index]['id'].toString(),
-                  )),
-                  Visibility(
-                    visible: buttonLeft,
-                    child: Positioned(
-                      bottom: 220, // Ajusta la posición vertical del botón
-                      left: 2,
-                      child: IconButton(
-                        iconSize: 60,
-                        onPressed: () => {
-                          // if (index - 1 > 1)
-                          //   {
-                          Navigator.pop(context),
-                          info(context, index - 1),
-                          //     buttonLeft = true
-                          //   }
-                          // else
-                          //   {
-                          //     setState(() {
-                          //       buttonLeft = false;
-                          //     })
-                          //   }
-                        },
-                        icon: Icon(Icons.arrow_circle_left),
+            content: responsive(
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Icon(Icons.close),
+                        ),
                       ),
-                    ),
+                      Expanded(
+                          child: OrderInfo(
+                        id: data[index]['id'].toString(),
+                      )),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Visibility(
+                            visible: buttonLeft,
+                            child: IconButton(
+                              iconSize: 60,
+                              onPressed: () => {
+                                Navigator.pop(context),
+                                info(context, index - 1),
+                              },
+                              icon: Icon(Icons.arrow_circle_left),
+                            ),
+                          ),
+                          SizedBox(
+                            width: 70,
+                          ),
+                          Visibility(
+                            visible: buttonRigth,
+                            child: IconButton(
+                              iconSize: 60,
+                              onPressed: () => {
+                                Navigator.pop(context),
+                                info(context, index + 1)
+                              },
+                              icon: Icon(Icons.arrow_circle_right),
+                            ),
+                          ),
+                        ],
+                      )
+                    ],
                   ),
-                  Visibility(
-                    visible: buttonRigth,
-                    child: Positioned(
-                      bottom: 220, // Ajusta la posición vertical del botón
-                      right: 2,
-                      child: IconButton(
-                        iconSize: 60,
-                        onPressed: () => {
-                          Navigator.pop(context),
-                          // index + 1 <= total
-                          info(context, index + 1)
-                          //     : setState(() {
-                          //         buttonRigth = false;
-                          //       })
-                        },
-                        icon: Icon(Icons.arrow_circle_right),
+                ),
+                GestureDetector(
+                  onPanUpdate: (details) {
+                    if (details.delta.dx > 0) {
+                     Navigator.pop(context);
+                                info(context, index + 1);
+                    } else if (details.delta.dx < 0) {
+                         Navigator.pop(context);
+                                info(context, index - 1);
+                      print('Deslizamiento hacia la izquierda');
+                    }
+                  },
+                  child:  Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Icon(Icons.close),
+                        ),
                       ),
-                    ),
+                      Expanded(
+                          child: OrderInfo(
+                        id: data[index]['id'].toString(),
+                      )),
+                    
+                    ],
                   ),
-                  Positioned(
-                    top: 10, // Ajusta la posición vertical del botón
-                    right: 10,
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: Icon(Icons.close),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+                ),
+                ),
+                context),
           );
         });
   }
@@ -1104,6 +1320,16 @@ class _OrderEntryState extends State<OrderEntry> {
     }
   }
 
+  clearSelected() {
+    optionsCheckBox = [];
+    for (var i = 0; i < total; i++) {
+      optionsCheckBox.add({"check": false, "id": "", "NumeroOrden": ""});
+    }
+    setState(() {
+      counterChecks = 0;
+    });
+  }
+
   _modelTextField({text, controller}) {
     return Container(
       width: double.infinity,
@@ -1117,10 +1343,9 @@ class _OrderEntryState extends State<OrderEntry> {
         onSubmitted: (value) async {
           setState(() {
             search = value;
+            pedido = "";
           });
-                   pedido="";
-                    confirmado="";
-                    logistico="";
+
           getLoadingModal(context, false);
 
           var response = [];
@@ -1128,23 +1353,44 @@ class _OrderEntryState extends State<OrderEntry> {
           setState(() {
             optionsCheckBox = [];
             counterChecks = 0;
+            currentPage = 1;
           });
-         
           var respon = await Connections().getOrdersSellersByCode(
               _controllers.searchController.text,
               currentPage,
               pageSize,
-              value,
-              pedido,
-              confirmado,
-              logistico);
+              search,
+              [
+                {
+                  'filter': 'CiudadShipping',
+                },
+                {
+                  'filter': 'NombreShipping',
+                },
+                {
+                  'filter': 'DireccionShipping',
+                },
+                {
+                  'filter': 'TelefonoShipping',
+                },
+                {
+                  'filter': 'ProductoP',
+                },
+                {
+                  'filter': 'ProductoExtra',
+                },
+                {
+                  'filter': 'PrecioTotal',
+                },
+              ],
+              filtersAndEq);
           var data2 = respon[0]['data'];
           data = respon[0]['data'];
           setState(() {
             pageCount = respon[0]['meta']['pagination']['pageCount'];
             total = respon[0]['meta']['pagination']['total'];
           });
-           for (var i = 0; i < total; i++) {
+          for (var i = 0; i < total; i++) {
             optionsCheckBox.add({"check": false, "id": "", "name_product": ""});
           }
           Future.delayed(Duration(milliseconds: 500), () {
@@ -1162,9 +1408,14 @@ class _OrderEntryState extends State<OrderEntry> {
                     getLoadingModal(context, false);
                     setState(() {
                       _controllers.searchController.clear();
+                      search = '';
+                      filtersAndEq = [];
+                      confirmado = "TODO";
+                      logistico = "TODO";
                     });
+
                     setState(() {
-                      data = dataTemporal;
+                      loadData();
                     });
                     Navigator.pop(context);
                   },
@@ -1174,16 +1425,6 @@ class _OrderEntryState extends State<OrderEntry> {
           border: OutlineInputBorder(
             borderSide: BorderSide(color: Colors.grey),
           ),
-          // enabledBorder: OutlineInputBorder(
-          //   borderSide:
-          //       BorderSide(width: 1, color: Color.fromRGBO(237, 241, 245, 1.0)),
-          //   borderRadius: BorderRadius.circular(10.0),
-          // ),
-          // focusedBorder: OutlineInputBorder(
-          //   borderSide:
-          //       BorderSide(width: 1, color: Color.fromRGBO(237, 241, 245, 1.0)),
-          //   borderRadius: BorderRadius.circular(10.0),
-          // ),
           focusColor: Colors.black,
           iconColor: Colors.black,
         ),
