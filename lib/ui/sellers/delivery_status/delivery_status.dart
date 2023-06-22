@@ -297,8 +297,7 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                                               ),
                                             ),
                                             Expanded(
-                                                child:
-                                                    DeliveryStatusSellerInfo(
+                                                child: DeliveryStatusSellerInfo(
                                               id: data[index]['id'].toString(),
                                             ))
                                           ],
@@ -308,11 +307,11 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                                   });
                             }),
                             DataCell(
-                              
-                                Text(  style : TextStyle(
-                                        color: GetColor( data[index]['attributes']['Status']
-                                    .toString())!),
-                                  
+                                Text(
+                                    style: TextStyle(
+                                        color: GetColor(data[index]
+                                                ['attributes']['Status']
+                                            .toString())!),
                                     '${data[index]['attributes']['Name_Comercial'].toString()}-${data[index]['attributes']['NumeroOrden'].toString()}'),
                                 onTap: () {
                               showDialog(
@@ -336,8 +335,7 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                                               ),
                                             ),
                                             Expanded(
-                                                child:
-                                                    DeliveryStatusSellerInfo(
+                                                child: DeliveryStatusSellerInfo(
                                               id: data[index]['id'].toString(),
                                             ))
                                           ],
@@ -349,7 +347,7 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                             DataCell(
                                 Text(data[index]['attributes']['CiudadShipping']
                                     .toString()), onTap: () {
-                                     showDialog(
+                              showDialog(
                                   context: context,
                                   builder: (context) {
                                     return AlertDialog(
@@ -370,8 +368,7 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                                               ),
                                             ),
                                             Expanded(
-                                                child:
-                                                    DeliveryStatusSellerInfo(
+                                                child: DeliveryStatusSellerInfo(
                                               id: data[index]['id'].toString(),
                                             ))
                                           ],
@@ -383,7 +380,7 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                             DataCell(
                                 Text(data[index]['attributes']['NombreShipping']
                                     .toString()), onTap: () {
-                             showDialog(
+                              showDialog(
                                   context: context,
                                   builder: (context) {
                                     return AlertDialog(
@@ -404,8 +401,7 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                                               ),
                                             ),
                                             Expanded(
-                                                child:
-                                                    DeliveryStatusSellerInfo(
+                                                child: DeliveryStatusSellerInfo(
                                               id: data[index]['id'].toString(),
                                             ))
                                           ],
@@ -418,7 +414,7 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                                 Text(data[index]['attributes']
                                         ['DireccionShipping']
                                     .toString()), onTap: () {
-                                  showDialog(
+                              showDialog(
                                   context: context,
                                   builder: (context) {
                                     return AlertDialog(
@@ -439,8 +435,7 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                                               ),
                                             ),
                                             Expanded(
-                                                child:
-                                                    DeliveryStatusSellerInfo(
+                                                child: DeliveryStatusSellerInfo(
                                               id: data[index]['id'].toString(),
                                             ))
                                           ],
@@ -453,7 +448,7 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                                 Text(data[index]['attributes']
                                         ['TelefonoShipping']
                                     .toString()), onTap: () {
-                                  showDialog(
+                              showDialog(
                                   context: context,
                                   builder: (context) {
                                     return AlertDialog(
@@ -474,8 +469,7 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                                               ),
                                             ),
                                             Expanded(
-                                                child:
-                                                    DeliveryStatusSellerInfo(
+                                                child: DeliveryStatusSellerInfo(
                                               id: data[index]['id'].toString(),
                                             ))
                                           ],
@@ -487,7 +481,7 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                             DataCell(
                                 Text(data[index]['attributes']['Cantidad_Total']
                                     .toString()), onTap: () {
-                                   showDialog(
+                              showDialog(
                                   context: context,
                                   builder: (context) {
                                     return AlertDialog(
@@ -508,8 +502,7 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                                               ),
                                             ),
                                             Expanded(
-                                                child:
-                                                    DeliveryStatusSellerInfo(
+                                                child: DeliveryStatusSellerInfo(
                                               id: data[index]['id'].toString(),
                                             ))
                                           ],
@@ -521,7 +514,7 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                             DataCell(
                                 Text(data[index]['attributes']['ProductoP']
                                     .toString()), onTap: () {
-                                showDialog(
+                              showDialog(
                                   context: context,
                                   builder: (context) {
                                     return AlertDialog(
@@ -542,8 +535,7 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                                               ),
                                             ),
                                             Expanded(
-                                                child:
-                                                    DeliveryStatusSellerInfo(
+                                                child: DeliveryStatusSellerInfo(
                                               id: data[index]['id'].toString(),
                                             ))
                                           ],
@@ -555,7 +547,7 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                             DataCell(
                                 Text(data[index]['attributes']['ProductoExtra']
                                     .toString()), onTap: () {
-                             showDialog(
+                              showDialog(
                                   context: context,
                                   builder: (context) {
                                     return AlertDialog(
@@ -576,8 +568,7 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                                               ),
                                             ),
                                             Expanded(
-                                                child:
-                                                    DeliveryStatusSellerInfo(
+                                                child: DeliveryStatusSellerInfo(
                                               id: data[index]['id'].toString(),
                                             ))
                                           ],
@@ -610,8 +601,7 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                                               ),
                                             ),
                                             Expanded(
-                                                child:
-                                                    DeliveryStatusSellerInfo(
+                                                child: DeliveryStatusSellerInfo(
                                               id: data[index]['id'].toString(),
                                             ))
                                           ],
@@ -623,7 +613,7 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                             DataCell(
                                 Text(data[index]['attributes']['Comentario']
                                     .toString()), onTap: () {
-                                  showDialog(
+                              showDialog(
                                   context: context,
                                   builder: (context) {
                                     return AlertDialog(
@@ -644,8 +634,7 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                                               ),
                                             ),
                                             Expanded(
-                                                child:
-                                                    DeliveryStatusSellerInfo(
+                                                child: DeliveryStatusSellerInfo(
                                               id: data[index]['id'].toString(),
                                             ))
                                           ],
@@ -656,14 +645,13 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                             }),
                             DataCell(
                                 Text(
-                                       style : TextStyle(
-                                        color: GetColor( data[index]['attributes']['Status']
-                                    .toString())!),
-                                  
-                                  data[index]['attributes']['Status']
-                                    .toString()), onTap: () {
-
-                               showDialog(
+                                    style: TextStyle(
+                                        color: GetColor(data[index]
+                                                ['attributes']['Status']
+                                            .toString())!),
+                                    data[index]['attributes']['Status']
+                                        .toString()), onTap: () {
+                              showDialog(
                                   context: context,
                                   builder: (context) {
                                     return AlertDialog(
@@ -684,8 +672,7 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                                               ),
                                             ),
                                             Expanded(
-                                                child:
-                                                    DeliveryStatusSellerInfo(
+                                                child: DeliveryStatusSellerInfo(
                                               id: data[index]['id'].toString(),
                                             ))
                                           ],
@@ -697,7 +684,7 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                             DataCell(
                                 Text(data[index]['attributes']['Estado_Interno']
                                     .toString()), onTap: () {
-                                     showDialog(
+                              showDialog(
                                   context: context,
                                   builder: (context) {
                                     return AlertDialog(
@@ -718,8 +705,7 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                                               ),
                                             ),
                                             Expanded(
-                                                child:
-                                                    DeliveryStatusSellerInfo(
+                                                child: DeliveryStatusSellerInfo(
                                               id: data[index]['id'].toString(),
                                             ))
                                           ],
@@ -732,7 +718,7 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                                 Text(data[index]['attributes']
                                         ['Estado_Logistico']
                                     .toString()), onTap: () {
-                                 showDialog(
+                              showDialog(
                                   context: context,
                                   builder: (context) {
                                     return AlertDialog(
@@ -753,8 +739,7 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                                               ),
                                             ),
                                             Expanded(
-                                                child:
-                                                    DeliveryStatusSellerInfo(
+                                                child: DeliveryStatusSellerInfo(
                                               id: data[index]['id'].toString(),
                                             ))
                                           ],
@@ -767,7 +752,7 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                                 Text(data[index]['attributes']
                                         ['Estado_Devolucion']
                                     .toString()), onTap: () {
-                                   showDialog(
+                              showDialog(
                                   context: context,
                                   builder: (context) {
                                     return AlertDialog(
@@ -788,8 +773,7 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                                               ),
                                             ),
                                             Expanded(
-                                                child:
-                                                    DeliveryStatusSellerInfo(
+                                                child: DeliveryStatusSellerInfo(
                                               id: data[index]['id'].toString(),
                                             ))
                                           ],
@@ -835,8 +819,7 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                                               ),
                                             ),
                                             Expanded(
-                                                child:
-                                                    DeliveryStatusSellerInfo(
+                                                child: DeliveryStatusSellerInfo(
                                               id: data[index]['id'].toString(),
                                             ))
                                           ],
@@ -866,7 +849,7 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                                             : ""
                                         : ""
                                     : ""), onTap: () {
-                                  showDialog(
+                              showDialog(
                                   context: context,
                                   builder: (context) {
                                     return AlertDialog(
@@ -887,8 +870,7 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                                               ),
                                             ),
                                             Expanded(
-                                                child:
-                                                    DeliveryStatusSellerInfo(
+                                                child: DeliveryStatusSellerInfo(
                                               id: data[index]['id'].toString(),
                                             ))
                                           ],
@@ -900,7 +882,7 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                             DataCell(
                                 Text(data[index]['attributes']['Marca_T_I']
                                     .toString()), onTap: () {
-                                     showDialog(
+                              showDialog(
                                   context: context,
                                   builder: (context) {
                                     return AlertDialog(
@@ -921,8 +903,7 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                                               ),
                                             ),
                                             Expanded(
-                                                child:
-                                                    DeliveryStatusSellerInfo(
+                                                child: DeliveryStatusSellerInfo(
                                               id: data[index]['id'].toString(),
                                             ))
                                           ],
@@ -1058,7 +1039,6 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
     );
   }
 
-
   sortFunc(name) {
     if (sort) {
       setState(() {
@@ -1077,14 +1057,14 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
     }
   }
 
-
-
-
-
-
   Color? GetColor(state) {
     int color = 0xFF000000;
-    
+//     Entregado= verde
+// No entregado=Rojo
+// Novedad=Amarillo
+// En ruta = Azul
+// Reagendado=Rosado
+// Pedido Programado Sin color
     switch (state) {
       case "ENTREGADO":
         color = 0xFF33FF6D;
@@ -1093,7 +1073,7 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
         color = 0xFFD6DC27;
         break;
       case "NO ENTREGADO":
-        color = 0xFFE61414;
+        color = 0xFFFF3333;
         break;
       case "REAGENDADO":
         color = 0xFFFA37BF;
@@ -1105,7 +1085,8 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
         color = 0xFF4B4C4B;
         break;
 
-      default:color=0xFF000000;
+      default:
+        color = 0xFF000000;
     }
 
     // if (state == "ENTREGADO") {
@@ -1126,9 +1107,4 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
 
     return Color(color);
   }
-
-
-
-
-
 }
