@@ -221,7 +221,7 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                       },
                     ),
                     DataColumn2(
-                      label: Text('Status'),
+                      label: Text('Statuse'),
                       size: ColumnSize.M,
                       onSort: (columnIndex, ascending) {
                         sortFunc("Status");
@@ -308,7 +308,11 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                                   });
                             }),
                             DataCell(
-                                Text(
+                              
+                                Text(  style : TextStyle(
+                                        color: GetColor( data[index]['attributes']['Status']
+                                    .toString())!),
+                                  
                                     '${data[index]['attributes']['Name_Comercial'].toString()}-${data[index]['attributes']['NumeroOrden'].toString()}'),
                                 onTap: () {
                               showDialog(
@@ -651,8 +655,14 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                                   });
                             }),
                             DataCell(
-                                Text(data[index]['attributes']['Status']
+                                Text(
+                                       style : TextStyle(
+                                        color: GetColor( data[index]['attributes']['Status']
+                                    .toString())!),
+                                  
+                                  data[index]['attributes']['Status']
                                     .toString()), onTap: () {
+
                                showDialog(
                                   context: context,
                                   builder: (context) {
@@ -1048,6 +1058,7 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
     );
   }
 
+
   sortFunc(name) {
     if (sort) {
       setState(() {
@@ -1065,4 +1076,59 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
           .compareTo(b['attributes'][name].toString()));
     }
   }
+
+
+
+
+
+
+  Color? GetColor(state) {
+    int color = 0xFF000000;
+    
+    switch (state) {
+      case "ENTREGADO":
+        color = 0xFF33FF6D;
+        break;
+      case "NOVEDAD":
+        color = 0xFFD6DC27;
+        break;
+      case "NO ENTREGADO":
+        color = 0xFFE61414;
+        break;
+      case "REAGENDADO":
+        color = 0xFFFA37BF;
+        break;
+      case "EN RUTA":
+        color = 0xFF3341FF;
+        break;
+      case "EN OFICINA":
+        color = 0xFF4B4C4B;
+        break;
+
+      default:color=0xFF000000;
+    }
+
+    // if (state == "ENTREGADO") {
+    //   return Color(0xFF33FF6D);
+    // } else if (state == "NOVEDAD") {
+    //   return Color(0xFF3366FF);
+    // } else if (state == "NO ENTREGADO") {
+    //   return Color(0xFFE61414);
+    // } else if (state == "REAGENDADO") {
+    //   return Color(0xFFD6FA37);
+    // } else if (state == "EN RUTA") {
+    //   return Color(0xFF4733FF);
+    // } else if (state == "EN OFICINA") {
+    //   return Color(0xFF63615F);
+    // } else {
+    //   return Color(0xFFFFFFF);
+    // }
+
+    return Color(color);
+  }
+
+
+
+
+
 }
