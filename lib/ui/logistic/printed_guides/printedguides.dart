@@ -592,7 +592,7 @@ class _PrintedGuidesState extends State<PrintedGuides> {
                     )));
 
                     doc.addPage(pw.Page(
-                      pageFormat: PdfPageFormat.a4,
+                      pageFormat: PdfPageFormat(1000, 950),
                       build: (pw.Context context) {
                         // Definir un contenedor que ocupe toda la página
                         return pw.Row(
@@ -610,11 +610,11 @@ class _PrintedGuidesState extends State<PrintedGuides> {
                     onLayout: (PdfPageFormat format) async => await doc.save());
                 setState(() {});
               },
-              child: Text(
+              child: const Text(
                 "IMPRIMIR",
                 style: TextStyle(fontWeight: FontWeight.bold),
               )),
-          SizedBox(
+        const  SizedBox(
             width: 20,
           ),
           ElevatedButton(
@@ -636,7 +636,7 @@ class _PrintedGuidesState extends State<PrintedGuides> {
 
                 await loadData();
               },
-              child: Text(
+              child: const Text(
                 "NO DESEA",
                 style: TextStyle(fontWeight: FontWeight.bold),
               )),
@@ -662,7 +662,7 @@ class _PrintedGuidesState extends State<PrintedGuides> {
 
                 await loadData();
               },
-              child: Text(
+              child: const Text(
                 "MARCAR ENVIADO",
                 style: TextStyle(fontWeight: FontWeight.bold),
               )),

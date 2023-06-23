@@ -11,7 +11,6 @@ import 'package:frontend/ui/sellers/order_entry/order_info.dart';
 import 'package:frontend/ui/widgets/loading.dart';
 import 'package:frontend/ui/widgets/routes/routes.dart';
 import 'package:frontend/ui/widgets/sellers/add_order.dart';
-import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 import 'package:frontend/main.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -1253,37 +1252,44 @@ class _OrderEntryState extends State<OrderEntry> {
                 ),
                 GestureDetector(
                   onPanUpdate: (details) {
-                    if (details.delta.dx > 0) {
-                     Navigator.pop(context);
-                                info(context, index + 1);
-                    } else if (details.delta.dx < 0) {
-                         Navigator.pop(context);
-                                info(context, index - 1);
+                    if (details.delta.dx < 0) {
+                      Navigator.pop(context);
+                      print('indice actual' + index.toString());
+                      print('pagesize' + pageSize.toString());
+
+                      if (index + 1 < pageSize) {
+                        info(context, index + 1);
+                      }
+                    } else if (details.delta.dx > 0) {
+                      Navigator.pop(context);
+                      if (index - 1 != 0) {
+                        info(context, index - 1);
+                      }
+
                       print('Deslizamiento hacia la izquierda');
                     }
                   },
-                  child:  Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height,
-                  child: Column(
-                    children: [
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
-                          child: Icon(Icons.close),
+                  child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
                         ),
-                      ),
-                      Expanded(
-                          child: OrderInfo(
-                        id: data[index]['id'].toString(),
-                      )),
-                    
-                    ],
+                        Expanded(
+                            child: OrderInfo(
+                          id: data[index]['id'].toString(),
+                        )),
+                      ],
+                    ),
                   ),
-                ),
                 ),
                 context),
           );
