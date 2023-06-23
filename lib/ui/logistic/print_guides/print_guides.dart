@@ -476,18 +476,21 @@ class _PrintGuidesState extends State<PrintGuides> {
                       transport: optionsCheckBox[i]['transport'],
                     )));
 
-                    doc.addPage(pw.Page(
-                      margin: pw.EdgeInsets.all(1),
-                      orientation: pw.PageOrientation
-                          .landscape, // Establecer la orientación en landscape
-                      build: (pw.Context context) {
-                        return pw.Container(
-                          margin: pw.EdgeInsets.all(0),
-                          child: pw.Image(pw.MemoryImage(capturedImage),
-                              fit: pw.BoxFit.contain),
-                        );
-                      },
-                    ),);
+                    doc.addPage(
+                      pw.Page(
+                        margin: pw.EdgeInsets.all(1),
+                        orientation: pw.PageOrientation
+                            .landscape, // Establecer la orientación en landscape
+                        build: (pw.Context context) {
+                          return pw.Row(
+                            children: [
+                              pw.Image(pw.MemoryImage(capturedImage),
+                                  fit: pw.BoxFit.contain)
+                            ],
+                          );
+                        },
+                      ),
+                    );
                     var response = await Connections()
                         .updateOrderLogisticStatus(
                             "IMPRESO", optionsCheckBox[i]['id'].toString());

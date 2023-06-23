@@ -11,11 +11,14 @@ import 'package:flutter_barcode_listener/flutter_barcode_listener.dart';
 import 'package:frontend/ui/logistic/printed_guides/printedguides_info.dart';
 import 'package:frontend/ui/widgets/loading.dart';
 import 'package:frontend/ui/widgets/logistic/scanner_printed.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:screenshot/screenshot.dart';
+import 'package:universal_html/html.dart' as html;
+import 'dart:js' as js;
 
 class PrintedGuides extends StatefulWidget {
   const PrintedGuides({super.key});
@@ -88,6 +91,9 @@ class _PrintedGuidesState extends State<PrintedGuides> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(onPressed: () {
+        enviarMensajeWhatsApp('593992107483', '¡Hola! ¿Cómo estás?');
+      }),
       backgroundColor: Colors.white,
       body: Container(
         width: double.infinity,
@@ -106,7 +112,7 @@ class _PrintedGuidesState extends State<PrintedGuides> {
                   },
                   child: Container(
                     color: Colors.transparent,
-                    child: Row(
+                    child: const Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
@@ -586,36 +592,17 @@ class _PrintedGuidesState extends State<PrintedGuides> {
                     )));
 
                     doc.addPage(pw.Page(
-                      margin: pw.EdgeInsets.all(1),
-                      orientation: pw.PageOrientation
-                          .landscape, // Establecer la orientación en landscape
+                      pageFormat: PdfPageFormat.a4,
                       build: (pw.Context context) {
-                        return pw.Container(
-                          margin: pw.EdgeInsets.all(0),
-                          child: pw.Image(pw.MemoryImage(capturedImage),
-                              fit: pw.BoxFit.contain),
+                        // Definir un contenedor que ocupe toda la página
+                        return pw.Row(
+                          children: [
+                            pw.Image(pw.MemoryImage(capturedImage),
+                                fit: pw.BoxFit.contain)
+                          ],
                         );
                       },
-                    )
-
-                        // pw.Page(
-                        //   pageFormat: PdfPageFormat.a4,
-                        //   orientation: pw.PageOrientation.portrait,
-                        //   build: (pw.Context context) {
-                        //     return pw.Row(
-                        //         mainAxisAlignment: pw.MainAxisAlignment.center,
-                        //         crossAxisAlignment: pw.CrossAxisAlignment.center,
-                        //         children: [
-                        //           pw.Container(
-                        //             transform: Matrix4.rotationZ(-3.14 / 2),
-                        //             height: 150,
-                        //             child: pw.Image(pw.MemoryImage(capturedImage),
-                        //                 fit: pw.BoxFit.contain),
-                        //             width: 1200,
-                        //           ),
-                        //         ]); // Center
-                        //   })
-                        );
+                    ));
                   }
                 }
                 Navigator.pop(context);
@@ -815,4 +802,10 @@ class _PrintedGuidesState extends State<PrintedGuides> {
     }
     // print("tamanio a imprimir"+optionsCheckBox.length.toString());
   }
+}
+
+void enviarMensajeWhatsApp(String numeroTelefono, String mensaje) {
+  final url =
+      'https://wa.me/$numeroTelefono?text=${Uri.encodeComponent(mensaje)}';
+  js.context.callMethod('open', [url]);
 }
