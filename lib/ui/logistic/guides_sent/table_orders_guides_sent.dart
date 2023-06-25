@@ -64,12 +64,10 @@ class _TableOrdersGuidesSentState extends State<TableOrdersGuidesSent> {
   }
 
   loadData() async {
-  
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getLoadingModal(context, false);
     });
-      var response = [];
+    var response = [];
     List transportatorList = [];
 
     setState(() {
@@ -140,29 +138,45 @@ class _TableOrdersGuidesSentState extends State<TableOrdersGuidesSent> {
         width: double.infinity,
         child: Column(
           children: [
-                         SizedBox(height: 10,),
-             Align(
+            SizedBox(
+              height: 10,
+            ),
+            Align(
               alignment: Alignment.centerRight,
-               child: GestureDetector(
-                      onTap: ()async{
-                       await loadData();
-                      },
-                      child: Container(
-                        color: Colors.transparent,
-                        
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                          Icon(Icons.replay_outlined, color: Colors.green,),
-                          SizedBox(width: 10,),
-                          Text("Recargar Información", style: TextStyle(decoration: TextDecoration.underline, color: Colors.green),),                          SizedBox(width: 10,),
-
-                        ],),
+              child: GestureDetector(
+                onTap: () async {
+                  await loadData();
+                },
+                child: Container(
+                  color: Colors.transparent,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Icon(
+                        Icons.replay_outlined,
+                        color: Colors.green,
                       ),
-                    ),
-             ),
-                  SizedBox(height: 10,),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Text(
+                        "Recargar Información",
+                        style: TextStyle(
+                            decoration: TextDecoration.underline,
+                            color: Colors.green),
+                      ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 10,
+            ),
             Container(
               width: double.infinity,
               child: Row(
@@ -190,9 +204,12 @@ class _TableOrdersGuidesSentState extends State<TableOrdersGuidesSent> {
             ),
             Expanded(
               child: DataTable2(
-                  headingTextStyle: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-                  dataTextStyle:
-                      TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black),
+                  headingTextStyle: TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.black),
+                  dataTextStyle: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black),
                   columnSpacing: 12,
                   horizontalMargin: 12,
                   minWidth: 2500,
@@ -513,27 +530,16 @@ class _TableOrdersGuidesSentState extends State<TableOrdersGuidesSent> {
                     )));
 
                     doc.addPage(pw.Page(
-                        pageFormat: PdfPageFormat.a4,
-                        orientation: pw.PageOrientation.portrait,
-                        build: (pw.Context context) {
-                          return pw.Column(
-                              mainAxisAlignment: pw.MainAxisAlignment.center,
-                              crossAxisAlignment: pw.CrossAxisAlignment.center,
-                              children: [
-                                pw.Container(
-                                  width: double.infinity,
-                                  child: pw.Image(pw.MemoryImage(capturedImage),
-                                      fit: pw.BoxFit.contain),
-                                  height: 1200,
-                                ),
-                                pw.Container(
-                                  width: double.infinity,
-                                  child: pw.Image(pw.MemoryImage(capturedImage),
-                                      fit: pw.BoxFit.contain),
-                                  height: 1200,
-                                )
-                              ]); // Center
-                        }));
+                      pageFormat: PdfPageFormat(21.0 * cm, 21.0 * cm),
+                      build: (pw.Context context) {
+                        return pw.Row(
+                          children: [
+                            pw.Image(pw.MemoryImage(capturedImage),
+                                fit: pw.BoxFit.contain)
+                          ],
+                        );
+                      },
+                    ));
                   }
                 }
                 Navigator.pop(context);

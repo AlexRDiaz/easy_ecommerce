@@ -320,7 +320,7 @@ class _TransportDeliveryHistoryDetailsState
                                                           "${data['attributes']['Name_Comercial']}-${data['attributes']['NumeroOrden']}",
                                                       numberCliente:
                                                           "${data['attributes']['TelefonoShipping']}",
-                                                          id: widget.id,
+                                                      id: widget.id,
                                                     );
                                                   });
                                               await loadData();
@@ -393,43 +393,20 @@ class _TransportDeliveryHistoryDetailsState
                                               )));
 
                                               doc.addPage(pw.Page(
-                                                  pageFormat: PdfPageFormat.a4,
-                                                  orientation: pw
-                                                      .PageOrientation.portrait,
-                                                  build: (pw.Context context) {
-                                                    return pw.Column(
-                                                        mainAxisAlignment: pw
-                                                            .MainAxisAlignment
-                                                            .center,
-                                                        crossAxisAlignment: pw
-                                                            .CrossAxisAlignment
-                                                            .center,
-                                                        children: [
-                                                          pw.Container(
-                                                            width:
-                                                                double.infinity,
-                                                            child: pw.Image(
-                                                                pw.MemoryImage(
-                                                                    capturedImage),
-                                                                fit: pw.BoxFit
-                                                                    .contain),
-                                                            height: 1200,
-                                                          ),
-                                                          pw.Container(
-                                                            width:
-                                                                double.infinity,
-                                                            child: pw.Image(
-                                                                pw.MemoryImage(
-                                                                    capturedImage),
-                                                                fit: pw.BoxFit
-                                                                    .contain),
-                                                            height: 1200,
-                                                          )
-                                                        ]); // Center
-                                                  }));
-                                              // var response = await Connections()
-                                              //     .updateOrderLogisticStatus(
-                                              //         "IMPRESO", Get.parameters['id'].toString());
+                                                pageFormat: PdfPageFormat(
+                                                    21.0 * cm, 21.0 * cm),
+                                                build: (pw.Context context) {
+                                                  return pw.Row(
+                                                    children: [
+                                                      pw.Image(
+                                                          pw.MemoryImage(
+                                                              capturedImage),
+                                                          fit:
+                                                              pw.BoxFit.contain)
+                                                    ],
+                                                  );
+                                                },
+                                              ));
                                               await Printing.layoutPdf(
                                                   onLayout: (PdfPageFormat
                                                           format) async =>
@@ -671,7 +648,10 @@ class _TransportDeliveryHistoryDetailsState
                                                                   var valorTemporal =
                                                                       0.0;
 
-                                                                  var data = await Connections().updateOrderPendienteStateLogisticUser(widget.id);
+                                                                  var data = await Connections()
+                                                                      .updateOrderPendienteStateLogisticUser(
+                                                                          widget
+                                                                              .id);
 
                                                                   Navigator.pop(
                                                                       context);
@@ -720,7 +700,10 @@ class _TransportDeliveryHistoryDetailsState
                                                                   var valorTemporal =
                                                                       0.0;
 
-                                                                  var data = await Connections().updateOrderPayStateLogisticUser(widget.id);
+                                                                  var data = await Connections()
+                                                                      .updateOrderPayStateLogisticUser(
+                                                                          widget
+                                                                              .id);
 
                                                                   Navigator.pop(
                                                                       context);

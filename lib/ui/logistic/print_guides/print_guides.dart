@@ -477,9 +477,9 @@ class _PrintGuidesState extends State<PrintGuides> {
                     )));
 
                     doc.addPage(pw.Page(
-                      pageFormat: PdfPageFormat(1000, 950),
+                      pageFormat: PdfPageFormat(21.0 * cm, 21.0 * cm,
+                          marginAll: 0.1 * cm),
                       build: (pw.Context context) {
-                        // Definir un contenedor que ocupe toda la página
                         return pw.Row(
                           children: [
                             pw.Image(pw.MemoryImage(capturedImage),
