@@ -1985,9 +1985,11 @@ class Connections {
   }
 
   getOrdersForSellerState(code) async {
+    print("fecha de consulta: " +
+        sharedPrefs!.getString("dateOperatorState").toString());
     var request = await http.get(
       Uri.parse(
-          "$server/api/pedidos-shopifies?populate=transportadora&populate=users&populate=users.vendedores&populate=pedido_fecha&populate=sub_ruta&populate=operadore&populate=operadore.user&filters[\$and][0][IdComercial][\$eq]=${sharedPrefs!.getString("idComercialMasterSeller").toString()}&filters[\$and][1][NumeroOrden][\$contains]=$code&filters[\$or][2][Status][\$ne]=PEDIDO PROGRAMADO&filters[\$and][3][Fecha_Entrega][\$eq]=${sharedPrefs!.getString("dateOperatorState")}&pagination[limit]=-1"),
+          "$server/api/pedidos-shopifies?populate=transportadora&populate=users&populate=users.vendedores&populate=pedido_fecha&populate=sub_ruta&populate=operadore&populate=operadore.user&filters[\$and][0][IdComercial][\$eq]=12/5/2023&filters[\$and][1][NumeroOrden][\$contains]=$code&filters[\$or][2][Status][\$ne]=PEDIDO PROGRAMADO&filters[\$and][3][Fecha_Entrega][\$eq]=${sharedPrefs!.getString("dateOperatorState")}&pagination[limit]=-1"),
       headers: {'Content-Type': 'application/json'},
     );
     var response = await request.body;
@@ -1996,7 +1998,7 @@ class Connections {
   }
 
   getOrdersForSellerStateSearch(
-      code, arrayFiltersOrCont, arrayFiltersAndEq) async {
+      code, arrayFiltersOrCont, arrayFiltersAndEq, arraysFiltersRanges) async {
     String url =
         "$server/api/pedidos-shopifies?populate=transportadora&populate=users&populate=users.vendedores&populate=pedido_fecha&populate=sub_ruta&populate=operadore&populate=operadore.user&filters[Status][\$ne]=PEDIDO PROGRAMADO&filters[IdComercial][\$eq]=${sharedPrefs!.getString("idComercialMasterSeller").toString()}";
 
@@ -2021,10 +2023,21 @@ class Connections {
       numberFilter++;
     }
 
+    var filterRanges = '';
+    for (var filter in arraysFiltersRanges) {
+      // print("filter:" + filter['filter'].toString());
+      // print("value:" + filter['value'].toString());
+
+      filterRanges +=
+          "&filters[\$and][$numberFilter][${filter['filter']}][${filter['operator']}]=${filter['value']}";
+
+      numberFilter++;
+    }
+
     var configPagination = "&pagination[limit]=-1";
-    url += filtersOrCont + filtersAndEq + configPagination;
+    url += filtersOrCont + filtersAndEq + filterRanges + configPagination;
     // "$server/api/pedidos-shopifies?populate=transportadora&populate=users&populate=users.vendedores&populate=pedido_fecha&populate=sub_ruta&populate=operadore&populate=operadore.user&filters[Status][\$ne]=PEDIDO PROGRAMADO&filters[IdComercial][\$eq]=${sharedPrefs!.getString("idComercialMasterSeller").toString()}&filters[\$or][0][NumeroOrden][\$contains]=$code&filters[\$or][1][Fecha_Entrega][\$contains]=$code&filters[\$or][2][CiudadShipping][\$contains]=$code&filters[\$or][3][NombreShipping][\$contains]=$code&filters[\$or][4][DireccionShipping][\$contains]=$code&filters[\$or][5][TelefonoShipping][\$contains]=$code&filters[\$or][6][Cantidad_Total][\$contains]=$code&filters[\$or][7][ProductoP][\$contains]=$code&filters[\$or][8][ProductoExtra][\$contains]=$code&filters[\$or][9][PrecioTotal][\$contains]=$code&filters[\$or][10][Comentario][\$contains]=$code&filters[\$or][11][Status][\$contains]=$code&filters[\$or][12][Estado_Interno][\$contains]=$code&filters[\$or][13][Estado_Logistico][\$contains]=$code&filters[\$or][14][Estado_Devolucion][\$contains]=$code&filters[\$or][15][Marca_T_I][\$contains]=$code&pagination[limit]=-1"
-    print(url);
+    print('se ha actualizado ' + url);
     var request = await http.get(
       Uri.parse(url),
       headers: {'Content-Type': 'application/json'},

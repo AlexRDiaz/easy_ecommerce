@@ -145,27 +145,13 @@ class _OrderEntryState extends State<OrderEntry> {
         pageSize,
         search,
         [
-          {
-            'filter': 'CiudadShipping',
-          },
-          {
-            'filter': 'NombreShipping',
-          },
-          {
-            'filter': 'DireccionShipping',
-          },
-          {
-            'filter': 'TelefonoShipping',
-          },
-          {
-            'filter': 'ProductoP',
-          },
-          {
-            'filter': 'ProductoExtra',
-          },
-          {
-            'filter': 'PrecioTotal',
-          },
+          {'filter': 'CiudadShipping'},
+          {'filter': 'NombreShipping'},
+          {'filter': 'DireccionShipping'},
+          {'filter': 'TelefonoShipping'},
+          {'filter': 'ProductoP'},
+          {'filter': 'ProductoExtra'},
+          {'filter': 'PrecioTotal'},
         ],
         filtersAndEq);
     data = response[0]['data'];
@@ -174,15 +160,8 @@ class _OrderEntryState extends State<OrderEntry> {
       pageCount = response[0]['meta']['pagination']['pageCount'];
       total = response[0]['meta']['pagination']['total'];
     });
-    if (confirmado != '' || logistico != '') {
-      // counterChecks = 0;
-      //  optionsCheckBox = [];
 
-      // for (var i = 0; i < total; i++) {
-      //   optionsCheckBox.add({"check": false, "id": "", "NumeroOrden": ""});
-      // }
-    }
-    Future.delayed(Duration(milliseconds: 500), () {
+    await Future.delayed(Duration(milliseconds: 500), () {
       Navigator.pop(context);
     });
     setState(() {});
@@ -724,11 +703,7 @@ class _OrderEntryState extends State<OrderEntry> {
                                     }
                                   }
                                 }
-                                // search = "";
-                                // confirmado = value!;
-                                // logistico = "";
-                                print("se cambio pagina de " +
-                                    currentPage.toString());
+
                                 currentPage = 1;
                                 print("a " + currentPage.toString());
                               });
@@ -757,51 +732,52 @@ class _OrderEntryState extends State<OrderEntry> {
                             value: logisticoVal,
                             elevation: 16,
                             onChanged: (String? value) {
-                              print(
-                                  "valor actual logistico" + value.toString());
+                              AddFilterAndEq(value, 'Estado_Logistico');
+                              // print(
+                              //     "valor actual logistico" + value.toString());
 
-                              setState(() {
-                                logistico = value!;
+                              // setState(() {
+                              //   logistico = value!;
 
-                                if (value != 'TODO') {
-                                  bool contains = false;
+                              //   if (value != 'TODO') {
+                              //     bool contains = false;
 
-                                  for (var filter in filtersAndEq) {
-                                    if (filter['filter'] ==
-                                        'Estado_Logistico') {
-                                      contains = true;
-                                      break;
-                                    }
-                                  }
-                                  if (contains == false) {
-                                    filtersAndEq.add({
-                                      'filter': 'Estado_Logistico',
-                                      'value': value
-                                    });
-                                  } else {
-                                    for (var filter in filtersAndEq) {
-                                      if (filter['filter'] ==
-                                          'Estado_Logistico') {
-                                        filter['value'] = value;
-                                        break;
-                                      }
-                                    }
-                                  }
-                                } else {
-                                  for (var filter in filtersAndEq) {
-                                    if (filter['filter'] ==
-                                        'Estado_Logistico') {
-                                      filtersAndEq.remove(filter);
-                                      break;
-                                    }
-                                  }
-                                }
-                                // search = "";
-                                // logistico = value!;
-                                // confirmado = "";
-                                // currentPage = 1;
-                              });
-                              paginateData();
+                              //     for (var filter in filtersAndEq) {
+                              //       if (filter['filter'] ==
+                              //           'Estado_Logistico') {
+                              //         contains = true;
+                              //         break;
+                              //       }
+                              //     }
+                              //     if (contains == false) {
+                              //       filtersAndEq.add({
+                              //         'filter': 'Estado_Logistico',
+                              //         'value': value
+                              //       });
+                              //     } else {
+                              //       for (var filter in filtersAndEq) {
+                              //         if (filter['filter'] ==
+                              //             'Estado_Logistico') {
+                              //           filter['value'] = value;
+                              //           break;
+                              //         }
+                              //       }
+                              //     }
+                              //   } else {
+                              //     for (var filter in filtersAndEq) {
+                              //       if (filter['filter'] ==
+                              //           'Estado_Logistico') {
+                              //         filtersAndEq.remove(filter);
+                              //         break;
+                              //       }
+                              //     }
+                              //   }
+                              //   // search = "";
+                              //   // logistico = value!;
+                              //   // confirmado = "";
+                              //   // currentPage = 1;
+                              // });
+                              // paginateData();
                             },
                             items: optEstadoLogistico
                                 .map<DropdownMenuItem<String>>((String value) {
@@ -1070,6 +1046,42 @@ class _OrderEntryState extends State<OrderEntry> {
     return res;
   }
 
+  AddFilterAndEq(value, filtro) {
+    setState(() {
+      confirmado = value!;
+      if (value != 'TODO') {
+        bool contains = false;
+
+        for (var filter in filtersAndEq) {
+          if (filter['filter'] == filtro) {
+            contains = true;
+            break;
+          }
+        }
+        if (contains == false) {
+          filtersAndEq.add({'filter': filtro, 'value': value});
+        } else {
+          for (var filter in filtersAndEq) {
+            if (filter['filter'] == filtro) {
+              filter['value'] = value;
+              break;
+            }
+          }
+        }
+      } else {
+        for (var filter in filtersAndEq) {
+          if (filter['filter'] == filtro) {
+            filtersAndEq.remove(filter);
+            break;
+          }
+        }
+      }
+
+      currentPage = 1;
+    });
+    paginateData();
+  }
+
   Future<dynamic> Calendar(String id) {
     return showDialog(
         context: context,
@@ -1081,16 +1093,6 @@ class _OrderEntryState extends State<OrderEntry> {
               child: Column(
                 children: [
                   Expanded(child: CalendarModal(id: id)),
-                  // Positioned(
-                  //   top: 10, // Ajusta la posición vertical del botón
-                  //   right: 10,
-                  //   child: GestureDetector(
-                  //     onTap: () {
-                  //       Navigator.pop(context);
-                  //     },
-                  //     child: Icon(Icons.close),
-                  //   ),
-                  // ),
                 ],
               ),
             ),
@@ -1098,90 +1100,30 @@ class _OrderEntryState extends State<OrderEntry> {
         });
   }
 
-  // Future<dynamic> info(BuildContext context, int index) {
-  //   if (index - 1 >= 0) {
-  //     buttonLeft = true;
-  //   } else {
-  //     buttonLeft = false;
-  //   }
-  //   if (index + 1 < data.length) {
-  //     buttonRigth = true;
-  //   } else {
-  //     buttonRigth = false;
-  //   }
-  //   return showDialog(
-  //       context: context,
-  //       builder: (context) {
-  //         return AlertDialog(
-  //           content: Container(
-  //             width: MediaQuery.of(context).size.width,
-  //             height: MediaQuery.of(context).size.height,
-  //             child: Stack(
-  //               children: [
-  //                 Expanded(
-  //                     child: OrderInfo(
-  //                   id: data[index]['id'].toString(),
-  //                 )),
-  //                 Visibility(
-  //                   visible: buttonLeft,
-  //                   child: Positioned(
-  //                     bottom: 220, // Ajusta la posición vertical del botón
-  //                     left: 2,
-  //                     child: IconButton(
-  //                       iconSize: 60,
-  //                       onPressed: () => {
-  //                         // if (index - 1 > 1)
-  //                         //   {
-  //                         Navigator.pop(context),
-  //                         info(context, index - 1),
-  //                         //     buttonLeft = true
-  //                         //   }
-  //                         // else
-  //                         //   {
-  //                         //     setState(() {
-  //                         //       buttonLeft = false;
-  //                         //     })
-  //                         //   }
-  //                       },
-  //                       icon: Icon(Icons.arrow_circle_left),
-  //                     ),
-  //                   ),
-  //                 ),
-  //                 Visibility(
-  //                   visible: buttonRigth,
-  //                   child: Positioned(
-  //                     bottom: 220, // Ajusta la posición vertical del botón
-  //                     right: 2,
-  //                     child: IconButton(
-  //                       iconSize: 60,
-  //                       onPressed: () => {
-  //                         Navigator.pop(context),
-  //                         // index + 1 <= total
-  //                         info(context, index + 1)
-  //                         //     : setState(() {
-  //                         //         buttonRigth = false;
-  //                         //       })
-  //                       },
-  //                       icon: Icon(Icons.arrow_circle_right),
-  //                     ),
-  //                   ),
-  //                 ),
-  //                 Positioned(
-  //                   top: 10, // Ajusta la posición vertical del botón
-  //                   right: 10,
-  //                   child: GestureDetector(
-  //                     onTap: () {
-  //                       Navigator.pop(context);
-  //                     },
-  //                     child: Icon(Icons.close),
-  //                   ),
-  //                 ),
-  //               ],
-  //             ),
-  //           ),
-  //         );
-  //       });
-  // }
+  Future<void> sumarNumero(BuildContext context, int numero) async {
+    print('Sumando el número: $numero');
+    await paginateData();
+    // await Future.delayed(Duration(milliseconds: 1000), () {
+    Navigator.pop(context);
+
+    //});
+    info(context, numero);
+  }
+
+  NextInfo(index) {
+    Navigator.pop(context);
+
+    if (index + 1 < pageSize) {
+      info(context, 1);
+    }
+  }
+
+  PreviusInfo(index) {
+    Navigator.pop(context);
+    if (index - 1 != 0) {
+      info(context, index - 1);
+    }
+  }
 
   Future<dynamic> info(BuildContext context, int index) {
     if (index - 1 >= 0) {
@@ -1216,6 +1158,8 @@ class _OrderEntryState extends State<OrderEntry> {
                       Expanded(
                           child: OrderInfo(
                         id: data[index]['id'].toString(),
+                        index: index,
+                        sumarNumero: sumarNumero,
                       )),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -1224,10 +1168,7 @@ class _OrderEntryState extends State<OrderEntry> {
                             visible: buttonLeft,
                             child: IconButton(
                               iconSize: 60,
-                              onPressed: () => {
-                                Navigator.pop(context),
-                                info(context, index - 1),
-                              },
+                              onPressed: () => {PreviusInfo(index)},
                               icon: Icon(Icons.arrow_circle_left),
                             ),
                           ),
@@ -1238,10 +1179,7 @@ class _OrderEntryState extends State<OrderEntry> {
                             visible: buttonRigth,
                             child: IconButton(
                               iconSize: 60,
-                              onPressed: () => {
-                                Navigator.pop(context),
-                                info(context, index + 1)
-                              },
+                              onPressed: () => {NextInfo(index)},
                               icon: Icon(Icons.arrow_circle_right),
                             ),
                           ),
@@ -1253,20 +1191,9 @@ class _OrderEntryState extends State<OrderEntry> {
                 GestureDetector(
                   onPanUpdate: (details) {
                     if (details.delta.dx < 0) {
-                      Navigator.pop(context);
-                      print('indice actual' + index.toString());
-                      print('pagesize' + pageSize.toString());
-
-                      if (index + 1 < pageSize) {
-                        info(context, index + 1);
-                      }
+                      NextInfo(index);
                     } else if (details.delta.dx > 0) {
-                      Navigator.pop(context);
-                      if (index - 1 != 0) {
-                        info(context, index - 1);
-                      }
-
-                      print('Deslizamiento hacia la izquierda');
+                      PreviusInfo(index);
                     }
                   },
                   child: Container(
@@ -1285,8 +1212,9 @@ class _OrderEntryState extends State<OrderEntry> {
                         ),
                         Expanded(
                             child: OrderInfo(
-                          id: data[index]['id'].toString(),
-                        )),
+                                id: data[index]['id'].toString(),
+                                index: index,
+                                sumarNumero: sumarNumero)),
                       ],
                     ),
                   ),
@@ -1294,21 +1222,6 @@ class _OrderEntryState extends State<OrderEntry> {
                 context),
           );
         });
-  }
-
-  Container _buttons() {
-    return Container(
-      margin: EdgeInsets.all(5.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const SizedBox(
-            width: 20,
-          ),
-        ],
-      ),
-    );
   }
 
   bool verificarIndice(int index) {
@@ -1367,30 +1280,16 @@ class _OrderEntryState extends State<OrderEntry> {
               pageSize,
               search,
               [
-                {
-                  'filter': 'CiudadShipping',
-                },
-                {
-                  'filter': 'NombreShipping',
-                },
-                {
-                  'filter': 'DireccionShipping',
-                },
-                {
-                  'filter': 'TelefonoShipping',
-                },
-                {
-                  'filter': 'ProductoP',
-                },
-                {
-                  'filter': 'ProductoExtra',
-                },
-                {
-                  'filter': 'PrecioTotal',
-                },
+                {'filter': 'CiudadShipping'},
+                {'filter': 'NombreShipping'},
+                {'filter': 'DireccionShipping'},
+                {'filter': 'TelefonoShipping'},
+                {'filter': 'ProductoP'},
+                {'filter': 'ProductoExtra'},
+                {'filter': 'PrecioTotal'},
               ],
               filtersAndEq);
-          var data2 = respon[0]['data'];
+          //var data2 = respon[0]['data'];
           data = respon[0]['data'];
           setState(() {
             pageCount = respon[0]['meta']['pagination']['pageCount'];
@@ -1402,6 +1301,7 @@ class _OrderEntryState extends State<OrderEntry> {
           Future.delayed(Duration(milliseconds: 500), () {
             Navigator.pop(context);
           });
+
           setState(() {});
         },
         style: TextStyle(fontWeight: FontWeight.bold),
@@ -1428,7 +1328,7 @@ class _OrderEntryState extends State<OrderEntry> {
                   child: Icon(Icons.close))
               : null,
           hintText: text,
-          border: OutlineInputBorder(
+          border: const OutlineInputBorder(
             borderSide: BorderSide(color: Colors.grey),
           ),
           focusColor: Colors.black,
@@ -1437,120 +1337,6 @@ class _OrderEntryState extends State<OrderEntry> {
       ),
     );
   }
-
-  // _modelTextField({text, controller}) {
-  //   return Container(
-  //     width: double.infinity,
-  //     decoration: BoxDecoration(
-  //       borderRadius: BorderRadius.circular(10.0),
-  //       color: Color.fromARGB(255, 245, 244, 244),
-  //     ),
-  //     child: TextField(
-  //       controller: controller,
-  //       onSubmitted: (value) async {
-  //         getLoadingModal(context, false);
-
-  //         setState(() {
-  //           data = dataTemporal;
-  //         });
-  //         if (value.isEmpty) {
-  //           setState(() {
-  //             data = dataTemporal;
-  //           });
-  //         } else {
-  //           var dataTemp = data
-  //               .where((objeto) =>
-  //                   objeto['attributes']['Marca_T_I']
-  //                       .toString()
-  //                       .split(" ")[0]
-  //                       .toString()
-  //                       .toLowerCase()
-  //                       .contains(value.toLowerCase()) ||
-  //                   objeto['attributes']['NumeroOrden']
-  //                       .toString()
-  //                       .toLowerCase()
-  //                       .contains(value.toLowerCase()) ||
-  //                   objeto['attributes']['CiudadShipping']
-  //                       .toString()
-  //                       .toLowerCase()
-  //                       .contains(value.toLowerCase()) ||
-  //                   objeto['attributes']['NombreShipping']
-  //                       .toString()
-  //                       .toLowerCase()
-  //                       .contains(value.toLowerCase()) ||
-  //                   objeto['attributes']['DireccionShipping']
-  //                       .toString()
-  //                       .toLowerCase()
-  //                       .contains(value.toLowerCase()) ||
-  //                   objeto['attributes']['TelefonoShipping']
-  //                       .toString()
-  //                       .toLowerCase()
-  //                       .contains(value.toLowerCase()) ||
-  //                   objeto['attributes']['Cantidad_Total']
-  //                       .toString()
-  //                       .toLowerCase()
-  //                       .contains(value.toLowerCase()) ||
-  //                   objeto['attributes']['ProductoP']
-  //                       .toString()
-  //                       .toLowerCase()
-  //                       .contains(value.toLowerCase()) ||
-  //                   objeto['attributes']['ProductoExtra']
-  //                       .toString()
-  //                       .toLowerCase()
-  //                       .contains(value.toLowerCase()) ||
-  //                   objeto['attributes']['PrecioTotal']
-  //                       .toString()
-  //                       .toLowerCase()
-  //                       .contains(value.toLowerCase()) ||
-  //                   objeto['attributes']['Observacion'].toString().toLowerCase().contains(value.toLowerCase()) ||
-  //                   objeto['attributes']['Status'].toString().toLowerCase().contains(value.toLowerCase()) ||
-  //                   objeto['attributes']['Estado_Interno'].toString().toLowerCase().contains(value.toLowerCase()) ||
-  //                   objeto['attributes']['Fecha_Confirmacion'].toString().toLowerCase().contains(value.toLowerCase()) ||
-  //                   objeto['attributes']['Estado_Logistico'].toString().toLowerCase().contains(value.toLowerCase()))
-  //               .toList();
-  //           setState(() {
-  //             data = dataTemp;
-  //           });
-  //         }
-  //         Navigator.pop(context);
-
-  //         // loadData();
-  //       },
-  //       onChanged: (value) {},
-  //       style: TextStyle(fontWeight: FontWeight.bold),
-  //       decoration: InputDecoration(
-  //         prefixIcon: Icon(Icons.search),
-  //         suffixIcon: _controllers.searchController.text.isNotEmpty
-  //             ? GestureDetector(
-  //                 onTap: () {
-  //                   getLoadingModal(context, false);
-  //                   setState(() {
-  //                     _controllers.searchController.clear();
-  //                   });
-  //                   setState(() {
-  //                     data = dataTemporal;
-  //                   });
-  //                   Navigator.pop(context);
-  //                 },
-  //                 child: Icon(Icons.close))
-  //             : null,
-  //         hintText: text,
-  //         enabledBorder: OutlineInputBorder(
-  //           borderSide:
-  //               BorderSide(width: 1, color: Color.fromRGBO(237, 241, 245, 1.0)),
-  //           borderRadius: BorderRadius.circular(10.0),
-  //         ),
-  //         focusedBorder: OutlineInputBorder(
-  //           borderSide:
-  //               BorderSide(width: 1, color: Color.fromRGBO(237, 241, 245, 1.0)),
-  //           borderRadius: BorderRadius.circular(10.0),
-  //         ),
-  //         focusColor: Colors.black,
-  //         iconColor: Colors.black,
-  //       ),
-  //     ),
-  //   );
-  // }
 
   sortFuncDate(name) {
     if (sort) {

@@ -14,7 +14,14 @@ import 'package:frontend/main.dart';
 
 class OrderInfo extends StatefulWidget {
   final String id;
-  const OrderInfo({super.key, required this.id});
+  final int index;
+  final Function(BuildContext, int) sumarNumero;
+
+  const OrderInfo(
+      {super.key,
+      required this.id,
+      required this.index,
+      required this.sumarNumero});
 
   @override
   State<OrderInfo> createState() => _OrderInfoState();
@@ -86,10 +93,15 @@ class _OrderInfoState extends State<OrderInfo> {
                               : ElevatedButton(
                                   onPressed: () async {
                                     var response = await Connections()
-                                        .updateOrderInteralStatus("NO DESEA",
-                                           widget.id);
+                                        .updateOrderInteralStatus(
+                                            "NO DESEA", widget.id);
+
+                                    //  Navigator.pop(context);
+                                    widget.sumarNumero(context, widget.index);
+
                                     setState(() {});
-                                    loadData();
+                                    //loadData();
+                                    //Navigator.pop(context);
                                   },
                                   child: Text(
                                     "No Desea",
@@ -102,15 +114,14 @@ class _OrderInfoState extends State<OrderInfo> {
                           ElevatedButton(
                               onPressed: () async {
                                 var response = await Connections()
-                                    .updateOrderInteralStatus("CONFIRMADO",
-                                         widget.id);
+                                    .updateOrderInteralStatus(
+                                        "CONFIRMADO", widget.id);
                                 setState(() {});
                                 await showDialog(
                                     context: context,
                                     builder: (context) {
                                       return RoutesModal(
-                                        idOrder:
-                                           widget.id,
+                                        idOrder: widget.id,
                                         someOrders: false,
                                       );
                                     });
@@ -128,40 +139,41 @@ class _OrderInfoState extends State<OrderInfo> {
                                 getLoadingModal(context, false);
 
                                 await _controllers.updateInfo(
-                                  id: widget.id,
+                                    id: widget.id,
                                     success: () async {
-                                  Navigator.pop(context);
-                                  AwesomeDialog(
-                                    width: 500,
-                                    context: context,
-                                    dialogType: DialogType.success,
-                                    animType: AnimType.rightSlide,
-                                    title: 'Guardado',
-                                    desc: '',
-                                    btnCancel: Container(),
-                                    btnOkText: "Aceptar",
-                                    btnOkColor: colors.colorGreen,
-                                    btnCancelOnPress: () {},
-                                    btnOkOnPress: () {},
-                                  ).show();
-                                  await loadData();
-                                }, error: () {
-                                  Navigator.pop(context);
+                                      Navigator.pop(context);
+                                      AwesomeDialog(
+                                        width: 500,
+                                        context: context,
+                                        dialogType: DialogType.success,
+                                        animType: AnimType.rightSlide,
+                                        title: 'Guardado',
+                                        desc: '',
+                                        btnCancel: Container(),
+                                        btnOkText: "Aceptar",
+                                        btnOkColor: colors.colorGreen,
+                                        btnCancelOnPress: () {},
+                                        btnOkOnPress: () {},
+                                      ).show();
+                                      await loadData();
+                                    },
+                                    error: () {
+                                      Navigator.pop(context);
 
-                                  AwesomeDialog(
-                                    width: 500,
-                                    context: context,
-                                    dialogType: DialogType.error,
-                                    animType: AnimType.rightSlide,
-                                    title: 'Data Incorrecta',
-                                    desc: 'Vuelve a intentarlo',
-                                    btnCancel: Container(),
-                                    btnOkText: "Aceptar",
-                                    btnOkColor: colors.colorGreen,
-                                    btnCancelOnPress: () {},
-                                    btnOkOnPress: () {},
-                                  ).show();
-                                });
+                                      AwesomeDialog(
+                                        width: 500,
+                                        context: context,
+                                        dialogType: DialogType.error,
+                                        animType: AnimType.rightSlide,
+                                        title: 'Data Incorrecta',
+                                        desc: 'Vuelve a intentarlo',
+                                        btnCancel: Container(),
+                                        btnOkText: "Aceptar",
+                                        btnOkColor: colors.colorGreen,
+                                        btnCancelOnPress: () {},
+                                        btnOkOnPress: () {},
+                                      ).show();
+                                    });
                               },
                               child: Text(
                                 "Guardar",
@@ -263,8 +275,6 @@ class _OrderInfoState extends State<OrderInfo> {
           ),
         )));
   }
-
- 
 
   _modelTextField({text, controller}) {
     return Container(

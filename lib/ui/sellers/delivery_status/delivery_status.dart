@@ -1,19 +1,11 @@
 import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
-
 import 'package:data_table_2/data_table_2.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:frontend/connections/connections.dart';
-import 'package:frontend/helpers/navigators.dart';
-import 'package:frontend/main.dart';
 import 'package:frontend/ui/sellers/delivery_status/info_delivery.dart';
 import 'package:frontend/ui/transport/my_orders_prv/controllers/controllers.dart';
 import 'package:frontend/ui/widgets/loading.dart';
-import 'package:frontend/ui/widgets/routes/sub_routes.dart';
 import 'package:intl/intl.dart';
 
 class DeliveryStatus extends StatefulWidget {
@@ -35,9 +27,15 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
   int conNovedad = 0;
   int reagendados = 0;
   int enRuta = 0;
+  double totalValoresRecibidos = 0;
+  double costoDeEntregas = 0;
+  double devoluciones = 0;
+  double utilidad = 0;
   bool isFirst = true;
   var arrayFiltersAndEq = [];
-
+  var arraysFiltersRanges = [];
+  final FocusNode _focusNode1 = FocusNode();
+  final FocusNode _focusNode2 = FocusNode();
   @override
   void didChangeDependencies() {
     loadData();
@@ -50,68 +48,40 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
       getLoadingModal(context, false);
     });
 
-    if (_controllers.searchController.text.isEmpty) {
+    if (_controllers.searchController.text.isEmpty &&
+        arraysFiltersRanges.isEmpty) {
       response = await Connections()
           .getOrdersForSellerState(_controllers.searchController.text);
     } else {
       response = await Connections().getOrdersForSellerStateSearch(
           _controllers.searchController.text,
           [
-            {
-              'filter': 'NumeroOrden',
-            },
-            {
-              'filter': 'Fecha_Entrega',
-            },
-            {
-              'filter': 'CiudadShipping',
-            },
-            {
-              'filter': 'NombreShipping',
-            },
-            {
-              'filter': 'DireccionShipping',
-            },
-            {
-              'filter': 'TelefonoShipping',
-            },
-            {
-              'filter': 'Cantidad_Total',
-            },
-            {
-              'filter': 'ProductoP',
-            },
-            {
-              'filter': 'ProductoExtra',
-            },
-            {
-              'filter': 'PrecioTotal',
-            },
-            {
-              'filter': 'Comentario',
-            },
-            {
-              'filter': 'Status',
-            },
-            {
-              'filter': 'Estado_Interno',
-            },
-            {
-              'filter': 'Estado_Logistico',
-            },
-            {
-              'filter': 'Estado_Devolucion',
-            },
-            {
-              'filter': 'Marca_T_I',
-            },
+            {'filter': 'NumeroOrden'},
+            {'filter': 'Fecha_Entrega'},
+            {'filter': 'CiudadShipping'},
+            {'filter': 'NombreShipping'},
+            {'filter': 'DireccionShipping'},
+            {'filter': 'TelefonoShipping'},
+            {'filter': 'Cantidad_Total'},
+            {'filter': 'ProductoP'},
+            {'filter': 'ProductoExtra'},
+            {'filter': 'PrecioTotal'},
+            {'filter': 'Comentario'},
+            {'filter': 'Status'},
+            {'filter': 'Estado_Interno'},
+            {'filter': 'Estado_Logistico'},
+            {'filter': 'Estado_Devolucion'},
+            {'filter': 'Marca_T_I'},
           ],
-          arrayFiltersAndEq);
+          arrayFiltersAndEq,
+          arraysFiltersRanges);
     }
 
     data = response;
+    //calculateValues();
+    // print(data);
     if (arrayFiltersAndEq.length == 0) {
-      print('arreglo de est' + arrayFiltersAndEq.length.toString());
+      // print('arreglo de est' + arrayFiltersAndEq.length.toString());
 
       updateCounters();
     }
@@ -282,116 +252,88 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                 ),
               ],
             ),
-            Text('Fecha inicio:'),
-
-            // Container(
-            //   width: double.infinity,
-            //   decoration: BoxDecoration(
-            //     borderRadius: BorderRadius.circular(10.0),
-            //     color: Color.fromARGB(255, 245, 244, 244),
-            //   ),
-            //   child: TextField(
-            //     onSubmitted: (value) {
-            //       arrayFiltersAndEq = [];
-            //       loadData();
-            //     },
-            //     onChanged: (value) {
-            //       setState(() {});
-            //     },
-            //     style: TextStyle(fontWeight: FontWeight.bold),
-            //     decoration: InputDecoration(
-            //       prefixIcon: Icon(Icons.search),
-            //       suffixIcon: _controllers.searchController.text.isNotEmpty
-            //           ? GestureDetector(
-            //               onTap: () {
-            //                 setState(() {
-            //                   _controllers.searchController.clear();
-            //                 });
-            //               },
-            //               child: Icon(Icons.close))
-            //           : null,
-            //       enabledBorder: OutlineInputBorder(
-            //         borderSide: BorderSide(
-            //             width: 1, color: Color.fromRGBO(237, 241, 245, 1.0)),
-            //         borderRadius: BorderRadius.circular(10.0),
-            //       ),
-            //       focusedBorder: OutlineInputBorder(
-            //         borderSide: BorderSide(
-            //             width: 1, color: Color.fromRGBO(237, 241, 245, 1.0)),
-            //         borderRadius: BorderRadius.circular(10.0),
-            //       ),
-            //       focusColor: Colors.black,
-            //       iconColor: Colors.black,
-            //     ),
-            //   ),
-            // ),
-
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.center,
-            //   children: [Text('Fecha Fin:'), TextField()],
-            // ),
-            Container(
-                width: double.infinity,
-                child: Row(
-                  children: [
-                    TextButton(
-                        onPressed: () async {
-                          setState(() {
-                            _controllers.searchController.clear();
-                          });
-                          var results = await showCalendarDatePicker2Dialog(
-                            context: context,
-                            config: CalendarDatePicker2WithActionButtonsConfig(
-                              dayTextStyle:
-                                  TextStyle(fontWeight: FontWeight.bold),
-                              yearTextStyle:
-                                  TextStyle(fontWeight: FontWeight.bold),
-                              selectedYearTextStyle:
-                                  TextStyle(fontWeight: FontWeight.bold),
-                              weekdayLabelTextStyle:
-                                  TextStyle(fontWeight: FontWeight.bold),
+            const SizedBox(height: 8.0),
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              child: Row(
+                                children: [
+                                  const Text('Fecha de inicio:'),
+                                  const SizedBox(width: 8.0),
+                                  Flexible(
+                                    child: TextField(
+                                      onSubmitted: (value) {
+                                        _focusNode2.requestFocus();
+                                      },
+                                      focusNode: _focusNode1,
+                                      controller:
+                                          _controllers.startDateController,
+                                      decoration: const InputDecoration(
+                                        hintText: 'Ingrese la fecha de inicio',
+                                      ),
+                                    ),
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.calendar_month),
+                                    onPressed: () async {
+                                      _controllers.startDateController.text =
+                                          await OpenCalendar();
+                                      _focusNode2.requestFocus();
+                                    },
+                                  ),
+                                ],
+                              ),
                             ),
-                            dialogSize: const Size(325, 400),
-                            value: _dates,
-                            borderRadius: BorderRadius.circular(15),
-                          );
-                          setState(() {
-                            if (results != null) {
-                              String fechaOriginal = results![0]
-                                  .toString()
-                                  .split(" ")[0]
-                                  .split('-')
-                                  .reversed
-                                  .join('-')
-                                  .replaceAll("-", "/");
-                              List<String> componentes =
-                                  fechaOriginal.split('/');
-
-                              String dia = int.parse(componentes[0]).toString();
-                              String mes = int.parse(componentes[1]).toString();
-                              String anio = componentes[2];
-
-                              String nuevaFecha = "$dia/$mes/$anio";
-
-                              sharedPrefs!
-                                  .setString("dateOperatorState", nuevaFecha);
-                            }
-                          });
-                          loadData();
-                        },
-                        child: Text(
-                          "Seleccionar Fecha",
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        )),
-                    SizedBox(
-                      width: 10,
-                    ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          const Text('Fecha fin:'),
+                          const SizedBox(width: 8.0),
+                          Flexible(
+                            child: TextField(
+                              onSubmitted: (value) {
+                                applyDateFilter();
+                              },
+                              focusNode: _focusNode2,
+                              controller: _controllers.endDateController,
+                              decoration: InputDecoration(
+                                hintText: 'Ingrese la fecha fin',
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.calendar_month),
+                            onPressed: () async {
+                              _controllers.endDateController.text =
+                                  await OpenCalendar();
+                              await applyDateFilter();
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                Column(
+                  children: [
                     Text(
-                      "Fecha: ${sharedPrefs!.getString("dateOperatorState")}",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    )
+                        'Total de valores recibidos=${totalValoresRecibidos.toStringAsFixed(2)}'),
+                    Text(
+                        'Costo de entregas=${costoDeEntregas.toStringAsFixed(2)}'),
+                    Text('devoluciones=${devoluciones.toStringAsFixed(2)}'),
+                    Text('utilidad=${utilidad.toStringAsFixed(2)}'),
                   ],
-                )),
+                )
+              ],
+            ),
             Expanded(
               child: DataTable2(
                   headingTextStyle: const TextStyle(
@@ -412,14 +354,14 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                       },
                     ),
                     DataColumn2(
-                      label: Text('Código'),
+                      label: const Text('Código'),
                       size: ColumnSize.S,
                       onSort: (columnIndex, ascending) {
                         sortFunc("NumeroOrden");
                       },
                     ),
                     DataColumn2(
-                      label: Text('Ciudad'),
+                      label: const Text('Ciudad'),
                       size: ColumnSize.M,
                       onSort: (columnIndex, ascending) {
                         sortFunc("CiudadShipping");
@@ -1324,14 +1266,40 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
     }
   }
 
+  bool compareDates(String string1, String string2) {
+    List<String> parts1 = string1.split('/');
+    List<String> parts2 = string2.split('/');
+
+    int day1 = int.parse(parts1[0]);
+    int month1 = int.parse(parts1[1]);
+    int year1 = int.parse(parts1[2]);
+
+    int day2 = int.parse(parts2[0]);
+    int month2 = int.parse(parts2[1]);
+    int year2 = int.parse(parts2[2]);
+
+    if (year1 > year2) {
+      return true;
+    } else if (year1 < year2) {
+      return false;
+    } else {
+      if (month1 > month2) {
+        return true;
+      } else if (month1 < month2) {
+        return false;
+      } else {
+        if (day1 > day2) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    }
+  }
+
   Color? GetColor(state) {
     int color = 0xFF000000;
-//     Entregado= verde
-// No entregado=Rojo
-// Novedad=Amarillo
-// En ruta = Azul
-// Reagendado=Rosado
-// Pedido Programado Sin color
+
     switch (state) {
       case "ENTREGADO":
         color = 0xFF33FF6D;
@@ -1356,22 +1324,87 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
         color = 0xFF000000;
     }
 
-    // if (state == "ENTREGADO") {
-    //   return Color(0xFF33FF6D);
-    // } else if (state == "NOVEDAD") {
-    //   return Color(0xFF3366FF);
-    // } else if (state == "NO ENTREGADO") {
-    //   return Color(0xFFE61414);
-    // } else if (state == "REAGENDADO") {
-    //   return Color(0xFFD6FA37);
-    // } else if (state == "EN RUTA") {
-    //   return Color(0xFF4733FF);
-    // } else if (state == "EN OFICINA") {
-    //   return Color(0xFF63615F);
-    // } else {
-    //   return Color(0xFFFFFFF);
-    // }
-
     return Color(color);
+  }
+
+  Future<void> applyDateFilter() async {
+    arraysFiltersRanges = [];
+    if (_controllers.startDateController.text != '') {
+      arraysFiltersRanges.add({
+        'filter': 'Fecha_Entrega',
+        'operator': '\$gte',
+        'value': _controllers.startDateController.text
+      });
+    }
+    if (_controllers.endDateController.text != '') {
+      arraysFiltersRanges.add({
+        'filter': 'Fecha_Entrega',
+        'operator': '\$lte',
+        'value': _controllers.endDateController.text
+      });
+    }
+    await loadData();
+    calculateValues();
+  }
+
+  calculateValues() {
+    totalValoresRecibidos = 0;
+    costoDeEntregas = 0;
+    devoluciones = 0;
+    for (var element in data) {
+      // print(element['attributes']['PrecioTotal']);
+      totalValoresRecibidos +=
+          double.parse(element['attributes']['PrecioTotal']);
+
+      if (element['attributes']['Status'] == 'ENTREGADO' ||
+          element['attributes']['PrecioTotal'] == 'NO ENTREGADO') {
+        costoDeEntregas += double.parse(element['attributes']['PrecioTotal']);
+      }
+      if (element['attributes']['users']['data'][0]['attributes']['vendedores']
+              ['data'][0]['attributes']['CostoDevolucion'] !=
+          null) {
+        devoluciones += double.parse(element['attributes']['users']['data'][0]
+                ['attributes']['vendedores']['data'][0]['attributes']
+            ['CostoDevolucion']);
+      }
+    }
+    utilidad = totalValoresRecibidos - costoDeEntregas - devoluciones;
+  }
+
+  Future<String> OpenCalendar() async {
+    String nuevaFecha = "";
+
+    var results = await showCalendarDatePicker2Dialog(
+      context: context,
+      config: CalendarDatePicker2WithActionButtonsConfig(
+        dayTextStyle: TextStyle(fontWeight: FontWeight.bold),
+        yearTextStyle: TextStyle(fontWeight: FontWeight.bold),
+        selectedYearTextStyle: TextStyle(fontWeight: FontWeight.bold),
+        weekdayLabelTextStyle: TextStyle(fontWeight: FontWeight.bold),
+      ),
+      dialogSize: const Size(325, 400),
+      value: _dates,
+      borderRadius: BorderRadius.circular(15),
+    );
+
+    setState(() {
+      if (results != null) {
+        String fechaOriginal = results![0]
+            .toString()
+            .split(" ")[0]
+            .split('-')
+            .reversed
+            .join('-')
+            .replaceAll("-", "/");
+        List<String> componentes = fechaOriginal.split('/');
+
+        String dia = int.parse(componentes[0]).toString();
+        String mes = int.parse(componentes[1]).toString();
+        String anio = componentes[2];
+
+        nuevaFecha = "$dia/$mes/$anio";
+      }
+    });
+    return nuevaFecha;
   }
 }
