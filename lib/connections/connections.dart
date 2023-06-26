@@ -539,39 +539,40 @@ class Connections {
     return decodeData['data'];
   }
 
-  Future getOrdersSellersByCode(code, currentPage, pageSize,  search,arrayFiltersOrCont,arrayFiltersAndEq) async {
+  Future getOrdersSellersByCode(code, currentPage, pageSize, search,
+      arrayFiltersOrCont, arrayFiltersAndEq) async {
     print("currentPage=" + currentPage.toString());
     print("pageSize=" + pageSize.toString());
     // print("pedido=" + pedido!);
     // print("confirmado=" + confirmado!);
     // print("logistico=" + logistico!);
 
-    var url = "$server/api/pedidos-shopifies?populate=users&populate=pedido_fecha&filters[\$or][0][NumeroOrden][\$contains]=$code&filters[\$and][1][IdComercial][\$eq]=${sharedPrefs!.getString("idComercialMasterSeller").toString()}&filters[\$and][3][Estado_Interno][\$ne]=NO DESEA&sort=id%3Adesc&filters[\$and][4][Status][\$eq]=PEDIDO PROGRAMADO";
- int numberFilter=5;
-    var filtersOrCont="";
+    var url =
+        "$server/api/pedidos-shopifies?populate=users&populate=pedido_fecha&filters[\$or][0][NumeroOrden][\$contains]=$code&filters[\$and][1][IdComercial][\$eq]=${sharedPrefs!.getString("idComercialMasterSeller").toString()}&filters[\$and][3][Estado_Interno][\$ne]=NO DESEA&sort=id%3Adesc&filters[\$and][4][Status][\$eq]=PEDIDO PROGRAMADO";
+    int numberFilter = 5;
+    var filtersOrCont = "";
 
-    if(search!=""){
-   for (var filter in arrayFiltersOrCont) {
-
-               filtersOrCont+="&filters[\$or][$numberFilter][${filter['filter']}][\$contains]=$search";
-               numberFilter++;
-    }
-    }
-
-   var filtersAndEq="";
-   for (var filter in arrayFiltersAndEq) {
-               print("filter:"+filter['filter'].toString());
-                              print("value:"+filter['value'].toString());
-
-
-               filtersAndEq+="&filters[\$and][$numberFilter][${filter['filter']}][\$eq]=${filter['value']}";
-               numberFilter++;
+    if (search != "") {
+      for (var filter in arrayFiltersOrCont) {
+        filtersOrCont +=
+            "&filters[\$or][$numberFilter][${filter['filter']}][\$contains]=$search";
+        numberFilter++;
+      }
     }
 
+    var filtersAndEq = "";
+    for (var filter in arrayFiltersAndEq) {
+      print("filter:" + filter['filter'].toString());
+      print("value:" + filter['value'].toString());
 
+      filtersAndEq +=
+          "&filters[\$and][$numberFilter][${filter['filter']}][\$eq]=${filter['value']}";
+      numberFilter++;
+    }
 
-   var configPagination="&sort=id%3Adesc&pagination[page]=${currentPage}&pagination[pageSize]=${pageSize}";
-    url+=filtersOrCont+filtersAndEq +configPagination;
+    var configPagination =
+        "&sort=id%3Adesc&pagination[page]=${currentPage}&pagination[pageSize]=${pageSize}";
+    url += filtersOrCont + filtersAndEq + configPagination;
 
     print(url);
     var request = await http.get(
@@ -1994,10 +1995,38 @@ class Connections {
     return decodeData['data'];
   }
 
-  getOrdersForSellerStateSearch(code) async {
+  getOrdersForSellerStateSearch(
+      code, arrayFiltersOrCont, arrayFiltersAndEq) async {
+    String url =
+        "$server/api/pedidos-shopifies?populate=transportadora&populate=users&populate=users.vendedores&populate=pedido_fecha&populate=sub_ruta&populate=operadore&populate=operadore.user&filters[Status][\$ne]=PEDIDO PROGRAMADO&filters[IdComercial][\$eq]=${sharedPrefs!.getString("idComercialMasterSeller").toString()}";
+
+    String filtersOrCont = '';
+    int numberFilter = 0;
+
+    if (code != "") {
+      for (var filter in arrayFiltersOrCont) {
+        filtersOrCont +=
+            "&filters[\$or][$numberFilter][${filter['filter']}][\$contains]=$code";
+        numberFilter++;
+      }
+    }
+
+    var filtersAndEq = "";
+    for (var filter in arrayFiltersAndEq) {
+      print("filter:" + filter['filter'].toString());
+      print("value:" + filter['value'].toString());
+
+      filtersAndEq +=
+          "&filters[\$and][$numberFilter][${filter['filter']}][\$eq]=${filter['value']}";
+      numberFilter++;
+    }
+
+    var configPagination = "&pagination[limit]=-1";
+    url += filtersOrCont + filtersAndEq + configPagination;
+    // "$server/api/pedidos-shopifies?populate=transportadora&populate=users&populate=users.vendedores&populate=pedido_fecha&populate=sub_ruta&populate=operadore&populate=operadore.user&filters[Status][\$ne]=PEDIDO PROGRAMADO&filters[IdComercial][\$eq]=${sharedPrefs!.getString("idComercialMasterSeller").toString()}&filters[\$or][0][NumeroOrden][\$contains]=$code&filters[\$or][1][Fecha_Entrega][\$contains]=$code&filters[\$or][2][CiudadShipping][\$contains]=$code&filters[\$or][3][NombreShipping][\$contains]=$code&filters[\$or][4][DireccionShipping][\$contains]=$code&filters[\$or][5][TelefonoShipping][\$contains]=$code&filters[\$or][6][Cantidad_Total][\$contains]=$code&filters[\$or][7][ProductoP][\$contains]=$code&filters[\$or][8][ProductoExtra][\$contains]=$code&filters[\$or][9][PrecioTotal][\$contains]=$code&filters[\$or][10][Comentario][\$contains]=$code&filters[\$or][11][Status][\$contains]=$code&filters[\$or][12][Estado_Interno][\$contains]=$code&filters[\$or][13][Estado_Logistico][\$contains]=$code&filters[\$or][14][Estado_Devolucion][\$contains]=$code&filters[\$or][15][Marca_T_I][\$contains]=$code&pagination[limit]=-1"
+    print(url);
     var request = await http.get(
-      Uri.parse(
-          "$server/api/pedidos-shopifies?populate=transportadora&populate=users&populate=users.vendedores&populate=pedido_fecha&populate=sub_ruta&populate=operadore&populate=operadore.user&filters[Status][\$ne]=PEDIDO PROGRAMADO&filters[IdComercial][\$eq]=${sharedPrefs!.getString("idComercialMasterSeller").toString()}&filters[\$or][0][NumeroOrden][\$contains]=$code&filters[\$or][1][Fecha_Entrega][\$contains]=$code&filters[\$or][2][CiudadShipping][\$contains]=$code&filters[\$or][3][NombreShipping][\$contains]=$code&filters[\$or][4][DireccionShipping][\$contains]=$code&filters[\$or][5][TelefonoShipping][\$contains]=$code&filters[\$or][6][Cantidad_Total][\$contains]=$code&filters[\$or][7][ProductoP][\$contains]=$code&filters[\$or][8][ProductoExtra][\$contains]=$code&filters[\$or][9][PrecioTotal][\$contains]=$code&filters[\$or][10][Comentario][\$contains]=$code&filters[\$or][11][Status][\$contains]=$code&filters[\$or][12][Estado_Interno][\$contains]=$code&filters[\$or][13][Estado_Logistico][\$contains]=$code&filters[\$or][14][Estado_Devolucion][\$contains]=$code&filters[\$or][15][Marca_T_I][\$contains]=$code&pagination[limit]=-1"),
+      Uri.parse(url),
       headers: {'Content-Type': 'application/json'},
     );
     var response = await request.body;

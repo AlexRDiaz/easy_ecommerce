@@ -29,6 +29,14 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
   List data = [];
   List<DateTime?> _dates = [];
   bool sort = false;
+  int total = 0;
+  int entregados = 0;
+  int noEntregados = 0;
+  int conNovedad = 0;
+  int reagendados = 0;
+  int enRuta = 0;
+  bool isFirst = true;
+  var arrayFiltersAndEq = [];
 
   @override
   void didChangeDependencies() {
@@ -46,16 +54,108 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
       response = await Connections()
           .getOrdersForSellerState(_controllers.searchController.text);
     } else {
-      response = await Connections()
-          .getOrdersForSellerStateSearch(_controllers.searchController.text);
+      response = await Connections().getOrdersForSellerStateSearch(
+          _controllers.searchController.text,
+          [
+            {
+              'filter': 'NumeroOrden',
+            },
+            {
+              'filter': 'Fecha_Entrega',
+            },
+            {
+              'filter': 'CiudadShipping',
+            },
+            {
+              'filter': 'NombreShipping',
+            },
+            {
+              'filter': 'DireccionShipping',
+            },
+            {
+              'filter': 'TelefonoShipping',
+            },
+            {
+              'filter': 'Cantidad_Total',
+            },
+            {
+              'filter': 'ProductoP',
+            },
+            {
+              'filter': 'ProductoExtra',
+            },
+            {
+              'filter': 'PrecioTotal',
+            },
+            {
+              'filter': 'Comentario',
+            },
+            {
+              'filter': 'Status',
+            },
+            {
+              'filter': 'Estado_Interno',
+            },
+            {
+              'filter': 'Estado_Logistico',
+            },
+            {
+              'filter': 'Estado_Devolucion',
+            },
+            {
+              'filter': 'Marca_T_I',
+            },
+          ],
+          arrayFiltersAndEq);
     }
 
     data = response;
+    if (arrayFiltersAndEq.length == 0) {
+      print('arreglo de est' + arrayFiltersAndEq.length.toString());
 
+      updateCounters();
+    }
     Future.delayed(Duration(milliseconds: 500), () {
       Navigator.pop(context);
     });
     setState(() {});
+  }
+
+  updateCounters() {
+    if (isFirst) {
+      total = 0;
+      entregados = 0;
+      noEntregados = 0;
+      conNovedad = 0;
+      reagendados = 0;
+      enRuta = 0;
+      total = data.length;
+      // print(data.toString());
+      for (var element in data) {
+        element['attributes']['Status'];
+        switch (element['attributes']['Status']) {
+          case 'ENTREGADO':
+            entregados++;
+            break;
+
+          case 'NO ENTREGADO':
+            noEntregados++;
+            break;
+
+          case 'NOVEDAD':
+            conNovedad++;
+            break;
+          case 'REAGENDADO':
+            reagendados++;
+            break;
+          case 'EN RUTA':
+            enRuta++;
+            break;
+
+          default:
+        }
+      }
+    }
   }
 
   @override
@@ -67,6 +167,169 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
           children: [
             _modelTextField(
                 text: "Buscar", controller: _controllers.searchController),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Chip(
+                  label: Text('Total'),
+                  backgroundColor: Colors.blue,
+                  labelStyle: TextStyle(color: Colors.white),
+                  avatar: CircleAvatar(
+                    backgroundColor: Colors.white70,
+                    child: Text(total.toString()),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      isFirst = false;
+                      arrayFiltersAndEq = [];
+                      arrayFiltersAndEq
+                          .add({'filter': 'Status', 'value': 'ENTREGADO'});
+                    });
+
+                    loadData();
+                  },
+                  child: Chip(
+                    label: Text('Entregado'),
+                    backgroundColor: Colors.green,
+                    labelStyle: TextStyle(color: Colors.white),
+                    avatar: CircleAvatar(
+                      backgroundColor: Colors.white70,
+                      child: Text(entregados.toString()),
+                    ),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      arrayFiltersAndEq = [];
+                      arrayFiltersAndEq
+                          .add({'filter': 'Status', 'value': 'NO ENTREGADO'});
+
+                      loadData();
+                    });
+                  },
+                  child: Chip(
+                    label: Text('No entregado'),
+                    backgroundColor: Colors.red,
+                    labelStyle: TextStyle(color: Colors.white),
+                    avatar: CircleAvatar(
+                      backgroundColor: Colors.white70,
+                      child: Text(noEntregados.toString()),
+                    ),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      arrayFiltersAndEq = [];
+                      arrayFiltersAndEq
+                          .add({'filter': 'Status', 'value': 'NOVEDAD'});
+
+                      loadData();
+                    });
+                  },
+                  child: Chip(
+                    label: Text('Novedad'),
+                    backgroundColor: Colors.orange,
+                    labelStyle: TextStyle(color: Colors.white),
+                    avatar: CircleAvatar(
+                      backgroundColor: Colors.white70,
+                      child: Text(conNovedad.toString()),
+                    ),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      arrayFiltersAndEq = [];
+                      arrayFiltersAndEq
+                          .add({'filter': 'Status', 'value': 'REAGENDADO'});
+
+                      loadData();
+                    });
+                  },
+                  child: Chip(
+                    label: Text('Reagendado'),
+                    backgroundColor: Colors.purple,
+                    labelStyle: TextStyle(color: Colors.white),
+                    avatar: CircleAvatar(
+                      backgroundColor: Colors.white70,
+                      child: Text(reagendados.toString()),
+                    ),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      arrayFiltersAndEq = [];
+                      arrayFiltersAndEq
+                          .add({'filter': 'Status', 'value': 'EN RUTA'});
+
+                      loadData();
+                    });
+                  },
+                  child: Chip(
+                    label: Text('En ruta'),
+                    backgroundColor: Colors.yellow,
+                    labelStyle: TextStyle(color: Colors.black),
+                    avatar: CircleAvatar(
+                      backgroundColor: Colors.white70,
+                      child: Text(enRuta.toString()),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Text('Fecha inicio:'),
+
+            // Container(
+            //   width: double.infinity,
+            //   decoration: BoxDecoration(
+            //     borderRadius: BorderRadius.circular(10.0),
+            //     color: Color.fromARGB(255, 245, 244, 244),
+            //   ),
+            //   child: TextField(
+            //     onSubmitted: (value) {
+            //       arrayFiltersAndEq = [];
+            //       loadData();
+            //     },
+            //     onChanged: (value) {
+            //       setState(() {});
+            //     },
+            //     style: TextStyle(fontWeight: FontWeight.bold),
+            //     decoration: InputDecoration(
+            //       prefixIcon: Icon(Icons.search),
+            //       suffixIcon: _controllers.searchController.text.isNotEmpty
+            //           ? GestureDetector(
+            //               onTap: () {
+            //                 setState(() {
+            //                   _controllers.searchController.clear();
+            //                 });
+            //               },
+            //               child: Icon(Icons.close))
+            //           : null,
+            //       enabledBorder: OutlineInputBorder(
+            //         borderSide: BorderSide(
+            //             width: 1, color: Color.fromRGBO(237, 241, 245, 1.0)),
+            //         borderRadius: BorderRadius.circular(10.0),
+            //       ),
+            //       focusedBorder: OutlineInputBorder(
+            //         borderSide: BorderSide(
+            //             width: 1, color: Color.fromRGBO(237, 241, 245, 1.0)),
+            //         borderRadius: BorderRadius.circular(10.0),
+            //       ),
+            //       focusColor: Colors.black,
+            //       iconColor: Colors.black,
+            //     ),
+            //   ),
+            // ),
+
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.center,
+            //   children: [Text('Fecha Fin:'), TextField()],
+            // ),
             Container(
                 width: double.infinity,
                 child: Row(
@@ -131,9 +394,9 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                 )),
             Expanded(
               child: DataTable2(
-                  headingTextStyle: TextStyle(
+                  headingTextStyle: const TextStyle(
                       fontWeight: FontWeight.bold, color: Colors.black),
-                  dataTextStyle: TextStyle(
+                  dataTextStyle: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
                       color: Colors.black),
@@ -221,7 +484,7 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                       },
                     ),
                     DataColumn2(
-                      label: Text('Statuse'),
+                      label: Text('Status'),
                       size: ColumnSize.M,
                       onSort: (columnIndex, ascending) {
                         sortFunc("Status");
@@ -995,6 +1258,9 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
   }
 
   _modelTextField({text, controller}) {
+    setState(() {
+      isFirst = true;
+    });
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -1004,6 +1270,7 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
       child: TextField(
         controller: controller,
         onSubmitted: (value) {
+          arrayFiltersAndEq = [];
           loadData();
         },
         onChanged: (value) {
