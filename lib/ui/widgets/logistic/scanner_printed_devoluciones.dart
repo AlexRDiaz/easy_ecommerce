@@ -10,10 +10,12 @@ class ScannerPrintedDevoluciones extends StatefulWidget {
   const ScannerPrintedDevoluciones({super.key});
 
   @override
-  State<ScannerPrintedDevoluciones> createState() => _ScannerPrintedDevolucionesState();
+  State<ScannerPrintedDevoluciones> createState() =>
+      _ScannerPrintedDevolucionesState();
 }
 
-class _ScannerPrintedDevolucionesState extends State<ScannerPrintedDevoluciones> {
+class _ScannerPrintedDevolucionesState
+    extends State<ScannerPrintedDevoluciones> {
   String? _barcode;
   late bool visible;
   @override
@@ -35,15 +37,20 @@ class _ScannerPrintedDevolucionesState extends State<ScannerPrintedDevoluciones>
                   if (!visible) return;
                   getLoadingModal(context, false);
                   print(barcode);
+
+                  // await Connections()
+                  //     .updateOrderReturnLogistic(barcode.toString());
+
                   // var response = await Connections()
                   //     .updateOrderLogisticStatusPrint(
                   //         "ENVIADO", barcode.toString());
-                  // var responseOrder = await Connections().getOrderByID(barcode);
 
-                  // setState(() {
-                  //   _barcode =
-                  //       "${responseOrder['attributes']['Name_Comercial']}-${responseOrder['attributes']['NumeroOrden']}";
-                  // });
+                  var responseOrder = await Connections().getOrderByID(barcode);
+
+                  setState(() {
+                    _barcode =
+                        "${responseOrder['attributes']['Name_Comercial']}-${responseOrder['attributes']['NumeroOrden']}";
+                  });
                   //Navigator.pop(context);
                 },
                 child: Column(

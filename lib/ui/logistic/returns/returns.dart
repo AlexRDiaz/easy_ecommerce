@@ -96,29 +96,31 @@ class _ReturnsState extends State<Returns> {
               child: _modelTextField(
                   text: "Busqueda", controller: _controllers.searchController),
             ),
-              //  Align(
-              //       alignment: Alignment.centerRight,
-              //       child: ElevatedButton(
-              //           onPressed: () async {
-              //             await showDialog(
-              //                 context: context,
-              //                 builder: (context) {
-              //                   return ScannerPrintedDevoluciones();
-              //                 });
-              //             await loadData();
-              //           },
-              //           child: Text(
-              //             "SCANNER",
-              //             style: TextStyle(fontWeight: FontWeight.bold),
-              //           )),
-              //     ),
-           
-            // _filters(context),
+            Align(
+              alignment: Alignment.centerRight,
+              child: ElevatedButton(
+                  onPressed: () async {
+                    await showDialog(
+                        context: context,
+                        builder: (context) {
+                          return ScannerPrintedDevoluciones();
+                        });
+                    await loadData();
+                  },
+                  child: Text(
+                    "SCANNER",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  )),
+            ),
+            _filters(context),
             Expanded(
               child: DataTable2(
-                headingTextStyle: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-                dataTextStyle:
-                    const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black),
+                headingTextStyle: const TextStyle(
+                    fontWeight: FontWeight.bold, color: Colors.black),
+                dataTextStyle: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black),
                 columnSpacing: 12,
                 horizontalMargin: 6,
                 minWidth: 2000,

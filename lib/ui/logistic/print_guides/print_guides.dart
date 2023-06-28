@@ -1,21 +1,18 @@
+import 'dart:async';
+
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:frontend/config/exports.dart';
+
 import 'package:frontend/connections/connections.dart';
-import 'package:frontend/helpers/navigators.dart';
 import 'package:frontend/providers/filters_orders/filters_orders.dart';
 import 'package:frontend/ui/logistic/print_guides/controllers/controllers.dart';
 import 'package:frontend/ui/logistic/print_guides/model_guide/model_guide.dart';
-import 'package:frontend/ui/sellers/order_entry/controllers/controllers.dart';
-import 'package:frontend/ui/widgets/filters_orders.dart';
+
 import 'package:frontend/ui/widgets/loading.dart';
 import 'package:frontend/ui/widgets/routes/routes.dart';
-import 'package:get/route_manager.dart';
 import 'package:provider/provider.dart';
-import 'package:frontend/main.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -440,6 +437,31 @@ class _PrintGuidesState extends State<PrintGuides> {
     );
   }
 
+  Widget showProgressIndicator(BuildContext context, width, height, progress) {
+    return Container(
+      decoration: BoxDecoration(
+          color: Colors.grey, borderRadius: BorderRadius.circular(10)),
+      child: Stack(
+        children: [
+          Container(
+            width: width * progress,
+            height: height,
+            decoration: BoxDecoration(
+                color: Colors.blue, borderRadius: BorderRadius.circular(10)),
+          ),
+          Align(
+            alignment: Alignment.center,
+            child: Text(
+              '${(progress * 100).toInt()}%',
+              style: const TextStyle(
+                  color: Colors.white, fontWeight: FontWeight.bold),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
   Container _buttons() {
     return Container(
       margin: EdgeInsets.all(5.0),
@@ -526,6 +548,7 @@ class _PrintGuidesState extends State<PrintGuides> {
                 "Asignar Ruta",
                 style: TextStyle(fontWeight: FontWeight.bold),
               )),
+          // SizedBox(child: showProgressIndicator(context, 200, 20, 0.6)),
         ],
       ),
     );

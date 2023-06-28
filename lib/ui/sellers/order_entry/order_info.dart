@@ -103,7 +103,7 @@ class _OrderInfoState extends State<OrderInfo> {
                                     //loadData();
                                     //Navigator.pop(context);
                                   },
-                                  child: Text(
+                                  child: const Text(
                                     "No Desea",
                                     style:
                                         TextStyle(fontWeight: FontWeight.bold),

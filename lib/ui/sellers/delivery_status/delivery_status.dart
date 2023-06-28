@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:data_table_2/data_table_2.dart';
 import 'package:frontend/connections/connections.dart';
+import 'package:frontend/helpers/responsive.dart';
+import 'package:frontend/main.dart';
 import 'package:frontend/ui/sellers/delivery_status/info_delivery.dart';
 import 'package:frontend/ui/transport/my_orders_prv/controllers/controllers.dart';
 import 'package:frontend/ui/widgets/loading.dart';
@@ -32,6 +34,7 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
   double devoluciones = 0;
   double utilidad = 0;
   bool isFirst = true;
+  int counterLoad = 0;
   var arrayFiltersAndEq = [];
   var arraysFiltersRanges = [];
   final FocusNode _focusNode1 = FocusNode();
@@ -88,7 +91,13 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
     Future.delayed(Duration(milliseconds: 500), () {
       Navigator.pop(context);
     });
-    setState(() {});
+    setState(() {
+      counterLoad++;
+    });
+    if (counterLoad <= 1) {
+      _controllers.startDateController.text =
+          sharedPrefs!.getString("dateOperatorState")!;
+    }
   }
 
   updateCounters() {
@@ -133,20 +142,30 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
     return Scaffold(
       body: Container(
         width: double.infinity,
+        padding: EdgeInsets.all(15),
+        color: Colors.grey[100],
         child: Column(
           children: [
-            _modelTextField(
-                text: "Buscar", controller: _controllers.searchController),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            Wrap(
+              alignment: WrapAlignment.center,
               children: [
-                Chip(
-                  label: Text('Total'),
-                  backgroundColor: Colors.blue,
-                  labelStyle: TextStyle(color: Colors.white),
-                  avatar: CircleAvatar(
-                    backgroundColor: Colors.white70,
-                    child: Text(total.toString()),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      isFirst = false;
+                      arrayFiltersAndEq = [];
+                    });
+
+                    loadData();
+                  },
+                  child: Chip(
+                    label: Text('Total'),
+                    backgroundColor: const Color.fromARGB(255, 31, 32, 32),
+                    labelStyle: TextStyle(color: Colors.white),
+                    avatar: CircleAvatar(
+                      backgroundColor: Colors.white70,
+                      child: Text(total.toString()),
+                    ),
                   ),
                 ),
                 GestureDetector(
@@ -202,7 +221,7 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                   },
                   child: Chip(
                     label: Text('Novedad'),
-                    backgroundColor: Colors.orange,
+                    backgroundColor: Color.fromARGB(255, 200, 255, 0),
                     labelStyle: TextStyle(color: Colors.white),
                     avatar: CircleAvatar(
                       backgroundColor: Colors.white70,
@@ -242,8 +261,8 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                   },
                   child: Chip(
                     label: Text('En ruta'),
-                    backgroundColor: Colors.yellow,
-                    labelStyle: TextStyle(color: Colors.black),
+                    backgroundColor: Color.fromARGB(255, 62, 59, 232),
+                    labelStyle: TextStyle(color: Colors.white),
                     avatar: CircleAvatar(
                       backgroundColor: Colors.white70,
                       child: Text(enRuta.toString()),
@@ -253,89 +272,86 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
               ],
             ),
             const SizedBox(height: 8.0),
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
+            Container(
+              width: double.infinity,
+              color: Colors.white,
+              padding: EdgeInsets.only(top: 5, bottom: 5),
+              child: responsive(
+                  Row(
                     children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Container(
-                              child: Row(
-                                children: [
-                                  const Text('Fecha de inicio:'),
-                                  const SizedBox(width: 8.0),
-                                  Flexible(
-                                    child: TextField(
-                                      onSubmitted: (value) {
-                                        _focusNode2.requestFocus();
-                                      },
-                                      focusNode: _focusNode1,
-                                      controller:
-                                          _controllers.startDateController,
-                                      decoration: const InputDecoration(
-                                        hintText: 'Ingrese la fecha de inicio',
-                                      ),
-                                    ),
-                                  ),
-                                  IconButton(
-                                    icon: const Icon(Icons.calendar_month),
-                                    onPressed: () async {
-                                      _controllers.startDateController.text =
-                                          await OpenCalendar();
-                                      _focusNode2.requestFocus();
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
+                      Expanded(
+                        child: _modelTextField(
+                            text: "Buscar",
+                            controller: _controllers.searchController),
                       ),
-                      Row(
-                        children: [
-                          const Text('Fecha fin:'),
-                          const SizedBox(width: 8.0),
-                          Flexible(
-                            child: TextField(
-                              onSubmitted: (value) {
-                                applyDateFilter();
-                              },
-                              focusNode: _focusNode2,
-                              controller: _controllers.endDateController,
-                              decoration: InputDecoration(
-                                hintText: 'Ingrese la fecha fin',
-                              ),
+                      Expanded(
+                        child: Row(
+                          children: [
+                            Container(
+                              padding:
+                                  const EdgeInsets.only(left: 15, right: 5),
+                              child: responsive(
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: fechaFinFechaIni(),
+                                  ),
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: fechaFinFechaIni(),
+                                  ),
+                                  context),
                             ),
-                          ),
-                          IconButton(
-                            icon: Icon(Icons.calendar_month),
-                            onPressed: () async {
-                              _controllers.endDateController.text =
-                                  await OpenCalendar();
-                              await applyDateFilter();
-                            },
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
+                      boxValues(
+                          totalValoresRecibidos: totalValoresRecibidos,
+                          costoDeEntregas: costoDeEntregas,
+                          devoluciones: devoluciones,
+                          utilidad: utilidad),
                     ],
                   ),
-                ),
-                Column(
-                  children: [
-                    Text(
-                        'Total de valores recibidos=${totalValoresRecibidos.toStringAsFixed(2)}'),
-                    Text(
-                        'Costo de entregas=${costoDeEntregas.toStringAsFixed(2)}'),
-                    Text('devoluciones=${devoluciones.toStringAsFixed(2)}'),
-                    Text('utilidad=${utilidad.toStringAsFixed(2)}'),
-                  ],
-                )
-              ],
+                  Column(
+                    children: [
+                      Container(
+                        child: _modelTextField(
+                            text: "Buscar",
+                            controller: _controllers.searchController),
+                      ),
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.only(left: 15, right: 5),
+                            child: responsive(
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: fechaFinFechaIni(),
+                              ),
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: fechaFinFechaIni(),
+                              ),
+                              context,
+                            ),
+                          ),
+                        ],
+                      ),
+                      boxValues(
+                          totalValoresRecibidos: totalValoresRecibidos,
+                          costoDeEntregas: costoDeEntregas,
+                          devoluciones: devoluciones,
+                          utilidad: utilidad),
+                    ],
+                  ),
+                  context),
             ),
             Expanded(
               child: DataTable2(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: const BorderRadius.all(Radius.circular(4)),
+                    border: Border.all(color: Colors.blueGrey),
+                  ),
                   headingTextStyle: const TextStyle(
                       fontWeight: FontWeight.bold, color: Colors.black),
                   dataTextStyle: const TextStyle(
@@ -479,8 +495,26 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                       data.isNotEmpty ? data.length : [].length,
                       (index) => DataRow(cells: [
                             DataCell(
-                                Text(data[index]['attributes']['Fecha_Entrega']
-                                    .toString()), onTap: () {
+                                Row(
+                                  children: [
+                                    Text(data[index]['attributes']
+                                            ['Fecha_Entrega']
+                                        .toString()),
+                                    data[index]['attributes']['Status'] ==
+                                                'NOVEDAD' &&
+                                            data[index]['attributes']
+                                                    ['Estado_Devolucion'] ==
+                                                'PENDIENTE'
+                                        ? IconButton(
+                                            icon: Icon(Icons.schedule_outlined),
+                                            onPressed: () async {
+                                              reSchedule(data[index]['id'],
+                                                  'REAGENDADO');
+                                            },
+                                          )
+                                        : Container(),
+                                  ],
+                                ), onTap: () {
                               showDialog(
                                   context: context,
                                   builder: (context) {
@@ -1220,6 +1254,7 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
         },
         style: TextStyle(fontWeight: FontWeight.bold),
         decoration: InputDecoration(
+          fillColor: Colors.grey[500],
           prefixIcon: Icon(Icons.search),
           suffixIcon: _controllers.searchController.text.isNotEmpty
               ? GestureDetector(
@@ -1231,15 +1266,8 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                   child: Icon(Icons.close))
               : null,
           hintText: text,
-          enabledBorder: OutlineInputBorder(
-            borderSide:
-                BorderSide(width: 1, color: Color.fromRGBO(237, 241, 245, 1.0)),
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderSide:
-                BorderSide(width: 1, color: Color.fromRGBO(237, 241, 245, 1.0)),
-            borderRadius: BorderRadius.circular(10.0),
+          border: const OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey),
           ),
           focusColor: Colors.black,
           iconColor: Colors.black,
@@ -1329,6 +1357,23 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
 
   Future<void> applyDateFilter() async {
     arraysFiltersRanges = [];
+    if (_controllers.startDateController.text != '' &&
+        _controllers.endDateController.text != '') {
+      if (compareDates(_controllers.startDateController.text,
+          _controllers.endDateController.text)) {
+        var aux = _controllers.endDateController.text;
+
+        setState(() {
+          _controllers.endDateController.text =
+              _controllers.startDateController.text;
+
+          _controllers.startDateController.text = aux;
+        });
+      }
+    } else {
+      arraysFiltersRanges
+          .add({'filter': 'Fecha_Entrega', 'operator': '\$ne', 'value': ''});
+    }
     if (_controllers.startDateController.text != '') {
       arraysFiltersRanges.add({
         'filter': 'Fecha_Entrega',
@@ -1353,16 +1398,23 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
     devoluciones = 0;
     for (var element in data) {
       // print(element['attributes']['PrecioTotal']);
-      totalValoresRecibidos +=
-          double.parse(element['attributes']['PrecioTotal']);
+      if (element['attributes']['Status'] == 'ENTREGADO') {
+        totalValoresRecibidos +=
+            double.parse(element['attributes']['PrecioTotal']);
+      }
 
       if (element['attributes']['Status'] == 'ENTREGADO' ||
-          element['attributes']['PrecioTotal'] == 'NO ENTREGADO') {
-        costoDeEntregas += double.parse(element['attributes']['PrecioTotal']);
+          element['attributes']['Status'] == 'NO ENTREGADO') {
+        costoDeEntregas += double.parse(element['attributes']['users']['data']
+                        [0]['attributes']['vendedores']['data'][0]['attributes']
+                    ['CostoEnvio'] !=
+                null
+            ? element['attributes']['users']['data'][0]['attributes']
+                ['vendedores']['data'][0]['attributes']['CostoEnvio']
+            : 0);
       }
-      if (element['attributes']['users']['data'][0]['attributes']['vendedores']
-              ['data'][0]['attributes']['CostoDevolucion'] !=
-          null) {
+      if (element['attributes']['Status'] == 'NOVEDAD' &&
+          element['attributes']['Estado_Devolucion'] != 'PENDIENTE') {
         devoluciones += double.parse(element['attributes']['users']['data'][0]
                 ['attributes']['vendedores']['data'][0]['attributes']
             ['CostoDevolucion']);
@@ -1406,5 +1458,213 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
       }
     });
     return nuevaFecha;
+  }
+
+  fechaFinFechaIni() {
+    return [
+      Row(
+        children: [
+          const Text('Desde:'),
+          Text(_controllers.startDateController.text),
+          IconButton(
+            icon: const Icon(Icons.calendar_month),
+            onPressed: () async {
+              _controllers.startDateController.text = await OpenCalendar();
+              _focusNode2.requestFocus();
+            },
+          ),
+          const SizedBox(
+            width: 5,
+          ),
+          const Text('Hasta:'),
+          Text(
+            _controllers.endDateController.text,
+          ),
+          IconButton(
+            icon: Icon(Icons.calendar_month),
+            onPressed: () async {
+              _controllers.endDateController.text = await OpenCalendar();
+            },
+          ),
+        ],
+      ),
+      ElevatedButton(
+          onPressed: () async {
+            await applyDateFilter();
+          },
+          child: Text('Fitrar'))
+    ];
+  }
+
+  Future<void> reSchedule(id, estado) async {
+    var fecha = await OpenCalendar();
+    print(fecha);
+
+    confirmDialog(id, estado, fecha);
+  }
+
+  confirmDialog(id, estado, fecha) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor:
+              Colors.transparent, // Establece el fondo transparente
+
+          child: Container(
+            width: 400.0, // Ancho deseado para el AlertDialog
+            height: 300.0,
+            child: AlertDialog(
+              title: Text('Ateneción'),
+              content: Column(
+                children: [
+                  Text('Se reagendará esta entrega para $fecha'),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  child: const Text('Cancelar'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                TextButton(
+                  child: Text('Continuar'),
+                  onPressed: () async {
+                    await Connections()
+                        .updateDateDeliveryAndState(id, fecha, estado);
+                    loadData();
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class boxValues extends StatelessWidget {
+  const boxValues({
+    super.key,
+    required this.totalValoresRecibidos,
+    required this.costoDeEntregas,
+    required this.devoluciones,
+    required this.utilidad,
+  });
+
+  final double totalValoresRecibidos;
+  final double costoDeEntregas;
+  final double devoluciones;
+  final double utilidad;
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      children: [
+        Container(
+          padding: EdgeInsets.all(3),
+          width: 100,
+          decoration: BoxDecoration(border: Border.all(color: Colors.black)),
+          child: Column(
+            children: [
+              const Text(
+                'Valores recibidos:',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 10,
+                  color: Colors.black,
+                ),
+              ),
+              Text(
+                '\$${totalValoresRecibidos.toStringAsFixed(2)}',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                  color: Colors.black,
+                ),
+              ),
+            ],
+          ),
+        ),
+        Container(
+          padding: EdgeInsets.all(3),
+          width: 100,
+          decoration: BoxDecoration(border: Border.all(color: Colors.black)),
+          child: Column(
+            children: [
+              const Text(
+                'Costo de envío:',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 10,
+                  color: Colors.black,
+                ),
+              ),
+              Text(
+                '\$${costoDeEntregas.toStringAsFixed(2)}',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                  color: Colors.black,
+                ),
+              ),
+            ],
+          ),
+        ),
+        Container(
+          padding: EdgeInsets.all(3),
+          width: 100,
+          decoration: BoxDecoration(border: Border.all(color: Colors.black)),
+          child: Column(
+            children: [
+              const Text(
+                'Devoluciones:',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 10,
+                  color: Colors.black,
+                ),
+              ),
+              Text(
+                '\$${devoluciones.toStringAsFixed(2)}',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                  color: Colors.black,
+                ),
+              ),
+            ],
+          ),
+        ),
+        Container(
+          padding: EdgeInsets.all(3),
+          width: 100,
+          decoration: BoxDecoration(border: Border.all(color: Colors.black)),
+          child: Column(
+            children: [
+              const Text(
+                'Utilidad:',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 10,
+                  color: Colors.black,
+                ),
+              ),
+              Text(
+                '\$${utilidad.toStringAsFixed(2)}',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                  color: Colors.black,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 }

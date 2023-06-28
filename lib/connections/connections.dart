@@ -1200,6 +1200,21 @@ class Connections {
     }
   }
 
+  Future updateDateDeliveryAndState(id, fecha_entrega, status) async {
+    var request = await http.put(Uri.parse("$server/api/pedidos-shopifies/$id"),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          "data": {"Fecha_Entrega": fecha_entrega, "Status": status}
+        }));
+    var response = await request.body;
+    var decodeData = json.decode(response);
+    if (request.statusCode != 200) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   Future updateOrderStatusOperatorNoEntregado(
       status, comentario, archivo) async {
     String id = Get.parameters['id'].toString();

@@ -246,7 +246,7 @@ class _OrderEntryState extends State<OrderEntry> {
             Container(
               width: double.infinity,
               color: Colors.white,
-              padding: EdgeInsets.all(5),
+              padding: EdgeInsets.only(bottom: 5),
               child: responsive(
                   Row(
                     children: [
@@ -311,7 +311,7 @@ class _OrderEntryState extends State<OrderEntry> {
                                           context: context,
                                           builder: (BuildContext context) {
                                             return AlertDialog(
-                                              title: Text('Atenecion'),
+                                              title: Text('Ateneción'),
                                               content: Column(
                                                 children: [
                                                   const Text(
@@ -542,17 +542,7 @@ class _OrderEntryState extends State<OrderEntry> {
             const SizedBox(
               width: 10,
             ),
-            //  const Row(
-
-            //   children: [
-
-            //     Text("Opciones"),
-            //   ],
-            // ),
             Expanded(
-              // width: MediaQuery.of(context).size.width /
-              //     0.5, // Ancho del Container
-              // height: MediaQuery.of(context).size.height / 1.35,
               child: DataTable2(
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -733,51 +723,6 @@ class _OrderEntryState extends State<OrderEntry> {
                             elevation: 16,
                             onChanged: (String? value) {
                               AddFilterAndEq(value, 'Estado_Logistico');
-                              // print(
-                              //     "valor actual logistico" + value.toString());
-
-                              // setState(() {
-                              //   logistico = value!;
-
-                              //   if (value != 'TODO') {
-                              //     bool contains = false;
-
-                              //     for (var filter in filtersAndEq) {
-                              //       if (filter['filter'] ==
-                              //           'Estado_Logistico') {
-                              //         contains = true;
-                              //         break;
-                              //       }
-                              //     }
-                              //     if (contains == false) {
-                              //       filtersAndEq.add({
-                              //         'filter': 'Estado_Logistico',
-                              //         'value': value
-                              //       });
-                              //     } else {
-                              //       for (var filter in filtersAndEq) {
-                              //         if (filter['filter'] ==
-                              //             'Estado_Logistico') {
-                              //           filter['value'] = value;
-                              //           break;
-                              //         }
-                              //       }
-                              //     }
-                              //   } else {
-                              //     for (var filter in filtersAndEq) {
-                              //       if (filter['filter'] ==
-                              //           'Estado_Logistico') {
-                              //         filtersAndEq.remove(filter);
-                              //         break;
-                              //       }
-                              //     }
-                              //   }
-                              //   // search = "";
-                              //   // logistico = value!;
-                              //   // confirmado = "";
-                              //   // currentPage = 1;
-                              // });
-                              // paginateData();
                             },
                             items: optEstadoLogistico
                                 .map<DropdownMenuItem<String>>((String value) {
