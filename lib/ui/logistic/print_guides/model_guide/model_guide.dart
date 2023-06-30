@@ -45,6 +45,10 @@ class ModelGuide extends StatefulWidget {
 double size = 14.0;
 double multi = 3.0;
 double heigthColumns = 36.2;
+const double point = 1.0;
+const double inch = 72.0;
+const double cm = inch / 2.54;
+const double mm = inch / 25.4;
 
 class _ModelGuideState extends State<ModelGuide> {
   @override
@@ -53,142 +57,234 @@ class _ModelGuideState extends State<ModelGuide> {
       {'param': 'Fecha', 'value': widget.date},
       {'param': 'Código', 'value': widget.numPedido},
       {'param': 'Nombre', 'value': widget.name},
-      {'param': 'Dirección', 'value': widget.address},
       {'param': 'Teléfono', 'value': widget.phone},
       {'param': 'Cantidad', 'value': widget.quantity},
       {'param': 'Producto', 'value': widget.product},
       {'param': 'Producto extra', 'value': widget.extraProduct},
       {'param': 'Precio total', 'value': '\$${widget.price}'},
-      {'param': 'Observación', 'value': widget.observation},
-      {'param': 'Transportadora', 'value': widget.transport},
     ];
 
-    Row addParams() {
+    var paramsDatosEnvio = [
+      {'param': 'Transportadora', 'value': widget.transport},
+      {'param': 'Dirección', 'value': widget.address},
+      {'param': 'Observación', 'value': widget.observation},
+    ];
+
+    Expanded addParams() {
       List<Widget> colParams = [];
       List<Widget> colValues = [];
       for (var element in Params) {
         colParams.add(
-          Container(
-            height: heigthColumns,
+          Flexible(
             child: Text(
               '${element['param'].toString()}: ',
               style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: size * 1.5,
+                  fontSize: size * 1.3,
                   fontFamily: 'RobotoMono'),
             ),
           ),
         );
 
         colValues.add(
-          Container(
-            height: heigthColumns,
+          Flexible(
             child: Text(
               element['value'].toString(),
               overflow: TextOverflow.ellipsis,
               maxLines: 1,
-              style: TextStyle(fontSize: size * 1.5, fontFamily: 'RobotoMono'),
+              style: TextStyle(fontSize: size * 1.3, fontFamily: 'RobotoMono'),
             ),
           ),
         );
       }
 
-      return Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: EdgeInsets.only(left: 40, right: 10),
-              width: 70 * multi,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: colParams,
-              ),
-            ),
-            Container(
-              width: 170 * multi,
-              child: Column(
+      return Expanded(
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: EdgeInsets.only(left: 40, right: 10, bottom: 10),
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: colValues),
-            )
-          ]);
+                  children: Params.map((text) => Flexible(
+                        child: Container(
+                          margin: EdgeInsets.symmetric(vertical: 10),
+                          child: Text(
+                            '${text['param']}: ',
+                            overflow: TextOverflow.visible,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: size * 1.3,
+                                fontFamily: 'RobotoMono'),
+                          ),
+                        ),
+                      )).toList(),
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.only(left: 40, right: 10, bottom: 60),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: Params.map((text) => Flexible(
+                        child: Container(
+                          margin: EdgeInsets.symmetric(vertical: 10),
+                          child: Text(
+                            '${text['value']}',
+                            overflow: TextOverflow.visible,
+                            style: TextStyle(
+                                fontSize: size * 1.3, fontFamily: 'RobotoMono'),
+                          ),
+                        ),
+                      )).toList(),
+                ),
+              ),
+            ]),
+      );
+    }
+
+    Expanded addDataPackage() {
+      List<Widget> colDataPackege = [];
+
+      for (var element in Params) {
+        colDataPackege.add(
+          Flexible(
+            child: Row(
+              children: [
+                Container(
+                  width: 6.2 * cm,
+                  child: Text(
+                    '${element['param'].toString()}: ',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: size * 1.3,
+                        fontFamily: 'RobotoMono'),
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    element['value'].toString(),
+                    style: TextStyle(
+                        fontSize: size * 1.3, fontFamily: 'RobotoMono'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      }
+      return Expanded(
+        child: Container(
+          padding: EdgeInsets.only(left: 40, right: 10, top: 20),
+          child: Column(
+            children: colDataPackege,
+          ),
+        ),
+      );
+    }
+
+    Expanded addDataDelivery() {
+      List<Widget> colDataDelivery = [];
+
+      for (var element in paramsDatosEnvio) {
+        colDataDelivery.add(
+          Row(
+            children: [
+              Container(
+                width: 6.2 * cm,
+                child: Text(
+                  '${element['param'].toString()}: ',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: size * 1.3,
+                      fontFamily: 'RobotoMono'),
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  element['value'].toString(),
+                  style:
+                      TextStyle(fontSize: size * 1.3, fontFamily: 'RobotoMono'),
+                ),
+              ),
+            ],
+          ),
+        );
+      }
+      return Expanded(
+        child: Container(
+          padding: EdgeInsets.only(left: 40, right: 10, top: 20),
+          child: Column(
+            children: colDataDelivery,
+          ),
+        ),
+      );
     }
 
     return Transform.scale(
       scale: 1,
       child: Container(
-        width: 265 * 3,
-        child: Center(
-          child: Container(
-            child: Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Container(
-                decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black, width: 0.5),
-                    borderRadius: BorderRadius.circular(10)),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 20),
-                      child: _Header(),
-                    ),
-                    addParams(),
-                    SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Center(
-                          child: Container(
-                            decoration: BoxDecoration(
-                                borderRadius: const BorderRadius.only(
-                                  bottomLeft: Radius.circular(
-                                      10.0), // Radio de esquina inferior derecha
-                                ),
-                                border: Border.all(
-                                    color: Colors.black, width: 0.5)),
-                            height: 49 * multi,
-                            width: 500,
-                            child: Column(
-                              children: [
-                                Container(
-                                  padding: EdgeInsets.only(bottom: 4),
-                                  child: Text(
-                                    " ",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: size),
-                                  ),
-                                ),
-                                const SizedBox(height: 5),
-                                Container(
-                                  // padding: EdgeInsets.only(left: 3, right: 3),
-                                  height: 120,
-                                  width: 300,
-                                  child: Expanded(
-                                    child: BarcodeWidget(
-                                      barcode: Barcode.code128(),
-                                      data: '${widget.idForBarcode.toString()}',
-                                      drawText: true,
-                                      height: 30,
-                                      style: TextStyle(fontSize: 12),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Expanded(child: _4Column()),
-                      ],
-                    )
-                  ],
-                ),
+        width: 26.2 * cm,
+        decoration: BoxDecoration(border: Border.all(color: Colors.black)),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 20),
+              child: _Header(),
+            ),
+            addDataPackage(),
+            Divider(
+              height: 10,
+              color: Colors.black,
+            ),
+            addDataDelivery(),
+            Container(
+              alignment: Alignment.centerLeft,
+              padding: EdgeInsets.only(left: 40, bottom: 20),
+
+              // padding: EdgeInsets.only(left: 40),
+              child: Text(
+                "Ciudad: ${widget.city}",
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: size * 2.2,
+                    fontStyle: FontStyle.italic),
               ),
             ),
-          ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Center(
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      border: Border(
+                          right: BorderSide(color: Colors.black, width: 0.5),
+                          top: BorderSide(color: Colors.black, width: 0.5)),
+                    ),
+                    height: 49 * multi,
+                    width: 500,
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: BarcodeWidget(
+                            margin: EdgeInsets.all(12),
+                            barcode: Barcode.code128(),
+                            data: '${widget.idForBarcode.toString()}',
+                            drawText: true,
+                            style: TextStyle(fontSize: 10),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Expanded(child: _4Column()),
+              ],
+            )
+          ],
         ),
       ),
     );
@@ -203,11 +299,7 @@ class _ModelGuideState extends State<ModelGuide> {
             child: Container(
           height: 49 * multi,
           decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(
-                bottomRight:
-                    Radius.circular(10.0), // Radio de esquina inferior derecha
-              ),
-              border: Border.all(color: Colors.black, width: 0.5)),
+              border: Border(top: BorderSide(color: Colors.black, width: 0.5))),
           child: Center(
             child: PrettyQr(
               size: 120,
@@ -252,17 +344,6 @@ class _ModelGuideState extends State<ModelGuide> {
             ),
             Divider(
               color: Colors.black,
-            ),
-            Container(
-              child: Center(
-                child: Text(
-                  "Ciudad: ${widget.city}",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: size * 2,
-                      fontStyle: FontStyle.italic),
-                ),
-              ),
             ),
           ],
         ),

@@ -124,7 +124,7 @@ class _TransportDeliveryHistorialState
       });
       var response = await Connections()
           .getOrdersForHistorialTransportByCode(_search.text, url);
- 
+
       setState(() {
         data = response;
       });
@@ -189,10 +189,12 @@ class _TransportDeliveryHistorialState
             _dates(context),
             Expanded(
                 child: DataTable2(
-                    headingTextStyle:
-                        const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+                    headingTextStyle: const TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.black),
                     dataTextStyle: const TextStyle(
-                        fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black),
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black),
                     columnSpacing: 12,
                     horizontalMargin: 6,
                     minWidth: 5000,
@@ -574,6 +576,10 @@ class _TransportDeliveryHistorialState
                             ),
                             ElevatedButton(
                                 onPressed: () async {
+                                  const double point = 1.0;
+                                  const double inch = 72.0;
+                                  const double cm = inch / 2.54;
+                                  const double mm = inch / 25.4;
                                   getLoadingModal(context, false);
                                   final doc = pw.Document();
 
@@ -610,36 +616,20 @@ class _TransportDeliveryHistorialState
                                         transport: optionsCheckBox[i]
                                             ['transport'],
                                       )));
-
                                       doc.addPage(pw.Page(
-                                          pageFormat: PdfPageFormat.a4,
-                                          orientation:
-                                              pw.PageOrientation.portrait,
-                                          build: (pw.Context context) {
-                                            return pw.Column(
-                                                mainAxisAlignment:
-                                                    pw.MainAxisAlignment.center,
-                                                crossAxisAlignment: pw
-                                                    .CrossAxisAlignment.center,
-                                                children: [
-                                                  pw.Container(
-                                                    width: double.infinity,
-                                                    child: pw.Image(
-                                                        pw.MemoryImage(
-                                                            capturedImage),
-                                                        fit: pw.BoxFit.contain),
-                                                    height: 1200,
-                                                  ),
-                                                  pw.Container(
-                                                    width: double.infinity,
-                                                    child: pw.Image(
-                                                        pw.MemoryImage(
-                                                            capturedImage),
-                                                        fit: pw.BoxFit.contain),
-                                                    height: 1200,
-                                                  )
-                                                ]); // Center
-                                          }));
+                                        pageFormat: PdfPageFormat(
+                                            21.0 * cm, 21.0 * cm,
+                                            marginAll: 0.1 * cm),
+                                        build: (pw.Context context) {
+                                          return pw.Row(
+                                            children: [
+                                              pw.Image(
+                                                  pw.MemoryImage(capturedImage),
+                                                  fit: pw.BoxFit.contain)
+                                            ],
+                                          );
+                                        },
+                                      ));
                                     }
                                   }
                                   Navigator.pop(context);
@@ -682,7 +672,8 @@ class _TransportDeliveryHistorialState
                             ),
                             SizedBox(
                               height: 10,
-                            ),             ElevatedButton(
+                            ),
+                            ElevatedButton(
                                 onPressed: () async {
                                   getLoadingModal(context, false);
 
@@ -830,7 +821,9 @@ class _TransportDeliveryHistorialState
                                   "PENDIENTE",
                                   style: TextStyle(fontWeight: FontWeight.bold),
                                 )),
-                                SizedBox(height: 20,),
+                            SizedBox(
+                              height: 20,
+                            ),
                             ElevatedButton(
                                 onPressed: () async {
                                   getLoadingModal(context, false);
@@ -1019,13 +1012,12 @@ class _TransportDeliveryHistorialState
         DataCell(Checkbox(
             value: optionsCheckBox[index]['check'],
             onChanged: (value) {
-
               setState(() {
                 if (value!) {
                   optionsCheckBox[index]['check'] = value;
                   optionsCheckBox[index]['id'] = data[index]['id'].toString();
                   optionsCheckBox[index]['numPedido'] =
-                      "${data[index]['users']!=null?data[index]['users'][0]['vendedores'][0]['Nombre_Comercial']:data[index]['Tienda_Temporal'].toString()}-${data[index]['NumeroOrden']}"
+                      "${data[index]['users'] != null ? data[index]['users'][0]['vendedores'][0]['Nombre_Comercial'] : data[index]['Tienda_Temporal'].toString()}-${data[index]['NumeroOrden']}"
                           .toString();
                   optionsCheckBox[index]['date'] =
                       data[index]['pedido_fecha']['Fecha'].toString();
@@ -1064,19 +1056,33 @@ class _TransportDeliveryHistorialState
               });
             })),
         DataCell(Text('${data[index]['Marca_T_I'].toString()}'), onTap: () {
-          showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
-      
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
         DataCell(
             Text(
@@ -1085,18 +1091,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-        showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
         DataCell(
             Text(
@@ -1105,18 +1126,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-  showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
         DataCell(
             Text(
@@ -1125,18 +1161,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-        showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
         DataCell(
             Text(
@@ -1145,18 +1196,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-         showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
 
         DataCell(
@@ -1166,18 +1232,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-       showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
         DataCell(
             Text(
@@ -1186,18 +1267,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-       showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
         DataCell(
             Text(
@@ -1206,18 +1302,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-  showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
         DataCell(
             Text(
@@ -1226,18 +1337,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-  showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
         DataCell(
             Text(
@@ -1246,18 +1372,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-         showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
         DataCell(
             Text(
@@ -1266,18 +1407,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-    showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
         DataCell(
             Text(
@@ -1286,18 +1442,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
 
         DataCell(
@@ -1307,18 +1478,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-         showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
 
         DataCell(
@@ -1328,18 +1514,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-    showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
 
         DataCell(
@@ -1349,18 +1550,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-           showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
         DataCell(
             Text(
@@ -1372,18 +1588,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-      showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
         DataCell(
             Text(
@@ -1395,18 +1626,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-         showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
         DataCell(
             Text(
@@ -1418,18 +1664,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-        showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
         DataCell(
             Text(
@@ -1441,18 +1702,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-  showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
         DataCell(
             Text(
@@ -1461,18 +1737,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-        showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
         DataCell(
             Text(
@@ -1481,18 +1772,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
         DataCell(
             Text(
@@ -1501,18 +1807,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-        showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
         DataCell(
             Text(
@@ -1521,18 +1842,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-       showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
 
         DataCell(
@@ -1546,18 +1882,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-    showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
         DataCell(
             Text(
@@ -1569,18 +1920,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-       showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
 
         DataCell(
@@ -1589,18 +1955,33 @@ class _TransportDeliveryHistorialState
                 ? data[index]['users'][0]['vendedores'][0]['CostoEnvio']
                     .toString()
                 : ""), onTap: () {
-    showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
         DataCell(
             Text(data[index]['users'] != null &&
@@ -1608,18 +1989,33 @@ class _TransportDeliveryHistorialState
                 ? data[index]['users'][0]['vendedores'][0]['CostoDevolucion']
                     .toString()
                 : ""), onTap: () {
-        showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
 
         // DataCell(Text(
@@ -1635,18 +2031,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-           showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
         DataCell(
             Text(
@@ -1655,18 +2066,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
         DataCell(
             Text(
@@ -1675,22 +2101,36 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-        showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
       ];
     } else {
-      
       return [
         DataCell(Checkbox(
             value: optionsCheckBox[index]['check'],
@@ -1700,7 +2140,7 @@ class _TransportDeliveryHistorialState
                   optionsCheckBox[index]['check'] = value;
                   optionsCheckBox[index]['id'] = data[index]['id'].toString();
                   optionsCheckBox[index]['numPedido'] =
-                      "${data[index]['attributes']['users']['data']!=null?data[index]['attributes']['users']['data'][0]['attributes']['vendedores']['data'][0]['attributes']['Nombre_Comercial']:data[index]['attributes']['Tienda_Temporal'].toString()}-${data[index]['attributes']['NumeroOrden']}"
+                      "${data[index]['attributes']['users']['data'] != null ? data[index]['attributes']['users']['data'][0]['attributes']['vendedores']['data'][0]['attributes']['Nombre_Comercial'] : data[index]['attributes']['Tienda_Temporal'].toString()}-${data[index]['attributes']['NumeroOrden']}"
                           .toString();
                   optionsCheckBox[index]['date'] = data[index]['attributes']
                           ['pedido_fecha']['data']['attributes']['Fecha']
@@ -1740,39 +2180,68 @@ class _TransportDeliveryHistorialState
             })),
         DataCell(Text('${data[index]['attributes']['Marca_T_I'].toString()}'),
             onTap: () {
-  showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
         DataCell(
             Text(
-              data[index]['attributes']['Marca_T_I']
-                  .toString(),
+              data[index]['attributes']['Marca_T_I'].toString(),
               style: TextStyle(
                 color: rowColor,
               ),
             ), onTap: () {
-       showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
         DataCell(
             Text(
@@ -1781,18 +2250,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-  showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
         DataCell(
             Text(
@@ -1801,18 +2285,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-       showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
         DataCell(
             Text(
@@ -1821,18 +2320,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-       showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
 
         DataCell(
@@ -1842,18 +2356,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-  showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
         DataCell(
             Text(
@@ -1862,18 +2391,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-  showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
         DataCell(
             Text(
@@ -1882,18 +2426,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-        showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
         DataCell(
             Text(
@@ -1902,18 +2461,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-  showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
         DataCell(
             Text(
@@ -1922,18 +2496,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-    showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
         DataCell(
             Text(
@@ -1942,18 +2531,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-    showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
         DataCell(
             Text(
@@ -1962,18 +2566,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-           showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
 
         DataCell(
@@ -1983,18 +2602,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-           showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
 
         DataCell(
@@ -2004,18 +2638,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-       showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
 
         DataCell(
@@ -2025,18 +2674,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
         DataCell(
             Text(
@@ -2049,18 +2713,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-  showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
         DataCell(
             Text(
@@ -2073,18 +2752,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-        showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
         DataCell(
             Text(
@@ -2097,18 +2791,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-     showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
         DataCell(
             Text(
@@ -2121,18 +2830,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-        showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
         DataCell(
             Text(
@@ -2141,18 +2865,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-          showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
         DataCell(
             Text(
@@ -2161,18 +2900,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-     showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
         DataCell(
             Text(
@@ -2181,18 +2935,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-  showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
         DataCell(
             Text(
@@ -2201,18 +2970,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-      showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
 
         DataCell(
@@ -2226,18 +3010,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-       showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
         DataCell(
             Text(
@@ -2251,18 +3050,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-      showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
 
         DataCell(
@@ -2271,18 +3085,33 @@ class _TransportDeliveryHistorialState
                         ['vendedores']['data'][0]['attributes']['CostoEnvio']
                     .toString()
                 : ""), onTap: () {
-  showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
         DataCell(
             Text(data[index]['attributes']['users']['data'] != null
@@ -2291,18 +3120,33 @@ class _TransportDeliveryHistorialState
                         ['CostoDevolucion']
                     .toString()
                 : ""), onTap: () {
-  showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
 
         // DataCell(Text(
@@ -2318,18 +3162,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-         showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
         DataCell(
             Text(
@@ -2338,18 +3197,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-  showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
         DataCell(
             Text(
@@ -2358,18 +3232,33 @@ class _TransportDeliveryHistorialState
                 color: rowColor,
               ),
             ), onTap: () {
-   showDialog(context: context, builder: (context){
-            return AlertDialog(
-              content: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Column(children: [
-                  Align(alignment: Alignment.centerRight,child: GestureDetector(onTap: (){Navigator.pop(context);},child: Icon(Icons.close),),),
-                  Expanded(child: TransportDeliveryHistoryDetails(id: data[index]['id'].toString(),))
-                ],),
-              ),
-            );
-          });
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                        Expanded(
+                            child: TransportDeliveryHistoryDetails(
+                          id: data[index]['id'].toString(),
+                        ))
+                      ],
+                    ),
+                  ),
+                );
+              });
         }),
       ];
     }

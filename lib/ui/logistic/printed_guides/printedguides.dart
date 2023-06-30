@@ -91,9 +91,9 @@ class _PrintedGuidesState extends State<PrintedGuides> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(onPressed: () {
-        enviarMensajeWhatsApp('593992107483', '¡Hola! ¿Cómo estás?');
-      }),
+      // floatingActionButton: FloatingActionButton(onPressed: () {
+      //   enviarMensajeWhatsApp('593992107483', '¡Hola! ¿Cómo estás?');
+      // }),
       backgroundColor: Colors.white,
       body: Container(
         width: double.infinity,
@@ -565,6 +565,11 @@ class _PrintedGuidesState extends State<PrintedGuides> {
         children: [
           ElevatedButton(
               onPressed: () async {
+                const double point = 1.0;
+                const double inch = 72.0;
+                const double cm = inch / 2.54;
+                const double mm = inch / 25.4;
+
                 getLoadingModal(context, false);
                 final doc = pw.Document();
 
@@ -592,9 +597,9 @@ class _PrintedGuidesState extends State<PrintedGuides> {
                     )));
 
                     doc.addPage(pw.Page(
-                      pageFormat: PdfPageFormat(1000, 950),
+                      pageFormat: PdfPageFormat(21.0 * cm, 21.0 * cm,
+                          marginAll: 0.1 * cm),
                       build: (pw.Context context) {
-                        // Definir un contenedor que ocupe toda la página
                         return pw.Row(
                           children: [
                             pw.Image(pw.MemoryImage(capturedImage),
@@ -614,7 +619,7 @@ class _PrintedGuidesState extends State<PrintedGuides> {
                 "IMPRIMIR",
                 style: TextStyle(fontWeight: FontWeight.bold),
               )),
-        const  SizedBox(
+          const SizedBox(
             width: 20,
           ),
           ElevatedButton(

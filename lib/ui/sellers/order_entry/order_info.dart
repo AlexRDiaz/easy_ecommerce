@@ -1,15 +1,11 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:frontend/config/exports.dart';
 import 'package:frontend/connections/connections.dart';
-import 'package:frontend/helpers/navigators.dart';
 import 'package:frontend/ui/sellers/order_entry/controllers/controllers.dart';
 import 'package:frontend/ui/widgets/loading.dart';
 import 'package:frontend/ui/widgets/routes/routes.dart';
-import 'package:get/route_manager.dart';
 import 'package:frontend/main.dart';
 
 class OrderInfo extends StatefulWidget {

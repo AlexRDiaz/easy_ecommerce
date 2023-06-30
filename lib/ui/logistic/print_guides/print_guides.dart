@@ -471,6 +471,10 @@ class _PrintGuidesState extends State<PrintGuides> {
         children: [
           ElevatedButton(
               onPressed: () async {
+                const double point = 1.0;
+                const double inch = 72.0;
+                const double cm = inch / 2.54;
+                const double mm = inch / 25.4;
                 getLoadingModal(context, false);
                 final doc = pw.Document();
 
@@ -497,11 +501,10 @@ class _PrintGuidesState extends State<PrintGuides> {
                       quantity: optionsCheckBox[i]['quantity'],
                       transport: optionsCheckBox[i]['transport'],
                     )));
-
                     doc.addPage(pw.Page(
-                      pageFormat: PdfPageFormat(1000, 950),
+                      pageFormat: PdfPageFormat(21.0 * cm, 21.0 * cm,
+                          marginAll: 0.1 * cm),
                       build: (pw.Context context) {
-                        // Definir un contenedor que ocupe toda la página
                         return pw.Row(
                           children: [
                             pw.Image(pw.MemoryImage(capturedImage),

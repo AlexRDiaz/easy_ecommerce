@@ -38,20 +38,17 @@ class _ScannerPrintedDevolucionesState
                   getLoadingModal(context, false);
                   print(barcode);
 
-                  // await Connections()
-                  //     .updateOrderReturnLogistic(barcode.toString());
+                  await Connections()
+                      .updateOrderReturnLogistic(barcode.toString());
 
-                  // var response = await Connections()
-                  //     .updateOrderLogisticStatusPrint(
-                  //         "ENVIADO", barcode.toString());
-
-                  var responseOrder = await Connections().getOrderByID(barcode);
+                  var responseOrder =
+                      await Connections().getOrderByID(barcode.toString());
 
                   setState(() {
                     _barcode =
                         "${responseOrder['attributes']['Name_Comercial']}-${responseOrder['attributes']['NumeroOrden']}";
                   });
-                  //Navigator.pop(context);
+                  Navigator.pop(context);
                 },
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,

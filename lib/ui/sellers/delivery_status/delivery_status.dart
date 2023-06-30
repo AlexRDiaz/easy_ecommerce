@@ -164,7 +164,8 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                     labelStyle: TextStyle(color: Colors.white),
                     avatar: CircleAvatar(
                       backgroundColor: Colors.white70,
-                      child: Text(total.toString()),
+                      child: Text(total.toString(),
+                          style: TextStyle(fontSize: 10)),
                     ),
                   ),
                 ),
@@ -185,7 +186,8 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                     labelStyle: TextStyle(color: Colors.white),
                     avatar: CircleAvatar(
                       backgroundColor: Colors.white70,
-                      child: Text(entregados.toString()),
+                      child: Text(entregados.toString(),
+                          style: TextStyle(fontSize: 10)),
                     ),
                   ),
                 ),
@@ -205,7 +207,8 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                     labelStyle: TextStyle(color: Colors.white),
                     avatar: CircleAvatar(
                       backgroundColor: Colors.white70,
-                      child: Text(noEntregados.toString()),
+                      child: Text(noEntregados.toString(),
+                          style: TextStyle(fontSize: 10)),
                     ),
                   ),
                 ),
@@ -225,7 +228,8 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                     labelStyle: TextStyle(color: Colors.white),
                     avatar: CircleAvatar(
                       backgroundColor: Colors.white70,
-                      child: Text(conNovedad.toString()),
+                      child: Text(conNovedad.toString(),
+                          style: TextStyle(fontSize: 10)),
                     ),
                   ),
                 ),
@@ -245,7 +249,8 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                     labelStyle: TextStyle(color: Colors.white),
                     avatar: CircleAvatar(
                       backgroundColor: Colors.white70,
-                      child: Text(reagendados.toString()),
+                      child: Text(reagendados.toString(),
+                          style: TextStyle(fontSize: 10)),
                     ),
                   ),
                 ),
@@ -265,7 +270,8 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                     labelStyle: TextStyle(color: Colors.white),
                     avatar: CircleAvatar(
                       backgroundColor: Colors.white70,
-                      child: Text(enRuta.toString()),
+                      child: Text(enRuta.toString(),
+                          style: TextStyle(fontSize: 10)),
                     ),
                   ),
                 ),
@@ -1396,8 +1402,37 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
     totalValoresRecibidos = 0;
     costoDeEntregas = 0;
     devoluciones = 0;
+
     for (var element in data) {
-      // print(element['attributes']['PrecioTotal']);
+      element['attributes']['PrecioTotal'] =
+          element['attributes']['PrecioTotal'].replaceAll(',', '.');
+
+      if (element['attributes']['users']['data'][0]['attributes']['vendedores']
+              ['data'][0]['attributes']['CostoEnvio'] !=
+          null) {
+        element['attributes']['users']['data'][0]['attributes']['vendedores']
+            ['data'][0]['attributes']['CostoEnvio'] = element['attributes']
+                    ['users']['data'][0]['attributes']['vendedores']['data'][0]
+                ['attributes']['CostoEnvio']
+            .replaceAll(',', '.');
+      } else {
+        element['attributes']['users']['data'][0]['attributes']['vendedores']
+            ['data'][0]['attributes']['CostoEnvio'] = 0;
+      }
+
+      if (element['attributes']['users']['data'][0]['attributes']['vendedores']
+              ['data'][0]['attributes']['CostoDevolucion'] !=
+          null) {
+        element['attributes']['users']['data'][0]['attributes']['vendedores']
+            ['data'][0]['attributes']['CostoDevolucion'] = element['attributes']
+                ['users']['data'][0]['attributes']['vendedores']['data'][0]
+            ['attributes']['CostoDevolucion']
+          ..replaceAll(',', '.');
+      } else {
+        element['attributes']['users']['data'][0]['attributes']['vendedores']
+            ['data'][0]['attributes']['CostoDevolucion'] = 0;
+      }
+
       if (element['attributes']['Status'] == 'ENTREGADO') {
         totalValoresRecibidos +=
             double.parse(element['attributes']['PrecioTotal']);
@@ -1406,12 +1441,9 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
       if (element['attributes']['Status'] == 'ENTREGADO' ||
           element['attributes']['Status'] == 'NO ENTREGADO') {
         costoDeEntregas += double.parse(element['attributes']['users']['data']
-                        [0]['attributes']['vendedores']['data'][0]['attributes']
-                    ['CostoEnvio'] !=
-                null
-            ? element['attributes']['users']['data'][0]['attributes']
-                ['vendedores']['data'][0]['attributes']['CostoEnvio']
-            : 0);
+                    [0]['attributes']['vendedores']['data'][0]['attributes']
+                ['CostoEnvio'] ??
+            0);
       }
       if (element['attributes']['Status'] == 'NOVEDAD' &&
           element['attributes']['Estado_Devolucion'] != 'PENDIENTE') {
@@ -1566,7 +1598,7 @@ class boxValues extends StatelessWidget {
       children: [
         Container(
           padding: EdgeInsets.all(3),
-          width: 100,
+          width: 80,
           decoration: BoxDecoration(border: Border.all(color: Colors.black)),
           child: Column(
             children: [
@@ -1574,7 +1606,7 @@ class boxValues extends StatelessWidget {
                 'Valores recibidos:',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 10,
+                  fontSize: 9,
                   color: Colors.black,
                 ),
               ),
@@ -1591,7 +1623,7 @@ class boxValues extends StatelessWidget {
         ),
         Container(
           padding: EdgeInsets.all(3),
-          width: 100,
+          width: 80,
           decoration: BoxDecoration(border: Border.all(color: Colors.black)),
           child: Column(
             children: [
@@ -1599,7 +1631,7 @@ class boxValues extends StatelessWidget {
                 'Costo de envío:',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 10,
+                  fontSize: 9,
                   color: Colors.black,
                 ),
               ),
@@ -1616,7 +1648,7 @@ class boxValues extends StatelessWidget {
         ),
         Container(
           padding: EdgeInsets.all(3),
-          width: 100,
+          width: 80,
           decoration: BoxDecoration(border: Border.all(color: Colors.black)),
           child: Column(
             children: [
@@ -1624,7 +1656,7 @@ class boxValues extends StatelessWidget {
                 'Devoluciones:',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 10,
+                  fontSize: 9,
                   color: Colors.black,
                 ),
               ),
@@ -1641,7 +1673,7 @@ class boxValues extends StatelessWidget {
         ),
         Container(
           padding: EdgeInsets.all(3),
-          width: 100,
+          width: 80,
           decoration: BoxDecoration(border: Border.all(color: Colors.black)),
           child: Column(
             children: [
@@ -1649,7 +1681,7 @@ class boxValues extends StatelessWidget {
                 'Utilidad:',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 10,
+                  fontSize: 9,
                   color: Colors.black,
                 ),
               ),

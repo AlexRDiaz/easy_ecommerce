@@ -700,6 +700,9 @@ class Connections {
   }
 
   getOrdersForHistorialTransportByDates() async {
+    print('start: ${sharedPrefs!.getString("dateDesdeTransportHistorial")}');
+    print('end: ${sharedPrefs!.getString("dateHastaTransportHistorial")}');
+
     var request = await http.post(
         Uri.parse("$server/api/history/transport?pagination[limit]=-1"),
         headers: {'Content-Type': 'application/json'},
@@ -707,6 +710,7 @@ class Connections {
           "start": sharedPrefs!.getString("dateDesdeTransportHistorial"),
           "end": sharedPrefs!.getString("dateHastaTransportHistorial")
         }));
+
     var response = await request.body;
     var decodeData = json.decode(response);
     return decodeData['data'];
