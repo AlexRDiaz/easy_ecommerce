@@ -1991,6 +1991,65 @@ class Connections {
     }
   }
 
+  getOrdersForSellerStateSearchForDate(code, arrayFiltersOrCont,
+      arrayFiltersAndEq, List<dynamic> arrayDateRanges) async {
+    // String url =
+    //     "http://localhost:1337/api/shopify/pedidos/filter/seller/dates/${sharedPrefs!.getString("idComercialMasterSeller").toString()}?filters[Status][\$ne]=PEDIDO PROGRAMADO";
+
+    String url =
+        "http://localhost:1337/api/shopify/pedidos/filter/seller/dates/${sharedPrefs!.getString("idComercialMasterSeller").toString()}?";
+
+    List<dynamic> filtersOrCont = [];
+    List<dynamic> filtersAndEq = [];
+    List<dynamic> filtersNotEq = [];
+
+    var bodyParams;
+    if (arrayDateRanges.isNotEmpty) {
+      bodyParams = {
+        arrayDateRanges[0]['body_param']: arrayDateRanges[0]['value'] != ""
+            ? arrayDateRanges[0]['value']
+            : '1/1/1999',
+        arrayDateRanges[1]['body_param']: arrayDateRanges[1]['value'] != ""
+            ? arrayDateRanges[1]['value']
+            : '1/1/2200'
+      };
+    } else {
+      bodyParams = {
+        'start': sharedPrefs!.getString("dateOperatorState"),
+        'end': '1/1/2200'
+      };
+    }
+
+    if (code != "") {
+      for (var filter in arrayFiltersOrCont) {
+        filtersOrCont.add({
+          filter['filter']: {'\$contains': code}
+        });
+      }
+    }
+
+    filtersNotEq.add({'Status': 'PEDIDO PROGRAMADO'});
+    bodyParams['not'] = jsonEncode(filtersNotEq);
+
+    bodyParams['or'] = jsonEncode(filtersOrCont);
+
+    print("body: " + bodyParams.toString());
+    for (var filter in arrayFiltersAndEq) {
+      filtersAndEq.add({filter['filter']: filter['value']});
+    }
+    bodyParams['and'] = jsonEncode(filtersAndEq);
+
+    // "$server/api/pedidos-shopifies?populate=transportadora&populate=users&populate=users.vendedores&populate=pedido_fecha&populate=sub_ruta&populate=operadore&populate=operadore.user&filters[Status][\$ne]=PEDIDO PROGRAMADO&filters[IdComercial][\$eq]=${sharedPrefs!.getString("idComercialMasterSeller").toString()}&filters[\$or][0][NumeroOrden][\$contains]=$code&filters[\$or][1][Fecha_Entrega][\$contains]=$code&filters[\$or][2][CiudadShipping][\$contains]=$code&filters[\$or][3][NombreShipping][\$contains]=$code&filters[\$or][4][DireccionShipping][\$contains]=$code&filters[\$or][5][TelefonoShipping][\$contains]=$code&filters[\$or][6][Cantidad_Total][\$contains]=$code&filters[\$or][7][ProductoP][\$contains]=$code&filters[\$or][8][ProductoExtra][\$contains]=$code&filters[\$or][9][PrecioTotal][\$contains]=$code&filters[\$or][10][Comentario][\$contains]=$code&filters[\$or][11][Status][\$contains]=$code&filters[\$or][12][Estado_Interno][\$contains]=$code&filters[\$or][13][Estado_Logistico][\$contains]=$code&filters[\$or][14][Estado_Devolucion][\$contains]=$code&filters[\$or][15][Marca_T_I][\$contains]=$code&pagination[limit]=-1"
+    print('se ha actualizado ' + url);
+    var request = await http.post(Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(bodyParams));
+
+    var response = await request.body;
+    var decodeData = json.decode(response);
+    return decodeData['data'];
+  }
+
   getWithdrawalSellers(code) async {
     var request = await http.get(
       Uri.parse(

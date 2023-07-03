@@ -36,9 +36,7 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
   bool isFirst = true;
   int counterLoad = 0;
   var arrayFiltersAndEq = [];
-  var arraysFiltersRanges = [];
-  final FocusNode _focusNode1 = FocusNode();
-  final FocusNode _focusNode2 = FocusNode();
+  var arrayDateRanges = [];
   @override
   void didChangeDependencies() {
     loadData();
@@ -51,41 +49,32 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
       getLoadingModal(context, false);
     });
 
-    if (_controllers.searchController.text.isEmpty &&
-        arraysFiltersRanges.isEmpty) {
-      response = await Connections()
-          .getOrdersForSellerState(_controllers.searchController.text);
-    } else {
-      response = await Connections().getOrdersForSellerStateSearch(
-          _controllers.searchController.text,
-          [
-            {'filter': 'NumeroOrden'},
-            {'filter': 'Fecha_Entrega'},
-            {'filter': 'CiudadShipping'},
-            {'filter': 'NombreShipping'},
-            {'filter': 'DireccionShipping'},
-            {'filter': 'TelefonoShipping'},
-            {'filter': 'Cantidad_Total'},
-            {'filter': 'ProductoP'},
-            {'filter': 'ProductoExtra'},
-            {'filter': 'PrecioTotal'},
-            {'filter': 'Comentario'},
-            {'filter': 'Status'},
-            {'filter': 'Estado_Interno'},
-            {'filter': 'Estado_Logistico'},
-            {'filter': 'Estado_Devolucion'},
-            {'filter': 'Marca_T_I'},
-          ],
-          arrayFiltersAndEq,
-          arraysFiltersRanges);
-    }
+    response = await Connections().getOrdersForSellerStateSearchForDate(
+        _controllers.searchController.text,
+        [
+          {'filter': 'NumeroOrden'},
+          {'filter': 'Fecha_Entrega'},
+          {'filter': 'CiudadShipping'},
+          {'filter': 'NombreShipping'},
+          {'filter': 'DireccionShipping'},
+          {'filter': 'TelefonoShipping'},
+          {'filter': 'Cantidad_Total'},
+          {'filter': 'ProductoP'},
+          {'filter': 'ProductoExtra'},
+          {'filter': 'PrecioTotal'},
+          {'filter': 'Comentario'},
+          {'filter': 'Status'},
+          {'filter': 'Estado_Interno'},
+          {'filter': 'Estado_Logistico'},
+          {'filter': 'Estado_Devolucion'},
+          {'filter': 'Marca_T_I'},
+        ],
+        arrayFiltersAndEq,
+        arrayDateRanges);
 
     data = response;
-    //calculateValues();
-    // print(data);
-    if (arrayFiltersAndEq.length == 0) {
-      // print('arreglo de est' + arrayFiltersAndEq.length.toString());
 
+    if (arrayFiltersAndEq.length == 0) {
       updateCounters();
     }
     Future.delayed(Duration(milliseconds: 500), () {
@@ -521,35 +510,7 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                                         : Container(),
                                   ],
                                 ), onTap: () {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AlertDialog(
-                                      content: Container(
-                                        width:
-                                            MediaQuery.of(context).size.width,
-                                        height:
-                                            MediaQuery.of(context).size.height,
-                                        child: Column(
-                                          children: [
-                                            Align(
-                                              alignment: Alignment.centerRight,
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  Navigator.pop(context);
-                                                },
-                                                child: Icon(Icons.close),
-                                              ),
-                                            ),
-                                            Expanded(
-                                                child: DeliveryStatusSellerInfo(
-                                              id: data[index]['id'].toString(),
-                                            ))
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  });
+                              openDialog(context, index);
                             }),
                             DataCell(
                                 Text(
@@ -559,334 +520,54 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                                             .toString())!),
                                     '${data[index]['attributes']['Name_Comercial'].toString()}-${data[index]['attributes']['NumeroOrden'].toString()}'),
                                 onTap: () {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AlertDialog(
-                                      content: Container(
-                                        width:
-                                            MediaQuery.of(context).size.width,
-                                        height:
-                                            MediaQuery.of(context).size.height,
-                                        child: Column(
-                                          children: [
-                                            Align(
-                                              alignment: Alignment.centerRight,
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  Navigator.pop(context);
-                                                },
-                                                child: Icon(Icons.close),
-                                              ),
-                                            ),
-                                            Expanded(
-                                                child: DeliveryStatusSellerInfo(
-                                              id: data[index]['id'].toString(),
-                                            ))
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  });
+                              openDialog(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['CiudadShipping']
                                     .toString()), onTap: () {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AlertDialog(
-                                      content: Container(
-                                        width:
-                                            MediaQuery.of(context).size.width,
-                                        height:
-                                            MediaQuery.of(context).size.height,
-                                        child: Column(
-                                          children: [
-                                            Align(
-                                              alignment: Alignment.centerRight,
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  Navigator.pop(context);
-                                                },
-                                                child: Icon(Icons.close),
-                                              ),
-                                            ),
-                                            Expanded(
-                                                child: DeliveryStatusSellerInfo(
-                                              id: data[index]['id'].toString(),
-                                            ))
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  });
+                              openDialog(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['NombreShipping']
                                     .toString()), onTap: () {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AlertDialog(
-                                      content: Container(
-                                        width:
-                                            MediaQuery.of(context).size.width,
-                                        height:
-                                            MediaQuery.of(context).size.height,
-                                        child: Column(
-                                          children: [
-                                            Align(
-                                              alignment: Alignment.centerRight,
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  Navigator.pop(context);
-                                                },
-                                                child: Icon(Icons.close),
-                                              ),
-                                            ),
-                                            Expanded(
-                                                child: DeliveryStatusSellerInfo(
-                                              id: data[index]['id'].toString(),
-                                            ))
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  });
+                              openDialog(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']
                                         ['DireccionShipping']
                                     .toString()), onTap: () {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AlertDialog(
-                                      content: Container(
-                                        width:
-                                            MediaQuery.of(context).size.width,
-                                        height:
-                                            MediaQuery.of(context).size.height,
-                                        child: Column(
-                                          children: [
-                                            Align(
-                                              alignment: Alignment.centerRight,
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  Navigator.pop(context);
-                                                },
-                                                child: Icon(Icons.close),
-                                              ),
-                                            ),
-                                            Expanded(
-                                                child: DeliveryStatusSellerInfo(
-                                              id: data[index]['id'].toString(),
-                                            ))
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  });
+                              openDialog(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']
                                         ['TelefonoShipping']
                                     .toString()), onTap: () {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AlertDialog(
-                                      content: Container(
-                                        width:
-                                            MediaQuery.of(context).size.width,
-                                        height:
-                                            MediaQuery.of(context).size.height,
-                                        child: Column(
-                                          children: [
-                                            Align(
-                                              alignment: Alignment.centerRight,
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  Navigator.pop(context);
-                                                },
-                                                child: Icon(Icons.close),
-                                              ),
-                                            ),
-                                            Expanded(
-                                                child: DeliveryStatusSellerInfo(
-                                              id: data[index]['id'].toString(),
-                                            ))
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  });
+                              openDialog(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['Cantidad_Total']
                                     .toString()), onTap: () {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AlertDialog(
-                                      content: Container(
-                                        width:
-                                            MediaQuery.of(context).size.width,
-                                        height:
-                                            MediaQuery.of(context).size.height,
-                                        child: Column(
-                                          children: [
-                                            Align(
-                                              alignment: Alignment.centerRight,
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  Navigator.pop(context);
-                                                },
-                                                child: Icon(Icons.close),
-                                              ),
-                                            ),
-                                            Expanded(
-                                                child: DeliveryStatusSellerInfo(
-                                              id: data[index]['id'].toString(),
-                                            ))
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  });
+                              openDialog(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['ProductoP']
                                     .toString()), onTap: () {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AlertDialog(
-                                      content: Container(
-                                        width:
-                                            MediaQuery.of(context).size.width,
-                                        height:
-                                            MediaQuery.of(context).size.height,
-                                        child: Column(
-                                          children: [
-                                            Align(
-                                              alignment: Alignment.centerRight,
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  Navigator.pop(context);
-                                                },
-                                                child: Icon(Icons.close),
-                                              ),
-                                            ),
-                                            Expanded(
-                                                child: DeliveryStatusSellerInfo(
-                                              id: data[index]['id'].toString(),
-                                            ))
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  });
+                              openDialog(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['ProductoExtra']
                                     .toString()), onTap: () {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AlertDialog(
-                                      content: Container(
-                                        width:
-                                            MediaQuery.of(context).size.width,
-                                        height:
-                                            MediaQuery.of(context).size.height,
-                                        child: Column(
-                                          children: [
-                                            Align(
-                                              alignment: Alignment.centerRight,
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  Navigator.pop(context);
-                                                },
-                                                child: Icon(Icons.close),
-                                              ),
-                                            ),
-                                            Expanded(
-                                                child: DeliveryStatusSellerInfo(
-                                              id: data[index]['id'].toString(),
-                                            ))
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  });
+                              openDialog(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['PrecioTotal']
                                     .toString()), onTap: () {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AlertDialog(
-                                      content: Container(
-                                        width:
-                                            MediaQuery.of(context).size.width,
-                                        height:
-                                            MediaQuery.of(context).size.height,
-                                        child: Column(
-                                          children: [
-                                            Align(
-                                              alignment: Alignment.centerRight,
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  Navigator.pop(context);
-                                                },
-                                                child: Icon(Icons.close),
-                                              ),
-                                            ),
-                                            Expanded(
-                                                child: DeliveryStatusSellerInfo(
-                                              id: data[index]['id'].toString(),
-                                            ))
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  });
+                              openDialog(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['Comentario']
                                     .toString()), onTap: () {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AlertDialog(
-                                      content: Container(
-                                        width:
-                                            MediaQuery.of(context).size.width,
-                                        height:
-                                            MediaQuery.of(context).size.height,
-                                        child: Column(
-                                          children: [
-                                            Align(
-                                              alignment: Alignment.centerRight,
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  Navigator.pop(context);
-                                                },
-                                                child: Icon(Icons.close),
-                                              ),
-                                            ),
-                                            Expanded(
-                                                child: DeliveryStatusSellerInfo(
-                                              id: data[index]['id'].toString(),
-                                            ))
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  });
+                              openDialog(context, index);
                             }),
                             DataCell(
                                 Text(
@@ -896,136 +577,24 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                                             .toString())!),
                                     data[index]['attributes']['Status']
                                         .toString()), onTap: () {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AlertDialog(
-                                      content: Container(
-                                        width:
-                                            MediaQuery.of(context).size.width,
-                                        height:
-                                            MediaQuery.of(context).size.height,
-                                        child: Column(
-                                          children: [
-                                            Align(
-                                              alignment: Alignment.centerRight,
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  Navigator.pop(context);
-                                                },
-                                                child: Icon(Icons.close),
-                                              ),
-                                            ),
-                                            Expanded(
-                                                child: DeliveryStatusSellerInfo(
-                                              id: data[index]['id'].toString(),
-                                            ))
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  });
+                              openDialog(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['Estado_Interno']
                                     .toString()), onTap: () {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AlertDialog(
-                                      content: Container(
-                                        width:
-                                            MediaQuery.of(context).size.width,
-                                        height:
-                                            MediaQuery.of(context).size.height,
-                                        child: Column(
-                                          children: [
-                                            Align(
-                                              alignment: Alignment.centerRight,
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  Navigator.pop(context);
-                                                },
-                                                child: Icon(Icons.close),
-                                              ),
-                                            ),
-                                            Expanded(
-                                                child: DeliveryStatusSellerInfo(
-                                              id: data[index]['id'].toString(),
-                                            ))
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  });
+                              openDialog(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']
                                         ['Estado_Logistico']
                                     .toString()), onTap: () {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AlertDialog(
-                                      content: Container(
-                                        width:
-                                            MediaQuery.of(context).size.width,
-                                        height:
-                                            MediaQuery.of(context).size.height,
-                                        child: Column(
-                                          children: [
-                                            Align(
-                                              alignment: Alignment.centerRight,
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  Navigator.pop(context);
-                                                },
-                                                child: Icon(Icons.close),
-                                              ),
-                                            ),
-                                            Expanded(
-                                                child: DeliveryStatusSellerInfo(
-                                              id: data[index]['id'].toString(),
-                                            ))
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  });
+                              openDialog(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']
                                         ['Estado_Devolucion']
                                     .toString()), onTap: () {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AlertDialog(
-                                      content: Container(
-                                        width:
-                                            MediaQuery.of(context).size.width,
-                                        height:
-                                            MediaQuery.of(context).size.height,
-                                        child: Column(
-                                          children: [
-                                            Align(
-                                              alignment: Alignment.centerRight,
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  Navigator.pop(context);
-                                                },
-                                                child: Icon(Icons.close),
-                                              ),
-                                            ),
-                                            Expanded(
-                                                child: DeliveryStatusSellerInfo(
-                                              id: data[index]['id'].toString(),
-                                            ))
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  });
+                              openDialog(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['users'] != null
@@ -1036,126 +605,42 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                                                     .toString() ==
                                                 "NO ENTREGADO"
                                         ? data[index]['attributes']['users']
-                                                            ['data'][0]
-                                                        ['attributes']
-                                                    ['vendedores']['data'][0]
-                                                ['attributes']['CostoEnvio']
+                                                    ['data'][0]['vendedores'][0]
+                                                ['CostoEnvio']
                                             .toString()
                                         : ""
                                     : ""), onTap: () {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AlertDialog(
-                                      content: Container(
-                                        width:
-                                            MediaQuery.of(context).size.width,
-                                        height:
-                                            MediaQuery.of(context).size.height,
-                                        child: Column(
-                                          children: [
-                                            Align(
-                                              alignment: Alignment.centerRight,
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  Navigator.pop(context);
-                                                },
-                                                child: Icon(Icons.close),
-                                              ),
-                                            ),
-                                            Expanded(
-                                                child: DeliveryStatusSellerInfo(
-                                              id: data[index]['id'].toString(),
-                                            ))
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  });
+                              openDialog(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['users'] != null
-                                    ? data[index]['attributes']['Status'].toString() ==
+                                    ? data[index]['attributes']['Status']
+                                                .toString() ==
                                             "NOVEDAD"
                                         ? data[index]['attributes']['Estado_Devolucion']
                                                         .toString() ==
                                                     "ENTREGADO EN OFICINA" ||
-                                                data[index]['attributes']['Status']
+                                                data[index]['attributes']
+                                                            ['Status']
                                                         .toString() ==
                                                     "EN RUTA" ||
                                                 data[index]['attributes']['Estado_Devolucion']
                                                         .toString() ==
                                                     "EN BODEGA"
                                             ? data[index]['attributes']['users']
-                                                            ['data'][0]['attributes']
-                                                        ['vendedores']['data'][0]
-                                                    ['attributes']['CostoDevolucion']
+                                                            ['data'][0]
+                                                        ['vendedores'][0]
+                                                    ['CostoDevolucion']
                                                 .toString()
                                             : ""
                                         : ""
                                     : ""), onTap: () {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AlertDialog(
-                                      content: Container(
-                                        width:
-                                            MediaQuery.of(context).size.width,
-                                        height:
-                                            MediaQuery.of(context).size.height,
-                                        child: Column(
-                                          children: [
-                                            Align(
-                                              alignment: Alignment.centerRight,
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  Navigator.pop(context);
-                                                },
-                                                child: Icon(Icons.close),
-                                              ),
-                                            ),
-                                            Expanded(
-                                                child: DeliveryStatusSellerInfo(
-                                              id: data[index]['id'].toString(),
-                                            ))
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  });
+                              openDialog(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['Marca_T_I']
                                     .toString()), onTap: () {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AlertDialog(
-                                      content: Container(
-                                        width:
-                                            MediaQuery.of(context).size.width,
-                                        height:
-                                            MediaQuery.of(context).size.height,
-                                        child: Column(
-                                          children: [
-                                            Align(
-                                              alignment: Alignment.centerRight,
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  Navigator.pop(context);
-                                                },
-                                                child: Icon(Icons.close),
-                                              ),
-                                            ),
-                                            Expanded(
-                                                child: DeliveryStatusSellerInfo(
-                                              id: data[index]['id'].toString(),
-                                            ))
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  });
+                              openDialog(context, index);
                             }),
                           ]))),
             ),
@@ -1165,26 +650,56 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
     );
   }
 
+  Future<dynamic> openDialog(BuildContext context, int index) {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            content: Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              child: Column(
+                children: [
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: Icon(Icons.close),
+                    ),
+                  ),
+                  Expanded(
+                      child: DeliveryStatusSellerInfo(
+                    id: data[index]['id'].toString(),
+                  ))
+                ],
+              ),
+            ),
+          );
+        });
+  }
+
   sortFuncCost(name) {
     if (sort) {
       setState(() {
         sort = false;
       });
-      data.sort((a, b) => b['attributes']['users']['data'][0]['attributes']
-              ['vendedores']['data'][0]['attributes']['$name']
+      data.sort((a, b) => b['attributes']['users']['data'][0]['vendedores'][0]
+              ['$name']
           .toString()
-          .compareTo(a['attributes']['users']['data'][0]['attributes']
-                  ['vendedores']['data'][0]['attributes']['$name']
+          .compareTo(a['attributes']['users']['data'][0]['vendedores'][0]
+                  ['$name']
               .toString()));
     } else {
       setState(() {
         sort = true;
       });
-      data.sort((a, b) => a['attributes']['users']['data'][0]['attributes']
-              ['vendedores']['data'][0]['attributes']['$name']
+      data.sort((a, b) => a['attributes']['users']['data'][0]['vendedores'][0]
+              ['$name']
           .toString()
-          .compareTo(b['attributes']['users']['data'][0]['attributes']
-                  ['vendedores']['data'][0]['attributes']['$name']
+          .compareTo(b['attributes']['users']['data'][0]['vendedores'][0]
+                  ['$name']
               .toString()));
     }
   }
@@ -1362,7 +877,7 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
   }
 
   Future<void> applyDateFilter() async {
-    arraysFiltersRanges = [];
+    arrayDateRanges = [];
     if (_controllers.startDateController.text != '' &&
         _controllers.endDateController.text != '') {
       if (compareDates(_controllers.startDateController.text,
@@ -1376,21 +891,17 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
           _controllers.startDateController.text = aux;
         });
       }
-    } else {
-      arraysFiltersRanges
-          .add({'filter': 'Fecha_Entrega', 'operator': '\$ne', 'value': ''});
     }
     if (_controllers.startDateController.text != '') {
-      arraysFiltersRanges.add({
-        'filter': 'Fecha_Entrega',
-        'operator': '\$gte',
+      arrayDateRanges.add({
+        'body_param': 'start',
         'value': _controllers.startDateController.text
       });
     }
     if (_controllers.endDateController.text != '') {
-      arraysFiltersRanges.add({
-        'filter': 'Fecha_Entrega',
-        'operator': '\$lte',
+      arrayDateRanges.add({
+//        'filter': 'Fecha_Entrega',
+        'body_param': 'end',
         'value': _controllers.endDateController.text
       });
     }
@@ -1404,33 +915,34 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
     devoluciones = 0;
 
     for (var element in data) {
+      if (element['id'] == 567) {
+        print('hello');
+      }
       element['attributes']['PrecioTotal'] =
           element['attributes']['PrecioTotal'].replaceAll(',', '.');
-
-      if (element['attributes']['users']['data'][0]['attributes']['vendedores']
-              ['data'][0]['attributes']['CostoEnvio'] !=
+      if (element['attributes']['users']['data'][0]['vendedores'][0]
+              ['CostoEnvio'] !=
           null) {
-        element['attributes']['users']['data'][0]['attributes']['vendedores']
-            ['data'][0]['attributes']['CostoEnvio'] = element['attributes']
-                    ['users']['data'][0]['attributes']['vendedores']['data'][0]
-                ['attributes']['CostoEnvio']
+        element['attributes']['users']['data'][0]['vendedores'][0]
+            ['CostoEnvio'] = element['attributes']['users']['data'][0]
+                ['vendedores'][0]['CostoEnvio']
             .replaceAll(',', '.');
       } else {
-        element['attributes']['users']['data'][0]['attributes']['vendedores']
-            ['data'][0]['attributes']['CostoEnvio'] = 0;
+        element['attributes']['users']['data'][0]['vendedores'][0]
+            ['CostoEnvio'] = 0;
       }
 
-      if (element['attributes']['users']['data'][0]['attributes']['vendedores']
-              ['data'][0]['attributes']['CostoDevolucion'] !=
+      if (element['attributes']['users']['data'][0]['vendedores'][0]
+              ['CostoDevolucion'] !=
           null) {
-        element['attributes']['users']['data'][0]['attributes']['vendedores']
-            ['data'][0]['attributes']['CostoDevolucion'] = element['attributes']
-                ['users']['data'][0]['attributes']['vendedores']['data'][0]
-            ['attributes']['CostoDevolucion']
-          ..replaceAll(',', '.');
+        element['attributes']['users']['data'][0]['vendedores'][0]
+                ['CostoDevolucion'] =
+            element['attributes']['users']['data'][0]['vendedores'][0]
+                ['CostoDevolucion']
+              ..replaceAll(',', '.');
       } else {
-        element['attributes']['users']['data'][0]['attributes']['vendedores']
-            ['data'][0]['attributes']['CostoDevolucion'] = 0;
+        element['attributes']['users']['data'][0]['vendedores'][0]
+            ['CostoDevolucion'] = 0;
       }
 
       if (element['attributes']['Status'] == 'ENTREGADO') {
@@ -1441,15 +953,13 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
       if (element['attributes']['Status'] == 'ENTREGADO' ||
           element['attributes']['Status'] == 'NO ENTREGADO') {
         costoDeEntregas += double.parse(element['attributes']['users']['data']
-                    [0]['attributes']['vendedores']['data'][0]['attributes']
-                ['CostoEnvio'] ??
+                [0]['vendedores'][0]['CostoEnvio'] ??
             0);
       }
       if (element['attributes']['Status'] == 'NOVEDAD' &&
           element['attributes']['Estado_Devolucion'] != 'PENDIENTE') {
         devoluciones += double.parse(element['attributes']['users']['data'][0]
-                ['attributes']['vendedores']['data'][0]['attributes']
-            ['CostoDevolucion']);
+            ['vendedores'][0]['CostoDevolucion']);
       }
     }
     utilidad = totalValoresRecibidos - costoDeEntregas - devoluciones;
@@ -1502,7 +1012,6 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
             icon: const Icon(Icons.calendar_month),
             onPressed: () async {
               _controllers.startDateController.text = await OpenCalendar();
-              _focusNode2.requestFocus();
             },
           ),
           const SizedBox(
