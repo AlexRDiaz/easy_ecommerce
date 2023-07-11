@@ -117,9 +117,11 @@ class _OrderInfoState extends State<OrderInfo> {
                                     context: context,
                                     builder: (context) {
                                       return RoutesModal(
-                                        idOrder: widget.id,
-                                        someOrders: false,
-                                      );
+                                          idOrder: widget.id,
+                                          someOrders: false,
+                                          phoneClient: data['attributes']
+                                                  ['TelefonoShipping']
+                                              .toString());
                                     });
                                 loadData();
                               },

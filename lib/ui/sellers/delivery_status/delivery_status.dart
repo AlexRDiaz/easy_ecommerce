@@ -7,6 +7,7 @@ import 'package:frontend/helpers/responsive.dart';
 import 'package:frontend/main.dart';
 import 'package:frontend/ui/sellers/delivery_status/info_delivery.dart';
 import 'package:frontend/ui/transport/my_orders_prv/controllers/controllers.dart';
+import 'package:frontend/ui/widgets/box_values.dart';
 import 'package:frontend/ui/widgets/loading.dart';
 import 'package:intl/intl.dart';
 
@@ -18,7 +19,7 @@ class DeliveryStatus extends StatefulWidget {
 }
 
 class _DeliveryStatusState extends State<DeliveryStatus> {
-  MyOrdersPRVTransportControllers _controllers =
+  final MyOrdersPRVTransportControllers _controllers =
       MyOrdersPRVTransportControllers();
   List data = [];
   List<DateTime?> _dates = [];
@@ -37,6 +38,20 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
   int counterLoad = 0;
   var arrayFiltersAndEq = [];
   var arrayDateRanges = [];
+  List arrayFiltersDefaultAnd = [];
+  var arrayFiltersNotEq = [
+    {'Status': 'PEDIDO PROGRAMADO'}
+  ];
+  List populate = [
+    'transportadora',
+    'users',
+    'users.vendedores',
+    'pedido_fecha',
+    'sub_ruta',
+    'operadore',
+    'operadore.user'
+  ];
+
   @override
   void didChangeDependencies() {
     loadData();
@@ -48,7 +63,10 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getLoadingModal(context, false);
     });
-
+    arrayFiltersAndEq.add({
+      'filter': 'IdComercial',
+      'value': sharedPrefs!.getString("idComercialMasterSeller").toString()
+    });
     response = await Connections().getOrdersForSellerStateSearchForDate(
         _controllers.searchController.text,
         [
@@ -70,13 +88,18 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
           {'filter': 'Marca_T_I'},
         ],
         arrayFiltersAndEq,
-        arrayDateRanges);
+        arrayDateRanges,
+        arrayFiltersNotEq,
+        arrayFiltersDefaultAnd,
+        [],
+        populate);
 
     data = response;
 
-    if (arrayFiltersAndEq.length == 0) {
+    if (isFirst) {
       updateCounters();
     }
+
     Future.delayed(Duration(milliseconds: 500), () {
       Navigator.pop(context);
     });
@@ -90,38 +113,36 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
   }
 
   updateCounters() {
-    if (isFirst) {
-      total = 0;
-      entregados = 0;
-      noEntregados = 0;
-      conNovedad = 0;
-      reagendados = 0;
-      enRuta = 0;
-      total = data.length;
-      // print(data.toString());
-      for (var element in data) {
-        element['attributes']['Status'];
-        switch (element['attributes']['Status']) {
-          case 'ENTREGADO':
-            entregados++;
-            break;
+    total = 0;
+    entregados = 0;
+    noEntregados = 0;
+    conNovedad = 0;
+    reagendados = 0;
+    enRuta = 0;
+    total = data.length;
+    // print(data.toString());
+    for (var element in data) {
+      element['attributes']['Status'];
+      switch (element['attributes']['Status']) {
+        case 'ENTREGADO':
+          entregados++;
+          break;
 
-          case 'NO ENTREGADO':
-            noEntregados++;
-            break;
+        case 'NO ENTREGADO':
+          noEntregados++;
+          break;
 
-          case 'NOVEDAD':
-            conNovedad++;
-            break;
-          case 'REAGENDADO':
-            reagendados++;
-            break;
-          case 'EN RUTA':
-            enRuta++;
-            break;
+        case 'NOVEDAD':
+          conNovedad++;
+          break;
+        case 'REAGENDADO':
+          reagendados++;
+          break;
+        case 'EN RUTA':
+          enRuta++;
+          break;
 
-          default:
-        }
+        default:
       }
     }
   }
@@ -160,12 +181,11 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                 ),
                 GestureDetector(
                   onTap: () {
-                    setState(() {
-                      isFirst = false;
-                      arrayFiltersAndEq = [];
-                      arrayFiltersAndEq
-                          .add({'filter': 'Status', 'value': 'ENTREGADO'});
-                    });
+                    arrayFiltersAndEq = [];
+                    arrayFiltersAndEq
+                        .add({'filter': 'Status', 'value': 'ENTREGADO'});
+
+                    isFirst = false;
 
                     loadData();
                   },
@@ -468,14 +488,14 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                       label: Text('Costo Entrega'),
                       size: ColumnSize.S,
                       onSort: (columnIndex, ascending) {
-                        sortFuncCost("CostoEnvio");
+                        //sortFuncCost("CostoEnvio");
                       },
                     ),
                     DataColumn2(
                       label: Text('Costo Devolución'),
                       size: ColumnSize.S,
                       onSort: (columnIndex, ascending) {
-                        sortFuncCost("CostoDevolucion");
+                        // sortFuncCost("CostoDevolucion");
                       },
                     ),
                     DataColumn2(
@@ -604,9 +624,8 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                                             data[index]['attributes']['Status']
                                                     .toString() ==
                                                 "NO ENTREGADO"
-                                        ? data[index]['attributes']['users']
-                                                    ['data'][0]['vendedores'][0]
-                                                ['CostoEnvio']
+                                        ? data[index]['attributes']['users'][0]
+                                                ['vendedores'][0]['CostoEnvio']
                                             .toString()
                                         : ""
                                     : ""), onTap: () {
@@ -614,22 +633,20 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['users'] != null
-                                    ? data[index]['attributes']['Status']
-                                                .toString() ==
+                                    ? data[index]['attributes']['Status'].toString() ==
                                             "NOVEDAD"
                                         ? data[index]['attributes']['Estado_Devolucion']
                                                         .toString() ==
                                                     "ENTREGADO EN OFICINA" ||
-                                                data[index]['attributes']
-                                                            ['Status']
+                                                data[index]['attributes']['Status']
                                                         .toString() ==
                                                     "EN RUTA" ||
-                                                data[index]['attributes']['Estado_Devolucion']
+                                                data[index]['attributes'][
+                                                            'Estado_Devolucion']
                                                         .toString() ==
                                                     "EN BODEGA"
                                             ? data[index]['attributes']['users']
-                                                            ['data'][0]
-                                                        ['vendedores'][0]
+                                                        [0]['vendedores'][0]
                                                     ['CostoDevolucion']
                                                 .toString()
                                             : ""
@@ -680,29 +697,25 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
         });
   }
 
-  sortFuncCost(name) {
-    if (sort) {
-      setState(() {
-        sort = false;
-      });
-      data.sort((a, b) => b['attributes']['users']['data'][0]['vendedores'][0]
-              ['$name']
-          .toString()
-          .compareTo(a['attributes']['users']['data'][0]['vendedores'][0]
-                  ['$name']
-              .toString()));
-    } else {
-      setState(() {
-        sort = true;
-      });
-      data.sort((a, b) => a['attributes']['users']['data'][0]['vendedores'][0]
-              ['$name']
-          .toString()
-          .compareTo(b['attributes']['users']['data'][0]['vendedores'][0]
-                  ['$name']
-              .toString()));
-    }
-  }
+  // sortFuncCost(name) {
+  //   if (sort) {
+  //     setState(() {
+  //       sort = false;
+  //     });
+  //     data.sort((a, b) => b['attributes']['users'][0]['vendedores'][0]['$name']
+  //         .toString()
+  //         .compareTo(a['attributes']['users'][0]['vendedores'][0]['$name']
+  //             .toString()));
+  //   } else {
+  //     setState(() {
+  //       sort = true;
+  //     });
+  //     data.sort((a, b) => a['attributes']['users'][0]['vendedores'][0]['$name']
+  //         .toString()
+  //         .compareTo(b['attributes']['users'][0]['vendedores'][0]['$name']
+  //             .toString()));
+  //   }
+  // }
 
   sortFuncDate(name) {
     if (sort) {
@@ -755,9 +768,9 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
   }
 
   _modelTextField({text, controller}) {
-    setState(() {
-      isFirst = true;
-    });
+    // setState(() {
+    //   isFirst = true;
+    // });
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -892,19 +905,21 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
         });
       }
     }
-    if (_controllers.startDateController.text != '') {
-      arrayDateRanges.add({
-        'body_param': 'start',
-        'value': _controllers.startDateController.text
-      });
-    }
-    if (_controllers.endDateController.text != '') {
-      arrayDateRanges.add({
+    arrayDateRanges.add({
+      'body_param': 'start',
+      'value': _controllers.startDateController.text != ""
+          ? _controllers.startDateController.text
+          : '1/1/1991'
+    });
+
+    arrayDateRanges.add({
 //        'filter': 'Fecha_Entrega',
-        'body_param': 'end',
-        'value': _controllers.endDateController.text
-      });
-    }
+      'body_param': 'end',
+      'value': _controllers.endDateController.text != ""
+          ? _controllers.endDateController.text
+          : '1/1/2200'
+    });
+    isFirst = true;
     await loadData();
     calculateValues();
   }
@@ -918,31 +933,31 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
       if (element['id'] == 567) {
         print('hello');
       }
+      var test =
+          element['attributes']['users'][0]['vendedores'][0]['CostoEnvio'];
+      print("aqui esta el test" + test);
+      var m = 2;
       element['attributes']['PrecioTotal'] =
           element['attributes']['PrecioTotal'].replaceAll(',', '.');
-      if (element['attributes']['users']['data'][0]['vendedores'][0]
-              ['CostoEnvio'] !=
+      if (element['attributes']['users'][0]['vendedores'][0]['CostoEnvio'] !=
           null) {
-        element['attributes']['users']['data'][0]['vendedores'][0]
-            ['CostoEnvio'] = element['attributes']['users']['data'][0]
-                ['vendedores'][0]['CostoEnvio']
-            .replaceAll(',', '.');
+        element['attributes']['users'][0]['vendedores'][0]['CostoEnvio'] =
+            element['attributes']['users'][0]['vendedores'][0]['CostoEnvio']
+                .replaceAll(',', '.');
       } else {
-        element['attributes']['users']['data'][0]['vendedores'][0]
-            ['CostoEnvio'] = 0;
+        element['attributes']['users'][0]['vendedores'][0]['CostoEnvio'] = 0;
       }
 
-      if (element['attributes']['users']['data'][0]['vendedores'][0]
+      if (element['attributes']['users'][0]['vendedores'][0]
               ['CostoDevolucion'] !=
           null) {
-        element['attributes']['users']['data'][0]['vendedores'][0]
-                ['CostoDevolucion'] =
-            element['attributes']['users']['data'][0]['vendedores'][0]
-                ['CostoDevolucion']
-              ..replaceAll(',', '.');
+        element['attributes']['users'][0]['vendedores'][0]['CostoDevolucion'] =
+            element['attributes']['users'][0]['vendedores'][0]
+                    ['CostoDevolucion']
+                .replaceAll(',', '.');
       } else {
-        element['attributes']['users']['data'][0]['vendedores'][0]
-            ['CostoDevolucion'] = 0;
+        element['attributes']['users'][0]['vendedores'][0]['CostoDevolucion'] =
+            0;
       }
 
       if (element['attributes']['Status'] == 'ENTREGADO') {
@@ -952,13 +967,13 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
 
       if (element['attributes']['Status'] == 'ENTREGADO' ||
           element['attributes']['Status'] == 'NO ENTREGADO') {
-        costoDeEntregas += double.parse(element['attributes']['users']['data']
-                [0]['vendedores'][0]['CostoEnvio'] ??
+        costoDeEntregas += double.parse(element['attributes']['users'][0]
+                ['vendedores'][0]['CostoEnvio'] ??
             0);
       }
       if (element['attributes']['Status'] == 'NOVEDAD' &&
           element['attributes']['Estado_Devolucion'] != 'PENDIENTE') {
-        devoluciones += double.parse(element['attributes']['users']['data'][0]
+        devoluciones += double.parse(element['attributes']['users'][0]
             ['vendedores'][0]['CostoDevolucion']);
       }
     }
@@ -1033,7 +1048,7 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
           onPressed: () async {
             await applyDateFilter();
           },
-          child: Text('Fitrar'))
+          child: Text('Filtrar'))
     ];
   }
 
@@ -1083,129 +1098,6 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
           ),
         );
       },
-    );
-  }
-}
-
-class boxValues extends StatelessWidget {
-  const boxValues({
-    super.key,
-    required this.totalValoresRecibidos,
-    required this.costoDeEntregas,
-    required this.devoluciones,
-    required this.utilidad,
-  });
-
-  final double totalValoresRecibidos;
-  final double costoDeEntregas;
-  final double devoluciones;
-  final double utilidad;
-
-  @override
-  Widget build(BuildContext context) {
-    return Wrap(
-      children: [
-        Container(
-          padding: EdgeInsets.all(3),
-          width: 80,
-          decoration: BoxDecoration(border: Border.all(color: Colors.black)),
-          child: Column(
-            children: [
-              const Text(
-                'Valores recibidos:',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 9,
-                  color: Colors.black,
-                ),
-              ),
-              Text(
-                '\$${totalValoresRecibidos.toStringAsFixed(2)}',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                  color: Colors.black,
-                ),
-              ),
-            ],
-          ),
-        ),
-        Container(
-          padding: EdgeInsets.all(3),
-          width: 80,
-          decoration: BoxDecoration(border: Border.all(color: Colors.black)),
-          child: Column(
-            children: [
-              const Text(
-                'Costo de envío:',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 9,
-                  color: Colors.black,
-                ),
-              ),
-              Text(
-                '\$${costoDeEntregas.toStringAsFixed(2)}',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                  color: Colors.black,
-                ),
-              ),
-            ],
-          ),
-        ),
-        Container(
-          padding: EdgeInsets.all(3),
-          width: 80,
-          decoration: BoxDecoration(border: Border.all(color: Colors.black)),
-          child: Column(
-            children: [
-              const Text(
-                'Devoluciones:',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 9,
-                  color: Colors.black,
-                ),
-              ),
-              Text(
-                '\$${devoluciones.toStringAsFixed(2)}',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                  color: Colors.black,
-                ),
-              ),
-            ],
-          ),
-        ),
-        Container(
-          padding: EdgeInsets.all(3),
-          width: 80,
-          decoration: BoxDecoration(border: Border.all(color: Colors.black)),
-          child: Column(
-            children: [
-              const Text(
-                'Utilidad:',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 9,
-                  color: Colors.black,
-                ),
-              ),
-              Text(
-                '\$${utilidad.toStringAsFixed(2)}',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                  color: Colors.black,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
     );
   }
 }

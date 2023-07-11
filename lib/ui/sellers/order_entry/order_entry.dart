@@ -31,24 +31,56 @@ class _OrderEntryState extends State<OrderEntry> {
   List optionsCheckBox = [];
   int counterChecks = 0;
   bool sort = false;
-  List dataTemporal = [];
   int currentPage = 1;
   int pageSize = 70;
   int pageCount = 100;
   int total = 0;
   bool isSearch = false;
-  String search = '';
   bool buttonLeft = false;
   bool buttonRigth = false;
   String pedido = '';
   String confirmado = 'TODO';
   String logistico = 'TODO';
   bool enabledBusqueda = true;
-  List filters = [];
-  List filtersAndEq = [];
+  bool isLoading = false;
+
+  List filtersAnd = [];
+  List filtersDefaultAnd = [
+    {
+      'operator': '\$and',
+      'filter': 'IdComercial',
+      'operator_attr': '\$eq',
+      'value': sharedPrefs!.getString("idComercialMasterSeller").toString()
+    },
+    {
+      'operator': '\$and',
+      'filter': 'Estado_Interno',
+      'operator_attr': '\$ne',
+      'value': 'NO DESEA'
+    },
+    {
+      'operator': '\$and',
+      'filter': 'Status',
+      'operator_attr': '\$eq',
+      'value': 'PEDIDO PROGRAMADO'
+    },
+  ];
+  List filtersOrCont = [
+    {'filter': 'CiudadShipping'},
+    {'filter': 'NumeroOrden'},
+    {'filter': 'NombreShipping'},
+    {'filter': 'DireccionShipping'},
+    {'filter': 'TelefonoShipping'},
+    {'filter': 'ProductoP'},
+    {'filter': 'ProductoExtra'},
+    {'filter': 'PrecioTotal'},
+  ];
+  List populate = ['users', 'pedido_fecha'];
+
+  NumberPaginatorController paginatorController = NumberPaginatorController();
 
   List<String> optEstadoConfirmado = ["TODO", 'PENDIENTE', 'CONFIRMADO'];
-  List<String> optEstadoLogistico = ['TODO', 'PENDIENTE', 'IMPRESO', 'ENVIADO'];
+  List<String> optEstadoLogistico = ["TODO", 'PENDIENTE', 'IMPRESO', 'ENVIADO'];
 
   @override
   void didChangeDependencies() {
@@ -69,7 +101,7 @@ class _OrderEntryState extends State<OrderEntry> {
   }
 
   loadData() async {
-    // print("Pagina Actual="+currentPage.toString());
+    isLoading = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getLoadingModal(context, false);
     });
@@ -77,40 +109,20 @@ class _OrderEntryState extends State<OrderEntry> {
     setState(() {
       data.clear();
     });
-
-    response = await Connections().getOrdersSellersByCode(
+    currentPage = 1;
+    response = await Connections().getOrdersSellersFilter(
         _controllers.searchController.text,
         currentPage,
         pageSize,
-        search,
-        [
-          {
-            'filter': 'CiudadShipping',
-          },
-          {
-            'filter': 'NombreShipping',
-          },
-          {
-            'filter': 'DireccionShipping',
-          },
-          {
-            'filter': 'TelefonoShipping',
-          },
-          {
-            'filter': 'ProductoP',
-          },
-          {
-            'filter': 'ProductoExtra',
-          },
-          {
-            'filter': 'PrecioTotal',
-          },
-        ],
-        filtersAndEq);
+        populate,
+        filtersOrCont,
+        filtersAnd,
+        [],
+        filtersDefaultAnd,
+        []);
 
-    data = response[0]['data'];
-    dataTemporal = response[0]['data'];
     setState(() {
+      data = response[0]['data'];
       pageCount = response[0]['meta']['pagination']['pageCount'];
       total = response[0]['meta']['pagination']['total'];
 
@@ -120,10 +132,13 @@ class _OrderEntryState extends State<OrderEntry> {
     for (var i = 0; i < total; i++) {
       optionsCheckBox.add({"check": false, "id": "", "NumeroOrden": ""});
     }
+    paginatorController.navigateToPage(0);
 
     Future.delayed(Duration(milliseconds: 500), () {
       Navigator.pop(context);
     });
+    counterChecks = 0;
+    isLoading = false;
     setState(() {});
   }
 
@@ -139,23 +154,17 @@ class _OrderEntryState extends State<OrderEntry> {
 
     // print("actual pagina valor" + currentPage.toString());
 
-    response = await Connections().getOrdersSellersByCode(
+    response = await Connections().getOrdersSellersFilter(
         _controllers.searchController.text,
         currentPage,
         pageSize,
-        search,
-        [
-          {'filter': 'CiudadShipping'},
-          {'filter': 'NombreShipping'},
-          {'filter': 'DireccionShipping'},
-          {'filter': 'TelefonoShipping'},
-          {'filter': 'ProductoP'},
-          {'filter': 'ProductoExtra'},
-          {'filter': 'PrecioTotal'},
-        ],
-        filtersAndEq);
+        populate,
+        filtersOrCont,
+        filtersAnd,
+        [],
+        filtersDefaultAnd,
+        []);
     data = response[0]['data'];
-    dataTemporal = response[0]['data'];
     setState(() {
       pageCount = response[0]['meta']['pagination']['pageCount'];
       total = response[0]['meta']['pagination']['total'];
@@ -175,24 +184,7 @@ class _OrderEntryState extends State<OrderEntry> {
     String confirmadoVal = confirmado;
 
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          await showDialog(
-              context: (context),
-              builder: (context) {
-                return AddOrderSellers();
-              });
-          await loadData();
-        },
-        backgroundColor: colors.colorGreen,
-        child: const Center(
-          child: Icon(
-            Icons.add,
-            color: Colors.white,
-            size: 30,
-          ),
-        ),
-      ),
+      //
       body: Container(
         padding: EdgeInsets.all(15),
         color: Colors.grey[100],
@@ -312,12 +304,14 @@ class _OrderEntryState extends State<OrderEntry> {
                                           builder: (BuildContext context) {
                                             return AlertDialog(
                                               title: Text('Ateneción'),
-                                              content: Column(
-                                                children: [
-                                                  const Text(
-                                                      '¿Estás seguro de eliminar los siguientes pedidos?'),
-                                                  Text('' + listToDelete()),
-                                                ],
+                                              content: SingleChildScrollView(
+                                                child: Column(
+                                                  children: [
+                                                    const Text(
+                                                        '¿Estás seguro de eliminar los siguientes pedidos?'),
+                                                    Text('' + listToDelete()),
+                                                  ],
+                                                ),
                                               ),
                                               actions: [
                                                 TextButton(
@@ -372,28 +366,25 @@ class _OrderEntryState extends State<OrderEntry> {
                                   "No Desea",
                                   style: TextStyle(fontWeight: FontWeight.bold),
                                 )),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            ElevatedButton(
+                                onPressed: () async {
+                                  await showDialog(
+                                      context: (context),
+                                      builder: (context) {
+                                        return AddOrderSellers();
+                                      });
+                                  await loadData();
+                                },
+                                child: const Row(
+                                  children: [Text(" Nuevo"), Icon(Icons.add)],
+                                )),
                           ],
                         ),
                       ),
-                      Expanded(
-                          child: NumberPaginator(
-                        config: NumberPaginatorUIConfig(
-                          buttonShape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                                5), // Customize the button shape
-                          ),
-                        ),
-                        numberPages: pageCount > 0 ? pageCount : 1,
-                        onPageChange: (index) async {
-                          //  print("indice="+index.toString());
-
-                          setState(() {
-                            currentPage = index + 1;
-                          });
-
-                          await paginateData();
-                        },
-                      )),
+                      Expanded(child: numberPaginator()),
                     ],
                   ),
                   Column(
@@ -513,24 +504,7 @@ class _OrderEntryState extends State<OrderEntry> {
                           ],
                         ),
                       ),
-                      Container(
-                          child: NumberPaginator(
-                        config: NumberPaginatorUIConfig(
-                          buttonShape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                                5), // Customize the button shape
-                          ),
-                        ),
-                        numberPages: pageCount > 0 ? pageCount : 1,
-                        onPageChange: (index) async {
-                          //  print("indice="+index.toString());
-                          setState(() {
-                            currentPage = index + 1;
-                          });
-
-                          await paginateData();
-                        },
-                      )),
+                      Container(child: numberPaginator()),
                     ],
                   ),
                   context),
@@ -546,9 +520,29 @@ class _OrderEntryState extends State<OrderEntry> {
               child: DataTable2(
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: const BorderRadius.all(Radius.circular(4)),
+                    borderRadius: BorderRadius.all(Radius.circular(4)),
                     border: Border.all(color: Colors.blueGrey),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.3),
+                        blurRadius: 4,
+                        spreadRadius: 2,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
                   ),
+                  dividerThickness: 1,
+                  dataRowColor: MaterialStateColor.resolveWith((states) {
+                    if (states.contains(MaterialState.selected)) {
+                      return Colors.blue
+                          .withOpacity(0.5); // Color para fila seleccionada
+                    } else if (states.contains(MaterialState.hovered)) {
+                      return Colors.grey.withOpacity(
+                          0.5); // Color para fila con el mouse encima
+                    }
+                    return Colors
+                        .transparent; // Color para filas pares e impares
+                  }),
                   headingTextStyle: const TextStyle(
                       fontWeight: FontWeight.bold, color: Colors.black),
                   dataTextStyle: const TextStyle(
@@ -651,53 +645,16 @@ class _OrderEntryState extends State<OrderEntry> {
                     ),
                     DataColumn2(
                       label: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           const Text('Estado Confirmado'),
                           DropdownButton<String>(
                             value: confirmadoVal,
                             elevation: 16,
                             onChanged: (String? value) {
-                              print(
-                                  "valor actual confirmado" + value.toString());
-
-                              setState(() {
-                                confirmado = value!;
-                                if (value != 'TODO') {
-                                  bool contains = false;
-
-                                  for (var filter in filtersAndEq) {
-                                    if (filter['filter'] == 'Estado_Interno') {
-                                      contains = true;
-                                      break;
-                                    }
-                                  }
-                                  if (contains == false) {
-                                    filtersAndEq.add({
-                                      'filter': 'Estado_Interno',
-                                      'value': value
-                                    });
-                                  } else {
-                                    for (var filter in filtersAndEq) {
-                                      if (filter['filter'] ==
-                                          'Estado_Interno') {
-                                        filter['value'] = value;
-                                        break;
-                                      }
-                                    }
-                                  }
-                                } else {
-                                  for (var filter in filtersAndEq) {
-                                    if (filter['filter'] == 'Estado_Interno') {
-                                      filtersAndEq.remove(filter);
-                                      break;
-                                    }
-                                  }
-                                }
-
-                                currentPage = 1;
-                                print("a " + currentPage.toString());
-                              });
-                              paginateData();
+                              AddFilterAndEq(value, 'Estado_Interno');
+                              confirmado = value!;
                             },
                             items: optEstadoConfirmado
                                 .map<DropdownMenuItem<String>>((String value) {
@@ -716,13 +673,16 @@ class _OrderEntryState extends State<OrderEntry> {
                     ),
                     DataColumn2(
                       label: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           const Text('Estado Logistico'),
+
                           DropdownButton<String>(
                             value: logisticoVal,
                             elevation: 16,
                             onChanged: (String? value) {
                               AddFilterAndEq(value, 'Estado_Logistico');
+                              logistico = value!;
                             },
                             items: optEstadoLogistico
                                 .map<DropdownMenuItem<String>>((String value) {
@@ -732,6 +692,21 @@ class _OrderEntryState extends State<OrderEntry> {
                               );
                             }).toList(),
                           ),
+
+                          // DropdownButton<String>(
+                          //   value: logisticoVal,
+                          //   elevation: 16,
+                          //   onChanged: (String? value) {
+                          //     AddFilterAndEq(value, 'Estado_Logistico');
+                          //   },
+                          //   items: optEstadoLogistico
+                          //       .map<DropdownMenuItem<String>>((String value) {
+                          //     return DropdownMenuItem<String>(
+                          //       value: value,
+                          //       child: Text(value),
+                          //     );
+                          //   }).toList(),
+                          // ),
                         ],
                       ),
                       size: ColumnSize.M,
@@ -839,10 +814,10 @@ class _OrderEntryState extends State<OrderEntry> {
                                         context: context,
                                         builder: (context) {
                                           return RoutesModal(
-                                            idOrder:
-                                                data[index]['id'].toString(),
-                                            someOrders: false,
-                                          );
+                                              idOrder:
+                                                  data[index]['id'].toString(),
+                                              someOrders: false,
+                                              phoneClient: "");
                                         });
                                     loadData();
                                   },
@@ -977,6 +952,28 @@ class _OrderEntryState extends State<OrderEntry> {
     );
   }
 
+  NumberPaginator numberPaginator() {
+    return NumberPaginator(
+      config: NumberPaginatorUIConfig(
+        buttonShape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(5), // Customize the button shape
+        ),
+      ),
+      controller: paginatorController,
+      numberPages: pageCount > 0 ? pageCount : 1,
+      // initialPage: 0,
+      onPageChange: (index) async {
+        //  print("indice="+index.toString());
+        setState(() {
+          currentPage = index + 1;
+        });
+        if (!isLoading) {
+          await paginateData();
+        }
+      },
+    );
+  }
+
   String listToDelete() {
     String res = "";
 
@@ -993,20 +990,20 @@ class _OrderEntryState extends State<OrderEntry> {
 
   AddFilterAndEq(value, filtro) {
     setState(() {
-      confirmado = value!;
       if (value != 'TODO') {
         bool contains = false;
 
-        for (var filter in filtersAndEq) {
+        for (var filter in filtersAnd) {
           if (filter['filter'] == filtro) {
             contains = true;
             break;
           }
         }
         if (contains == false) {
-          filtersAndEq.add({'filter': filtro, 'value': value});
+          filtersAnd
+              .add({'filter': filtro, 'operator_attr': '\$eq', 'value': value});
         } else {
-          for (var filter in filtersAndEq) {
+          for (var filter in filtersAnd) {
             if (filter['filter'] == filtro) {
               filter['value'] = value;
               break;
@@ -1014,9 +1011,9 @@ class _OrderEntryState extends State<OrderEntry> {
           }
         }
       } else {
-        for (var filter in filtersAndEq) {
+        for (var filter in filtersAnd) {
           if (filter['filter'] == filtro) {
-            filtersAndEq.remove(filter);
+            filtersAnd.remove(filter);
             break;
           }
         }
@@ -1024,7 +1021,7 @@ class _OrderEntryState extends State<OrderEntry> {
 
       currentPage = 1;
     });
-    paginateData();
+    loadData();
   }
 
   Future<dynamic> Calendar(String id) {
@@ -1191,6 +1188,7 @@ class _OrderEntryState extends State<OrderEntry> {
     }
     setState(() {
       counterChecks = 0;
+      enabledBusqueda = true;
     });
   }
 
@@ -1206,48 +1204,14 @@ class _OrderEntryState extends State<OrderEntry> {
         controller: controller,
         onSubmitted: (value) async {
           setState(() {
-            search = value;
-            pedido = "";
+            _controllers.searchController.text = value;
           });
-
+          loadData();
           getLoadingModal(context, false);
 
-          var response = [];
-
-          setState(() {
-            optionsCheckBox = [];
-            counterChecks = 0;
-            currentPage = 1;
-          });
-          var respon = await Connections().getOrdersSellersByCode(
-              _controllers.searchController.text,
-              currentPage,
-              pageSize,
-              search,
-              [
-                {'filter': 'CiudadShipping'},
-                {'filter': 'NombreShipping'},
-                {'filter': 'DireccionShipping'},
-                {'filter': 'TelefonoShipping'},
-                {'filter': 'ProductoP'},
-                {'filter': 'ProductoExtra'},
-                {'filter': 'PrecioTotal'},
-              ],
-              filtersAndEq);
-          //var data2 = respon[0]['data'];
-          data = respon[0]['data'];
-          setState(() {
-            pageCount = respon[0]['meta']['pagination']['pageCount'];
-            total = respon[0]['meta']['pagination']['total'];
-          });
-          for (var i = 0; i < total; i++) {
-            optionsCheckBox.add({"check": false, "id": "", "name_product": ""});
-          }
           Future.delayed(Duration(milliseconds: 500), () {
             Navigator.pop(context);
           });
-
-          setState(() {});
         },
         style: TextStyle(fontWeight: FontWeight.bold),
         decoration: InputDecoration(
@@ -1259,8 +1223,7 @@ class _OrderEntryState extends State<OrderEntry> {
                     getLoadingModal(context, false);
                     setState(() {
                       _controllers.searchController.clear();
-                      search = '';
-                      filtersAndEq = [];
+                      filtersAnd = [];
                       confirmado = "TODO";
                       logistico = "TODO";
                     });

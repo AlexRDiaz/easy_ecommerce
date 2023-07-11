@@ -1,19 +1,17 @@
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:frontend/config/exports.dart';
 import 'package:frontend/connections/connections.dart';
-import 'package:frontend/helpers/navigators.dart';
+import 'package:frontend/helpers/responsive.dart';
 import 'package:frontend/providers/filters_orders/filters_orders.dart';
-import 'package:frontend/ui/sellers/order_entry/controllers/controllers.dart';
-import 'package:frontend/ui/widgets/filters_orders.dart';
 import 'package:frontend/ui/widgets/loading.dart';
 import 'package:frontend/ui/widgets/routes/routes.dart';
-import 'package:get/route_manager.dart';
+import 'package:number_paginator/number_paginator.dart';
 import 'package:provider/provider.dart';
 import 'package:frontend/main.dart';
 
+import '../../widgets/sellers/add_order.dart';
 import 'controllers/controllers.dart';
 
 class UnwantedOrdersSellers extends StatefulWidget {
@@ -31,6 +29,68 @@ class _UnwantedOrdersSellersState extends State<UnwantedOrdersSellers> {
   int counterChecks = 0;
   bool sort = false;
   List dataTemporal = [];
+  int currentPage = 1;
+  int pageSize = 70;
+  int pageCount = 100;
+  int total = 0;
+  String pedido = '';
+  bool enabledBusqueda = true;
+  bool isLoading = false;
+  NumberPaginatorController paginatorController = NumberPaginatorController();
+  List filtersDefaultAnd = [
+    {
+      'operator': '\$and',
+      'filter': 'IdComercial',
+      'operator_attr': '\$eq',
+      'value': sharedPrefs!.getString("idComercialMasterSeller").toString()
+    },
+    {
+      'operator': '\$and',
+      'filter': 'Estado_Interno',
+      'operator_attr': '\$eq',
+      'value': 'NO DESEA'
+    },
+  ];
+  List populate = ['users', 'pedido_fecha'];
+  List filtersAnd = [];
+
+  List filtersOrCont = [
+    ///{'filter': 'NumeroOrden'},
+    {'filter': 'Marca_T_I'},
+    //{'filter': 'pedido_fecha.data.attributes.Fecha'},
+    {'filter': 'CiudadShipping'},
+    {'filter': 'NombreShipping'},
+    {'filter': 'DireccionShipping'},
+    {'filter': 'TelefonoShipping'},
+    {'filter': 'NumeroOrden'},
+
+    {'filter': 'Cantidad_Total'},
+
+    {'filter': 'ProductoP'},
+
+    {'filter': 'ProductoExtra'},
+
+    {'filter': 'PrecioTotal'},
+
+    {'filter': 'Observacion'},
+
+    {'filter': 'Status'},
+
+    {'filter': 'Estado_Interno'},
+
+    {'filter': 'Estado_Logistico'},
+
+    //        "filters[\$and][0][NumeroOrden][\$contains]=$code&filters[\$and][1][IdComercial][\$eq]=${sharedPrefs!.getString("idComercialMasterSeller").toString()}&filters[\$and][2][Estado_Interno][\$eq]=NO DESEA&";
+  ];
+
+  //
+  //
+  //                 objeto['attributes']['ProductoExtra'].toString().toLowerCase().contains(value.toLowerCase()) ||
+  //                 objeto['attributes']['PrecioTotal'].toString().toLowerCase().contains(value.toLowerCase()) ||
+  //                 objeto['attributes']['Observacion'].toString().toLowerCase().contains(value.toLowerCase()) ||
+  //                 objeto['attributes']['Status'].toString().toLowerCase().contains(value.toLowerCase()) ||
+  //                 objeto['attributes']['Estado_Interno'].toString().toLowerCase().contains(value.toLowerCase()) ||
+  //                 objeto['attributes']['Estado_Logistico'].toString().toLowerCase().contains(value.toLowerCase()))
 
   @override
   void didChangeDependencies() {
@@ -51,25 +111,75 @@ class _UnwantedOrdersSellersState extends State<UnwantedOrdersSellers> {
   }
 
   loadData() async {
+    isLoading = true;
     var response = [];
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getLoadingModal(context, false);
     });
 
-    response = await Connections()
-        .getUnwantedOrdersSellers(_controllers.searchController.text);
-
-    data = response;
-    dataTemporal = response;
-
     setState(() {
-      optionsCheckBox = [];
-      counterChecks = 0;
+      data.clear();
     });
-    for (var i = 0; i < data.length; i++) {
-      optionsCheckBox.add({"check": false, "id": ""});
+    response = await Connections().getOrdersSellersFilter(
+        _controllers.searchController.text,
+        currentPage,
+        pageSize,
+        populate,
+        filtersOrCont,
+        filtersAnd,
+        [],
+        filtersDefaultAnd,
+        []);
+
+    data = response[0]['data'];
+    setState(() {
+      pageCount = response[0]['meta']['pagination']['pageCount'];
+      total = response[0]['meta']['pagination']['total'];
+
+      // print("metadatar"+pageCount.toString());
+    });
+    optionsCheckBox = [];
+    for (var i = 0; i < total; i++) {
+      optionsCheckBox.add({"check": false, "id": "", "NumeroOrden": ""});
     }
     Future.delayed(Duration(milliseconds: 500), () {
+      Navigator.pop(context);
+    });
+    paginatorController.navigateToPage(0);
+    counterChecks = 0;
+    setState(() {});
+    isLoading = false;
+  }
+
+  paginateData() async {
+    // print("Pagina Actual="+currentPage.toString());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getLoadingModal(context, false);
+    });
+    var response = [];
+    setState(() {
+      data.clear();
+    });
+
+    // print("actual pagina valor" + currentPage.toString());
+
+    response = await Connections().getOrdersSellersFilter(
+        _controllers.searchController.text,
+        currentPage,
+        pageSize,
+        populate,
+        filtersOrCont,
+        filtersAnd,
+        [],
+        filtersDefaultAnd,
+        []);
+    data = response[0]['data'];
+    setState(() {
+      pageCount = response[0]['meta']['pagination']['pageCount'];
+      total = response[0]['meta']['pagination']['total'];
+    });
+
+    await Future.delayed(Duration(milliseconds: 500), () {
       Navigator.pop(context);
     });
     setState(() {});
@@ -79,33 +189,374 @@ class _UnwantedOrdersSellersState extends State<UnwantedOrdersSellers> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
+        padding: EdgeInsets.all(15),
+        color: Colors.grey[100],
         width: double.infinity,
         child: Column(
           children: [
+            const SizedBox(
+              height: 10,
+            ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: GestureDetector(
+                onTap: () async {
+                  setState(() {
+                    optionsCheckBox = [];
+                    counterChecks = 0;
+                    enabledBusqueda = true;
+                  });
+                  await loadData();
+                },
+                child: Container(
+                  color: Colors.transparent,
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Icon(
+                        Icons.replay_outlined,
+                        color: Colors.green,
+                      ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Text(
+                        "Recargar Información",
+                        style: TextStyle(
+                            decoration: TextDecoration.underline,
+                            color: Colors.green),
+                      ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
             Container(
               width: double.infinity,
-              child: Row(
-                children: [
-                  Expanded(
-                      child: counterChecks != 0
-                          ? _buttons()
-                          : _modelTextField(
-                              text: "Busqueda",
-                              controller: _controllers.searchController)),
-                  SizedBox(
-                    width: 10,
+              color: Colors.white,
+              padding: EdgeInsets.only(bottom: 5),
+              child: responsive(
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _modelTextField(
+                            text: "Busqueda",
+                            controller: _controllers.searchController),
+                      ),
+                      Expanded(
+                        child: Row(
+                          children: [
+                            Container(
+                              padding:
+                                  const EdgeInsets.only(left: 15, right: 5),
+                              child: Text(
+                                "Registros: ${total}",
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black),
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.only(left: 5, right: 5),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    counterChecks > 0
+                                        ? "Seleccionados: ${counterChecks}"
+                                        : "",
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black),
+                                  ),
+                                  counterChecks > 0
+                                      ? Visibility(
+                                          visible: true,
+                                          child: IconButton(
+                                            iconSize: 20,
+                                            onPressed: () => {clearSelected()},
+                                            icon: Icon(Icons.close_rounded),
+                                          ),
+                                        )
+                                      : Container(),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 5,
+                      ),
+                      Container(
+                        padding: EdgeInsets.only(left: 10, right: 10),
+                        height: 50.0,
+                        child: Row(
+                          children: [
+                            ElevatedButton(
+                                onPressed: counterChecks > 0
+                                    ? () async {
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: Text('Ateneción'),
+                                              content: Column(
+                                                children: [
+                                                  const Text(
+                                                      '¿Estás seguro de eliminar los siguientes pedidos?'),
+                                                  Text('' + listToDelete()),
+                                                ],
+                                              ),
+                                              actions: [
+                                                TextButton(
+                                                  child: const Text('Cancelar'),
+                                                  onPressed: () {
+                                                    // Acción al presionar el botón de cancelar
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                ),
+                                                TextButton(
+                                                  child: Text('Aceptar'),
+                                                  onPressed: () async {
+                                                    for (var i = 0;
+                                                        i <
+                                                            optionsCheckBox
+                                                                .length;
+                                                        i++) {
+                                                      if (optionsCheckBox[i]
+                                                                  ['id']
+                                                              .toString()
+                                                              .isNotEmpty &&
+                                                          optionsCheckBox[i]
+                                                                      ['id']
+                                                                  .toString() !=
+                                                              '' &&
+                                                          optionsCheckBox[i]
+                                                                  ['check'] ==
+                                                              true) {
+                                                        var response = await Connections()
+                                                            .updateOrderInteralStatus(
+                                                                "NO DESEA",
+                                                                optionsCheckBox[
+                                                                        i]['id']
+                                                                    .toString());
+                                                        counterChecks = 0;
+                                                      }
+                                                    }
+
+                                                    loadData();
+                                                    setState(() {});
+                                                    enabledBusqueda = true;
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      }
+                                    : null,
+                                child: const Text(
+                                  "No Desea",
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                )),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                          child: NumberPaginator(
+                        config: NumberPaginatorUIConfig(
+                          buttonShape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                5), // Customize the button shape
+                          ),
+                        ),
+                        controller: paginatorController,
+                        numberPages: pageCount > 0 ? pageCount : 1,
+                        initialPage: 0,
+                        onPageChange: (index) async {
+                          //  print("indice="+index.toString());
+
+                          setState(() {
+                            currentPage = index + 1;
+                          });
+                          if (!isLoading) {
+                            await paginateData();
+                          }
+                        },
+                      )),
+                    ],
                   ),
-                ],
-              ),
+                  Column(
+                    children: [
+                      Container(
+                        child: _modelTextField(
+                            text: "Busqueda",
+                            controller: _controllers.searchController),
+                      ),
+                      Container(
+                        child: Row(
+                          children: [
+                            Text(
+                              "Registros: ${total}",
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black),
+                            ),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            Text(
+                              counterChecks > 0
+                                  ? "Seleccionados: ${counterChecks}"
+                                  : "",
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        padding: EdgeInsets.only(left: 10, right: 10),
+                        height: 50.0,
+                        child: Row(
+                          children: [
+                            ElevatedButton(
+                                onPressed: counterChecks > 0
+                                    ? () async {
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: Text('Atenecion'),
+                                              content: Column(
+                                                children: [
+                                                  const Text(
+                                                      '¿Estás seguro de eliminar los siguientes pedidos?'),
+                                                  Text('' + listToDelete()),
+                                                ],
+                                              ),
+                                              actions: [
+                                                TextButton(
+                                                  child: const Text('Cancelar'),
+                                                  onPressed: () {
+                                                    // Acción al presionar el botón de cancelar
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                ),
+                                                TextButton(
+                                                  child: Text('Aceptar'),
+                                                  onPressed: () async {
+                                                    for (var i = 0;
+                                                        i <
+                                                            optionsCheckBox
+                                                                .length;
+                                                        i++) {
+                                                      if (optionsCheckBox[i]
+                                                                  ['id']
+                                                              .toString()
+                                                              .isNotEmpty &&
+                                                          optionsCheckBox[i]
+                                                                      ['id']
+                                                                  .toString() !=
+                                                              '' &&
+                                                          optionsCheckBox[i]
+                                                                  ['check'] ==
+                                                              true) {
+                                                        var response = await Connections()
+                                                            .updateOrderInteralStatus(
+                                                                "NO DESEA",
+                                                                optionsCheckBox[
+                                                                        i]['id']
+                                                                    .toString());
+                                                        counterChecks = 0;
+                                                      }
+                                                    }
+                                                    setState(() {});
+                                                    loadData();
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      }
+                                    : null,
+                                child: const Text(
+                                  "No Desea",
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                )),
+                            ElevatedButton(
+                                onPressed: () async {
+                                  await showDialog(
+                                      context: (context),
+                                      builder: (context) {
+                                        return AddOrderSellers();
+                                      });
+                                  await loadData();
+                                },
+                                child: const Text(
+                                  "Nuevo",
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                )),
+                          ],
+                        ),
+                      ),
+                      Container(
+                          child: NumberPaginator(
+                        config: NumberPaginatorUIConfig(
+                          buttonShape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                5), // Customize the button shape
+                          ),
+                        ),
+                        numberPages: pageCount > 0 ? pageCount : 1,
+                        onPageChange: (index) async {
+                          //  print("indice="+index.toString());
+                          setState(() {
+                            currentPage = index + 1;
+                          });
+
+                          await paginateData();
+                        },
+                      )),
+                    ],
+                  ),
+                  context),
+            ),
+            const SizedBox(
+              width: 10,
+            ),
+            const Row(),
+            const SizedBox(
+              width: 10,
             ),
             Expanded(
               child: DataTable2(
-                  headingTextStyle: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-                  dataTextStyle:
-                      TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: const BorderRadius.all(Radius.circular(4)),
+                    border: Border.all(color: Colors.blueGrey),
+                  ),
+                  headingTextStyle: const TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.black),
+                  dataTextStyle: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black),
                   columnSpacing: 12,
+                  headingRowHeight: 80,
                   horizontalMargin: 12,
-                  minWidth: 1500,
+                  minWidth: 3500,
                   columns: [
                     DataColumn2(
                       label: Text(''),
@@ -213,19 +664,39 @@ class _UnwantedOrdersSellersState extends State<UnwantedOrdersSellers> {
                       data.length,
                       (index) => DataRow(cells: [
                             DataCell(Checkbox(
-                                value: optionsCheckBox[index]['check'],
+                                //  verificarIndice
+                                value: verificarIndice(index),
+
+                                // value: optionsCheckBox[index]['check'],
                                 onChanged: (value) {
                                   setState(() {
                                     if (value!) {
-                                      optionsCheckBox[index]['check'] = value;
-                                      optionsCheckBox[index]['id'] =
-                                          data[index]['id'];
+                                      optionsCheckBox[index +
+                                              ((currentPage - 1) * pageSize)]
+                                          ['check'] = value;
+                                      optionsCheckBox[index +
+                                              ((currentPage - 1) * pageSize)]
+                                          ['id'] = data[index]['id'];
+                                      optionsCheckBox[index +
+                                              ((currentPage - 1) *
+                                                  pageSize)]['NumeroOrden'] =
+                                          data[index]['attributes']
+                                              ['NumeroOrden'];
+
                                       counterChecks += 1;
                                     } else {
-                                      optionsCheckBox[index]['check'] = value;
-                                      optionsCheckBox[index]['id'] = '';
+                                      optionsCheckBox[index +
+                                              ((currentPage - 1) * pageSize)]
+                                          ['check'] = value;
+
+                                      optionsCheckBox[index +
+                                              (currentPage - 1) * pageSize]
+                                          ['id'] = '';
                                       counterChecks -= 1;
                                     }
+                                    counterChecks > 0
+                                        ? enabledBusqueda = false
+                                        : enabledBusqueda = true;
                                   });
                                 })),
                             DataCell(Text(data[index]['attributes']['Marca_T_I']
@@ -250,10 +721,10 @@ class _UnwantedOrdersSellersState extends State<UnwantedOrdersSellers> {
                                         context: context,
                                         builder: (context) {
                                           return RoutesModal(
-                                            idOrder:
-                                                data[index]['id'].toString(),
-                                            someOrders: false,
-                                          );
+                                              idOrder:
+                                                  data[index]['id'].toString(),
+                                              someOrders: false,
+                                              phoneClient: "");
                                         });
                                     loadData();
                                   },
@@ -347,9 +818,9 @@ class _UnwantedOrdersSellersState extends State<UnwantedOrdersSellers> {
                     context: context,
                     builder: (context) {
                       return RoutesModal(
-                        idOrder: optionsCheckBox,
-                        someOrders: true,
-                      );
+                          idOrder: optionsCheckBox,
+                          someOrders: true,
+                          phoneClient: "");
                     });
 
                 setState(() {});
@@ -375,77 +846,23 @@ class _UnwantedOrdersSellersState extends State<UnwantedOrdersSellers> {
         color: Color.fromARGB(255, 245, 244, 244),
       ),
       child: TextField(
+        enabled: enabledBusqueda,
         controller: controller,
-        onSubmitted: (value) {
+        onSubmitted: (value) async {
+          setState(() {
+            _controllers.searchController.text = value;
+            pedido = "";
+          });
+          loadData();
           getLoadingModal(context, false);
 
-          setState(() {
-            data = dataTemporal;
+          Future.delayed(Duration(milliseconds: 500), () {
+            Navigator.pop(context);
           });
-          if (value.isEmpty) {
-            setState(() {
-              data = dataTemporal;
-            });
-          } else {
-            var dataTemp = data
-                .where((objeto) =>
-                    objeto['attributes']['Marca_T_I']
-                        .toString()
-                        .split(" ")[0]
-                        .toString()
-                        .toLowerCase()
-                        .contains(value.toLowerCase()) ||
-                    objeto['attributes']['pedido_fecha']['data']['attributes']
-                            ['Fecha']
-                        .toString()
-                        .toLowerCase()
-                        .contains(value.toLowerCase()) ||
-                    objeto['attributes']['NumeroOrden']
-                        .toString()
-                        .toLowerCase()
-                        .contains(value.toLowerCase()) ||
-                    objeto['attributes']['CiudadShipping']
-                        .toString()
-                        .toLowerCase()
-                        .contains(value.toLowerCase()) ||
-                    objeto['attributes']['NombreShipping']
-                        .toString()
-                        .toLowerCase()
-                        .contains(value.toLowerCase()) ||
-                    objeto['attributes']['DireccionShipping']
-                        .toString()
-                        .toLowerCase()
-                        .contains(value.toLowerCase()) ||
-                    objeto['attributes']['TelefonoShipping']
-                        .toString()
-                        .toLowerCase()
-                        .contains(value.toLowerCase()) ||
-                    objeto['attributes']['Cantidad_Total']
-                        .toString()
-                        .toLowerCase()
-                        .contains(value.toLowerCase()) ||
-                    objeto['attributes']['ProductoP']
-                        .toString()
-                        .toLowerCase()
-                        .contains(value.toLowerCase()) ||
-                    objeto['attributes']['ProductoExtra'].toString().toLowerCase().contains(value.toLowerCase()) ||
-                    objeto['attributes']['PrecioTotal'].toString().toLowerCase().contains(value.toLowerCase()) ||
-                    objeto['attributes']['Observacion'].toString().toLowerCase().contains(value.toLowerCase()) ||
-                    objeto['attributes']['Status'].toString().toLowerCase().contains(value.toLowerCase()) ||
-                    objeto['attributes']['Estado_Interno'].toString().toLowerCase().contains(value.toLowerCase()) ||
-                    objeto['attributes']['Estado_Logistico'].toString().toLowerCase().contains(value.toLowerCase()))
-                .toList();
-            setState(() {
-              data = dataTemp;
-            });
-          }
-          Navigator.pop(context);
-
-          // loadData();
         },
-        onChanged: (value) {},
         style: TextStyle(fontWeight: FontWeight.bold),
         decoration: InputDecoration(
+          fillColor: Colors.grey[500],
           prefixIcon: Icon(Icons.search),
           suffixIcon: _controllers.searchController.text.isNotEmpty
               ? GestureDetector(
@@ -453,24 +870,19 @@ class _UnwantedOrdersSellersState extends State<UnwantedOrdersSellers> {
                     getLoadingModal(context, false);
                     setState(() {
                       _controllers.searchController.clear();
+                      filtersAnd = [];
                     });
+
                     setState(() {
-                      data = dataTemporal;
+                      loadData();
                     });
                     Navigator.pop(context);
                   },
                   child: Icon(Icons.close))
               : null,
           hintText: text,
-          enabledBorder: OutlineInputBorder(
-            borderSide:
-                BorderSide(width: 1, color: Color.fromRGBO(237, 241, 245, 1.0)),
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderSide:
-                BorderSide(width: 1, color: Color.fromRGBO(237, 241, 245, 1.0)),
-            borderRadius: BorderRadius.circular(10.0),
+          border: const OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey),
           ),
           focusColor: Colors.black,
           iconColor: Colors.black,
@@ -494,6 +906,46 @@ class _UnwantedOrdersSellersState extends State<UnwantedOrdersSellers> {
       data.sort((a, b) => a['attributes'][name]
           .toString()
           .compareTo(b['attributes'][name].toString()));
+    }
+  }
+
+  clearSelected() {
+    optionsCheckBox = [];
+    for (var i = 0; i < total; i++) {
+      optionsCheckBox.add({"check": false, "id": "", "NumeroOrden": ""});
+    }
+    setState(() {
+      counterChecks = 0;
+      enabledBusqueda = true;
+    });
+  }
+
+  String listToDelete() {
+    String res = "";
+
+    for (var i = 0; i < optionsCheckBox.length; i++) {
+      if (optionsCheckBox[i]['check'] == true) {
+        res += sharedPrefs!.getString("NameComercialSeller").toString() +
+            "-" +
+            optionsCheckBox[i]['NumeroOrden'] +
+            '\n';
+      }
+    }
+    return res;
+  }
+
+  bool verificarIndice(int index) {
+    try {
+      dynamic elemento =
+          optionsCheckBox.elementAt(index + ((currentPage - 1) * pageSize));
+      // print("elemento="+elemento.toString());
+      if (elemento['id'] != data[index]['id']) {
+        return false;
+      } else {
+        return true;
+      }
+    } catch (error) {
+      return false;
     }
   }
 }

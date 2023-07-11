@@ -1,5 +1,6 @@
 import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:frontend/connections/connections.dart';
@@ -22,7 +23,9 @@ class _AddOrderSellersState extends State<AddOrderSellers> {
   TextEditingController _telefono = TextEditingController();
   TextEditingController _producto = TextEditingController();
   TextEditingController _productoE = TextEditingController();
-  TextEditingController _precioT = TextEditingController();
+  TextEditingController _precioTotalEnt = TextEditingController();
+  TextEditingController _precioTotalDec = TextEditingController();
+
   TextEditingController _observacion = TextEditingController();
   bool pendiente = true;
   bool confirmado = false;
@@ -38,109 +41,124 @@ class _AddOrderSellersState extends State<AddOrderSellers> {
           children: [
             Column(
               children: [
-                SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10),
                 TextField(
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                   controller: _ciudad,
-                  decoration: InputDecoration(
-                      hintText: "Ciudad",
-                      hintStyle: TextStyle(fontWeight: FontWeight.bold)),
+                  decoration: const InputDecoration(
+                    labelText: "Ciudad",
+                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
-                SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10),
                 TextField(
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                   controller: _codigo,
-                  decoration: InputDecoration(
-                      hintText: "Código",
-                      hintStyle: TextStyle(fontWeight: FontWeight.bold)),
+                  decoration: const InputDecoration(
+                    labelText: "Código",
+                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
-                SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10),
                 TextField(
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                   controller: _nombre,
-                  decoration: InputDecoration(
-                      hintText: "Nombre Cliente",
-                      hintStyle: TextStyle(fontWeight: FontWeight.bold)),
+                  decoration: const InputDecoration(
+                    labelText: "Nombre Cliente",
+                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
-                SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10),
                 TextField(
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                   controller: _direccion,
-                  decoration: InputDecoration(
-                      hintText: "Dirección",
-                      hintStyle: TextStyle(fontWeight: FontWeight.bold)),
+                  decoration: const InputDecoration(
+                    labelText: "Dirección",
+                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
-                SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10),
                 TextField(
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                   controller: _telefono,
-                  decoration: InputDecoration(
-                      hintText: "Teléfono",
-                      hintStyle: TextStyle(fontWeight: FontWeight.bold)),
+                  decoration: const InputDecoration(
+                    labelText: "Teléfono",
+                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
-                SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10),
                 TextField(
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                   controller: _cantidad,
-                  decoration: InputDecoration(
-                      hintText: "CANTIDAD",
-                      hintStyle: TextStyle(fontWeight: FontWeight.bold)),
+                  decoration: const InputDecoration(
+                    labelText: "Cantidad (Enteros)",
+                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.digitsOnly
+                  ],
                 ),
-                SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10),
                 TextField(
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                   controller: _producto,
-                  decoration: InputDecoration(
-                      hintText: "Producto",
-                      hintStyle: TextStyle(fontWeight: FontWeight.bold)),
+                  decoration: const InputDecoration(
+                    labelText: "Producto",
+                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
-                SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10),
                 TextField(
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                   controller: _productoE,
-                  decoration: InputDecoration(
-                      hintText: "Producto Extra",
-                      hintStyle: TextStyle(fontWeight: FontWeight.bold)),
+                  decoration: const InputDecoration(
+                    labelText: "Producto Extra",
+                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
-                SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10),
+                Row(children: [
+                  Expanded(
+                    child: TextField(
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                      controller: _precioTotalEnt,
+                      decoration: const InputDecoration(
+                        labelText: "Precio Total (Entero)",
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      keyboardType: TextInputType.number,
+                      inputFormatters: <TextInputFormatter>[
+                        FilteringTextInputFormatter.digitsOnly
+                      ],
+                    ),
+                  ),
+                  const Text("  .  ", style: TextStyle(fontSize: 35)),
+                  Expanded(
+                    child: TextField(
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                      controller: _precioTotalDec,
+                      decoration: const InputDecoration(
+                        labelText: "(Decimal)",
+                        labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      keyboardType: TextInputType.number,
+                      inputFormatters: <TextInputFormatter>[
+                        FilteringTextInputFormatter.digitsOnly
+                      ],
+                    ),
+                  ),
+                ]),
+                const SizedBox(height: 10),
                 TextField(
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                  controller: _precioT,
-                  decoration: InputDecoration(
-                      hintText: "Precio Total",
-                      hintStyle: TextStyle(fontWeight: FontWeight.bold)),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                TextField(
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                   controller: _observacion,
-                  decoration: InputDecoration(
-                      hintText: "Observación",
-                      hintStyle: TextStyle(fontWeight: FontWeight.bold)),
+                  decoration: const InputDecoration(
+                    labelText: "Observación",
+                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
-                SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10),
                 Row(
                   children: [
                     Checkbox(
@@ -152,17 +170,17 @@ class _AddOrderSellersState extends State<AddOrderSellers> {
                             noDesea = false;
                           });
                         }),
-                    SizedBox(
+                    const SizedBox(
                       width: 10,
                     ),
-                    Flexible(
+                    const Flexible(
                         child: Text(
                       "Pendiente",
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ))
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 Row(
@@ -176,17 +194,17 @@ class _AddOrderSellersState extends State<AddOrderSellers> {
                             noDesea = false;
                           });
                         }),
-                    SizedBox(
+                    const SizedBox(
                       width: 10,
                     ),
-                    Flexible(
+                    const Flexible(
                         child: Text(
                       "Confirmado",
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ))
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 Row(
@@ -200,17 +218,17 @@ class _AddOrderSellersState extends State<AddOrderSellers> {
                             noDesea = true;
                           });
                         }),
-                    SizedBox(
+                    const SizedBox(
                       width: 10,
                     ),
-                    Flexible(
+                    const Flexible(
                         child: Text(
                       "No Desea",
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ))
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 30,
                 ),
                 Row(
@@ -220,11 +238,11 @@ class _AddOrderSellersState extends State<AddOrderSellers> {
                         onPressed: () {
                           Navigator.pop(context);
                         },
-                        child: Text(
+                        child: const Text(
                           "CANCELAR",
                           style: TextStyle(fontWeight: FontWeight.bold),
                         )),
-                    SizedBox(
+                    const SizedBox(
                       width: 10,
                     ),
                     ElevatedButton(
@@ -245,8 +263,8 @@ class _AddOrderSellersState extends State<AddOrderSellers> {
                           }
                           var dateC = await Connections().createDateOrder(
                               "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}");
-                              String priceTotal = _precioT.text.replaceAll(",", ".");
-
+                          String priceTotal =
+                              _precioTotalEnt.text + "." + _precioTotalDec.text;
 
                           var response = await Connections().createOrder(
                               _codigo.text,
@@ -266,7 +284,7 @@ class _AddOrderSellersState extends State<AddOrderSellers> {
                           Navigator.pop(context);
                           Navigator.pop(context);
                         },
-                        child: Text(
+                        child: const Text(
                           "GUARDAR",
                           style: TextStyle(fontWeight: FontWeight.bold),
                         )),

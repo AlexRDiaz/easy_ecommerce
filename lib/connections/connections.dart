@@ -539,42 +539,114 @@ class Connections {
     return decodeData['data'];
   }
 
-  Future getOrdersSellersByCode(code, currentPage, pageSize, search,
-      arrayFiltersOrCont, arrayFiltersAndEq) async {
-    print("currentPage=" + currentPage.toString());
-    print("pageSize=" + pageSize.toString());
-    // print("pedido=" + pedido!);
-    // print("confirmado=" + confirmado!);
-    // print("logistico=" + logistico!);
+  getUnwantedOrdersSellers(
+    code,
+    int currentPage,
+    int pageSize,
+    List arrayPopulate,
+    arrayFiltersOrCont,
+  ) async {
+    String url = "$server/api/pedidos-shopifies?";
 
-    var url =
-        "$server/api/pedidos-shopifies?populate=users&populate=pedido_fecha&filters[\$or][0][NumeroOrden][\$contains]=$code&filters[\$and][1][IdComercial][\$eq]=${sharedPrefs!.getString("idComercialMasterSeller").toString()}&filters[\$and][3][Estado_Interno][\$ne]=NO DESEA&sort=id%3Adesc&filters[\$and][4][Status][\$eq]=PEDIDO PROGRAMADO";
-    int numberFilter = 5;
-    var filtersOrCont = "";
+    for (var populate in arrayPopulate) {
+      url += 'populate=$populate&';
+    }
+    int numberFilter = 3;
 
-    if (search != "") {
+    if (code != "") {
       for (var filter in arrayFiltersOrCont) {
-        filtersOrCont +=
-            "&filters[\$or][$numberFilter][${filter['filter']}][\$contains]=$search";
+        url +=
+            "filters[\$or][$numberFilter][${filter['filter']}][\$contains]=$code&";
         numberFilter++;
       }
     }
 
-    var filtersAndEq = "";
-    for (var filter in arrayFiltersAndEq) {
-      print("filter:" + filter['filter'].toString());
-      print("value:" + filter['value'].toString());
+    url +=
+        "pagination[page]=$currentPage&pagination[pageSize]=$pageSize&sort=id%3Adesc";
+    print("url= " + url);
+    var request = await http.get(
+      Uri.parse(url),
+      headers: {'Content-Type': 'application/json'},
+    );
+    var response = await request.body;
+    var decodeData = json.decode(response);
 
-      filtersAndEq +=
-          "&filters[\$and][$numberFilter][${filter['filter']}][\$eq]=${filter['value']}";
+    return decodeData['data'];
+  }
+//  getUnwantedOrdersSellers(code) async {
+//     var request = await http.get(
+//       Uri.parse(
+//           "$server/api/pedidos-shopifies?populate=users&populate=pedido_fecha&filters[\$and][0][NumeroOrden][\$contains]=$code&filters[\$and][1][IdComercial][\$eq]=${sharedPrefs!.getString("idComercialMasterSeller").toString()}&filters[\$and][2][Estado_Interno][\$eq]=NO DESEA&pagination[limit]=-1"),
+//       headers: {'Content-Type': 'application/json'},
+//     );
+//     var response = await request.body;
+//     var decodeData = json.decode(response);
+
+//     return decodeData['data'];
+//   }
+  Future getOrdersSellersFilter(
+      code,
+      currentPage,
+      pageSize,
+      arrayPopulate,
+      arrayFiltersOrCont,
+      arrayFiltersAnd,
+      arrayFiltersDefaultOr,
+      arrayFiltersDefaultAnd,
+      uniqueFilters) async {
+    var url = "$server/api/pedidos-shopifies?";
+    int numberFilter = 0;
+
+    for (var populate in arrayPopulate) {
+      url += 'populate=$populate&';
+    }
+    var nestedAnd = "";
+
+    for (var filter in uniqueFilters) {
+      url += filter;
+    }
+    for (var filter in arrayFiltersDefaultOr) {
+      int nestedOrCount = 0;
+
+      nestedAnd +=
+          "filters[\$and][$numberFilter][${filter['operator']}][$nestedOrCount][${filter['filter']}][${filter['operator_attr']}]=${filter['value']}&";
+      nestedOrCount++;
+    }
+
+    if (arrayFiltersDefaultOr != []) {
+      url += nestedAnd;
       numberFilter++;
     }
 
-    var configPagination =
-        "&sort=id%3Adesc&pagination[page]=${currentPage}&pagination[pageSize]=${pageSize}";
-    url += filtersOrCont + filtersAndEq + configPagination;
+    for (var filter in arrayFiltersDefaultAnd) {
+      url +=
+          "filters[${filter['operator']}][$numberFilter][${filter['filter']}][${filter['operator_attr']}]=${filter['value']}&";
+      numberFilter++;
+    }
 
-    print(url);
+    if (code != "") {
+      for (var filter in arrayFiltersOrCont) {
+        url +=
+            "filters[\$or][$numberFilter][${filter['filter']}][\$contains]=$code&";
+        numberFilter++;
+      }
+    }
+
+    for (var filter in arrayFiltersAnd) {
+      // print("filter:" + filter['filter'].toString());
+      // print("value:" + filter['value'].toString());
+
+      url +=
+          "filters[\$and][$numberFilter][${filter['filter']}][${filter['operator_attr']}]=${filter['value']}&";
+      numberFilter++;
+    }
+
+    // var configPagination =
+    //     "pagination[page]=${currentPage}&pagination[pageSize]=${pageSize}&sort=id%3Adesc";
+    url +=
+        "pagination[page]=$currentPage&pagination[pageSize]=$pageSize&sort=id%3Adesc";
+
+    //print(url);
     var request = await http.get(
       Uri.parse(url),
       headers: {'Content-Type': 'application/json'},
@@ -627,17 +699,64 @@ class Connections {
     ];
   }
 
-  getUnwantedOrdersSellers(code) async {
-    var request = await http.get(
-      Uri.parse(
-          "$server/api/pedidos-shopifies?populate=users&populate=pedido_fecha&filters[\$and][0][NumeroOrden][\$contains]=$code&filters[\$and][1][IdComercial][\$eq]=${sharedPrefs!.getString("idComercialMasterSeller").toString()}&filters[\$and][2][Estado_Interno][\$eq]=NO DESEA&pagination[limit]=-1"),
-      headers: {'Content-Type': 'application/json'},
-    );
-    var response = await request.body;
-    var decodeData = json.decode(response);
+  // getUnwantedOrdersSellers(code) async {
+  //   var request = await http.get(
+  //     Uri.parse(
+  //         "$server/api/pedidos-shopifies?populate=users&populate=pedido_fecha&filters[\$and][0][NumeroOrden][\$contains]=$code&filters[\$and][1][IdComercial][\$eq]=${sharedPrefs!.getString("idComercialMasterSeller").toString()}&filters[\$and][2][Estado_Interno][\$eq]=NO DESEA&pagination[limit]=-1"),
+  //     headers: {'Content-Type': 'application/json'},
+  //   );
+  //   var response = await request.body;
+  //   var decodeData = json.decode(response);
 
-    return decodeData['data'];
-  }
+  //   return decodeData['data'];
+  // }
+
+  // Future getUnwantedOrdersSellers(code, int currentPage, int pageSize,
+  //     List arrayFiltersOrCont, List arrayFiltersAndEq) async {
+  //   // print("currentPage=" + currentPage.toString());
+  //   // print("pageSize=" + pageSize.toString());
+  //   // print("pedido=" + pedido!);
+  //   // print("confirmado=" + confirmado!);
+  //   // print("code=" + code!);
+
+  //   var url =
+  //       "$server/api/pedidos-shopifies?populate=users&populate=pedido_fecha&filters[\$or][0][NumeroOrden][\$contains]=$code&filters[\$and][1][IdComercial][\$eq]=${sharedPrefs!.getString("idComercialMasterSeller").toString()}&filters[\$and][3][Estado_Interno][\$ne]=NO DESEA&sort=id%3Adesc&filters[\$and][4][Status][\$eq]=PEDIDO PROGRAMADO";
+  //   int numberFilter = 5;
+  //   var filtersOrCont = "";
+
+  //   if (code != "") {
+  //     for (var filter in arrayFiltersOrCont) {
+  //       filtersOrCont +=
+  //           "&filters[\$or][$numberFilter][${filter['filter']}][\$contains]=$code";
+  //       numberFilter++;
+  //     }
+  //   }
+
+  //   var filtersAndEq = "";
+  //   for (var filter in arrayFiltersAndEq) {
+  //     print("filter:" + filter['filter'].toString());
+  //     print("value:" + filter['value'].toString());
+
+  //     filtersAndEq +=
+  //         "&filters[\$and][$numberFilter][${filter['filter']}][\$eq]=${filter['value']}";
+  //     numberFilter++;
+  //   }
+
+  //   var configPagination =
+  //       "&sort=id%3Adesc&pagination[page]=${currentPage}&pagination[pageSize]=${pageSize}";
+  //   url += filtersOrCont + filtersAndEq + configPagination;
+
+  //   print(url);
+  //   var request = await http.get(
+  //     Uri.parse(url),
+  //     headers: {'Content-Type': 'application/json'},
+  //   );
+  //   var response = await request.body;
+  //   var decodeData = json.decode(response);
+  //   return [
+  //     {'data': decodeData['data'], 'meta': decodeData['meta']}
+  //   ];
+  // }
 
   getOrdersForPrintGuides(code) async {
     var request = await http.get(
@@ -1991,17 +2110,40 @@ class Connections {
     }
   }
 
-  getOrdersForSellerStateSearchForDate(code, arrayFiltersOrCont,
-      arrayFiltersAndEq, List<dynamic> arrayDateRanges) async {
-    // String url =
-    //     "http://localhost:1337/api/shopify/pedidos/filter/seller/dates/${sharedPrefs!.getString("idComercialMasterSeller").toString()}?filters[Status][\$ne]=PEDIDO PROGRAMADO";
-
+  getOperatorsByTransporter() async {
+    //http://localhost:1337/api/TRANSPORTADORAS/6?populate=operadores.user
     String url =
-        "http://localhost:1337/api/shopify/pedidos/filter/seller/dates/${sharedPrefs!.getString("idComercialMasterSeller").toString()}?";
+        "http://localhost:1337/api/TRANSPORTADORAS/${sharedPrefs!.getString("idTransportadora").toString()}?populate=operadores.user";
+
+    var request = await http
+        .get(Uri.parse(url), headers: {'Content-Type': 'application/json'});
+
+    var response = await request.body;
+    var decodeData = json.decode(response);
+    return decodeData['data'];
+  }
+
+  getOrdersForSellerStateSearchForDate(
+      code,
+      arrayFiltersOrCont,
+      arrayFiltersAndEq,
+      List<dynamic> arrayDateRanges,
+      List arrayFiltersNotEq,
+      List arrayDefaultAnd,
+      List arrayDefaultOr,
+      List populate) async {
+    String url = "$server/api/shopify/pedidos/filter/seller/dates?";
 
     List<dynamic> filtersOrCont = [];
     List<dynamic> filtersAndEq = [];
-    List<dynamic> filtersNotEq = [];
+
+    for (var filter in arrayDefaultAnd) {
+      filtersAndEq.add({filter['filter']: filter['value']});
+    }
+
+    for (var filter in arrayDefaultOr) {
+      filtersOrCont.add({filter['filter']: filter['value']});
+    }
 
     var bodyParams;
     if (arrayDateRanges.isNotEmpty) {
@@ -2019,7 +2161,7 @@ class Connections {
         'end': '1/1/2200'
       };
     }
-
+    bodyParams['populate'] = jsonEncode(populate);
     if (code != "") {
       for (var filter in arrayFiltersOrCont) {
         filtersOrCont.add({
@@ -2028,18 +2170,22 @@ class Connections {
       }
     }
 
-    filtersNotEq.add({'Status': 'PEDIDO PROGRAMADO'});
-    bodyParams['not'] = jsonEncode(filtersNotEq);
+    bodyParams['not'] = jsonEncode(arrayFiltersNotEq);
 
     bodyParams['or'] = jsonEncode(filtersOrCont);
 
-    print("body: " + bodyParams.toString());
     for (var filter in arrayFiltersAndEq) {
       filtersAndEq.add({filter['filter']: filter['value']});
     }
+
+    bodyParams['not'] = jsonEncode(arrayFiltersNotEq);
+
+    bodyParams['or'] = jsonEncode(filtersOrCont);
     bodyParams['and'] = jsonEncode(filtersAndEq);
 
     // "$server/api/pedidos-shopifies?populate=transportadora&populate=users&populate=users.vendedores&populate=pedido_fecha&populate=sub_ruta&populate=operadore&populate=operadore.user&filters[Status][\$ne]=PEDIDO PROGRAMADO&filters[IdComercial][\$eq]=${sharedPrefs!.getString("idComercialMasterSeller").toString()}&filters[\$or][0][NumeroOrden][\$contains]=$code&filters[\$or][1][Fecha_Entrega][\$contains]=$code&filters[\$or][2][CiudadShipping][\$contains]=$code&filters[\$or][3][NombreShipping][\$contains]=$code&filters[\$or][4][DireccionShipping][\$contains]=$code&filters[\$or][5][TelefonoShipping][\$contains]=$code&filters[\$or][6][Cantidad_Total][\$contains]=$code&filters[\$or][7][ProductoP][\$contains]=$code&filters[\$or][8][ProductoExtra][\$contains]=$code&filters[\$or][9][PrecioTotal][\$contains]=$code&filters[\$or][10][Comentario][\$contains]=$code&filters[\$or][11][Status][\$contains]=$code&filters[\$or][12][Estado_Interno][\$contains]=$code&filters[\$or][13][Estado_Logistico][\$contains]=$code&filters[\$or][14][Estado_Devolucion][\$contains]=$code&filters[\$or][15][Marca_T_I][\$contains]=$code&pagination[limit]=-1"
+    print("body: " + bodyParams.toString());
+
     print('se ha actualizado ' + url);
     var request = await http.post(Uri.parse(url),
         headers: {'Content-Type': 'application/json'},

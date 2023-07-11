@@ -5,13 +5,18 @@ import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:frontend/connections/connections.dart';
 import 'package:frontend/ui/widgets/loading.dart';
 import 'package:frontend/ui/widgets/routes/create_sub_route.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class RoutesModal extends StatefulWidget {
   final idOrder;
   final bool someOrders;
+  final String phoneClient;
 
   const RoutesModal(
-      {super.key, required this.idOrder, required this.someOrders});
+      {super.key,
+      required this.idOrder,
+      required this.someOrders,
+      required this.phoneClient});
 
   @override
   State<RoutesModal> createState() => _RoutesModalState();
@@ -192,10 +197,13 @@ class _RoutesModalState extends State<RoutesModal> {
                                     widget.idOrder[i]['id']);
                           }
                         }
+                        if (widget.phoneClient != "") {
+                          sendMessage(widget.phoneClient);
+                        }
                         setState(() {});
                         Navigator.pop(context);
                       },
-                child: Text(
+                child: const Text(
                   "ACEPTAR",
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ))
@@ -203,5 +211,15 @@ class _RoutesModalState extends State<RoutesModal> {
         ),
       ),
     );
+  }
+
+  sendMessage(phone) async {
+    String message =
+        "Gracias por confirmar tu compra, tu pedido a sido enviado a tu Ciudad, el codigo de tu pedido es CODIGO, si tu producto llega sin envoltura, sin caja o sin guia no lo reciba y comuniquese a este numero caso contrario perdera su garantia";
+    var _url =
+        Uri.parse("https://api.whatsapp.com/send?phone=$phone&text=$message");
+    if (!await launchUrl(_url)) {
+      throw Exception('Could not launch $_url');
+    }
   }
 }

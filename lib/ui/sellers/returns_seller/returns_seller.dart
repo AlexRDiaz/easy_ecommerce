@@ -1,17 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:data_table_2/data_table_2.dart';
-import 'package:frontend/config/exports.dart';
 import 'package:frontend/connections/connections.dart';
-import 'package:frontend/ui/logistic/income_and_expenses/controllers/controllers.dart';
+import 'package:frontend/helpers/responsive.dart';
+import 'package:frontend/main.dart';
 import 'package:frontend/ui/logistic/returns/controllers/controllers.dart';
-import 'package:frontend/ui/utils/utils.dart';
 import 'package:frontend/ui/widgets/loading.dart';
-import 'package:frontend/helpers/navigators.dart';
-import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:intl/intl.dart';
-
-import 'controllers/controllers.dart';
+import 'package:number_paginator/number_paginator.dart';
 
 class ReturnsSeller extends StatefulWidget {
   const ReturnsSeller({super.key});
@@ -25,6 +20,66 @@ class _ReturnsSellerState extends State<ReturnsSeller> {
   List data = [];
   List dataTemporal = [];
   bool sort = false;
+  bool isLoading = false;
+  int currentPage = 1;
+  int pageSize = 70;
+  int pageCount = 100;
+  int total = 0;
+
+  NumberPaginatorController paginatorController = NumberPaginatorController();
+  List populate = [
+    'users',
+    'pedido_fecha',
+    'ruta',
+    'transportadora',
+    'users.vendedores',
+    'operadore',
+    'operadore.user'
+  ];
+  List filtersAnd = [];
+  List filtersDefaultOr = [
+    {
+      'operator': '\$or',
+      'filter': 'Status',
+      'operator_attr': '\$eq',
+      'value': 'NOVEDAD'
+    },
+    {
+      'operator': '\$or',
+      'filter': 'Status',
+      'operator_attr': '\$eq',
+      'value': 'NO ENTREGADO'
+    },
+  ];
+
+  List filtersDefaultAnd = [
+    {
+      'operator': '\$and',
+      'filter': 'IdComercial',
+      'operator_attr': '\$eq',
+      'value': sharedPrefs!.getString("idComercialMasterSeller").toString()
+    }
+  ];
+
+// ][Status][\$eq]=NOVEDAD&",
+//     "filters[\$and][1][\$or][1][Status][\$eq]=NO ENTREGADO&",
+//     "filters[\$and][2][\$or][1][IdComercial][\$eq]=${sharedPrefs!.getString("idComercialMasterSeller").toString()}&"
+
+  List filtersOrCont = [
+    {'filter': 'Fecha_Entrega'},
+    {'filter': 'NumeroOrden'},
+    {'filter': 'CiudadShipping'},
+    {'filter': 'NombreShipping'},
+    {'filter': 'DireccionShipping'},
+    {'filter': 'TelefonoShipping'},
+    {'filter': 'Cantidad_Total'},
+    {'filter': 'ProductoP'},
+    {'filter': 'ProductoExtra'},
+    {'filter': 'PrecioTotal'},
+    {'filter': 'Status'},
+    {'filter': 'Estado_Devolucion'},
+    {'filter': 'Fecha_Confirmacion'},
+  ];
 
   String option = "";
   List bools = [
@@ -61,22 +116,6 @@ class _ReturnsSellerState extends State<ReturnsSeller> {
     "Fecha Entrega",
     "Devolución"
   ];
-  loadData() async {
-    var response = [];
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      getLoadingModal(context, false);
-    });
-
-    response = await Connections()
-        .getOrdersForReturnsSellers(_controllers.searchController.text);
-    data = response;
-    dataTemporal = response;
-
-    Future.delayed(const Duration(milliseconds: 500), () {
-      Navigator.pop(context);
-    });
-    setState(() {});
-  }
 
   @override
   void didChangeDependencies() {
@@ -84,24 +123,241 @@ class _ReturnsSellerState extends State<ReturnsSeller> {
     super.didChangeDependencies();
   }
 
+  loadData() async {
+    isLoading = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getLoadingModal(context, false);
+    });
+    var response = [];
+    setState(() {
+      data.clear();
+    });
+    response = await Connections().getOrdersSellersFilter(
+        _controllers.searchController.text,
+        currentPage,
+        pageSize,
+        populate,
+        filtersOrCont,
+        filtersAnd,
+        filtersDefaultOr,
+        filtersDefaultAnd, []);
+
+    data = response[0]['data'];
+    setState(() {
+      pageCount = response[0]['meta']['pagination']['pageCount'];
+      total = response[0]['meta']['pagination']['total'];
+
+      // print("metadatar"+pageCount.toString());
+    });
+
+    Future.delayed(Duration(milliseconds: 500), () {
+      Navigator.pop(context);
+    });
+    paginatorController.navigateToPage(0);
+    setState(() {});
+    isLoading = false;
+  }
+
+  paginateData() async {
+    // print("Pagina Actual="+currentPage.toString());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getLoadingModal(context, false);
+    });
+    var response = [];
+    setState(() {
+      data.clear();
+    });
+
+    // print("actual pagina valor" + currentPage.toString());
+
+    response = await Connections().getOrdersSellersFilter(
+        _controllers.searchController.text,
+        currentPage,
+        pageSize,
+        populate,
+        filtersOrCont,
+        filtersAnd,
+        filtersDefaultOr,
+        filtersDefaultAnd, []);
+    data = response[0]['data'];
+    setState(() {
+      pageCount = response[0]['meta']['pagination']['pageCount'];
+      total = response[0]['meta']['pagination']['total'];
+    });
+
+    await Future.delayed(Duration(milliseconds: 500), () {
+      Navigator.pop(context);
+    });
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SizedBox(
+      body: Container(
+        padding: EdgeInsets.all(15),
+        color: Colors.grey[100],
         width: double.infinity,
         child: Column(
           children: [
-            SizedBox(
-              width: double.infinity,
-              child: _modelTextField(
-                  text: "Búsqueda", controller: _controllers.searchController),
+            const SizedBox(
+              height: 10,
             ),
-            _filters(context),
+            Align(
+              alignment: Alignment.centerRight,
+              child: GestureDetector(
+                onTap: () async {
+                  setState(() {
+                    // optionsCheckBox = [];
+                    // counterChecks = 0;
+                    // enabledBusqueda = true;
+                  });
+                  await loadData();
+                },
+                child: Container(
+                  color: Colors.transparent,
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Icon(
+                        Icons.replay_outlined,
+                        color: Colors.green,
+                      ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Text(
+                        "Recargar Información",
+                        style: TextStyle(
+                            decoration: TextDecoration.underline,
+                            color: Colors.green),
+                      ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Container(
+              width: double.infinity,
+              color: Colors.white,
+              padding: EdgeInsets.only(bottom: 5),
+              child: responsive(
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _modelTextField(
+                            text: "Busqueda",
+                            controller: _controllers.searchController),
+                      ),
+                      Expanded(
+                        child: Row(
+                          children: [
+                            Container(
+                              padding:
+                                  const EdgeInsets.only(left: 15, right: 5),
+                              child: Text(
+                                "Registros: ${total}",
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 5,
+                      ),
+                      Expanded(
+                          child: NumberPaginator(
+                        config: NumberPaginatorUIConfig(
+                          buttonShape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                5), // Customize the button shape
+                          ),
+                        ),
+                        controller: paginatorController,
+                        numberPages: pageCount > 0 ? pageCount : 1,
+                        initialPage: 0,
+                        onPageChange: (index) async {
+                          //  print("indice="+index.toString());
+
+                          setState(() {
+                            currentPage = index + 1;
+                          });
+
+                          await paginateData();
+                        },
+                      )),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Container(
+                        child: _modelTextField(
+                            text: "Busqueda",
+                            controller: _controllers.searchController),
+                      ),
+                      Container(
+                        child: Row(
+                          children: [
+                            Text(
+                              "Registros: ${total}",
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black),
+                            ),
+                            SizedBox(
+                              width: 10,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                          child: NumberPaginator(
+                        config: NumberPaginatorUIConfig(
+                          buttonShape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                5), // Customize the button shape
+                          ),
+                        ),
+                        numberPages: pageCount > 0 ? pageCount : 1,
+                        onPageChange: (index) async {
+                          //  print("indice="+index.toString());
+                          setState(() {
+                            currentPage = index + 1;
+                          });
+                          if (!isLoading) {
+                            await paginateData();
+                          }
+                        },
+                      )),
+                    ],
+                  ),
+                  context),
+            ),
+            const SizedBox(
+              width: 10,
+            ),
+            const Row(),
+            const SizedBox(
+              width: 10,
+            ),
             Expanded(
               child: DataTable2(
-                headingTextStyle: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-                dataTextStyle:
-                    const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black),
+                headingTextStyle: const TextStyle(
+                    fontWeight: FontWeight.bold, color: Colors.black),
+                dataTextStyle: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black),
                 columnSpacing: 12,
                 horizontalMargin: 6,
                 minWidth: 2000,
@@ -192,6 +448,14 @@ class _ReturnsSellerState extends State<ReturnsSeller> {
                     numeric: true,
                     onSort: (columnIndex, ascending) {
                       sortFunc("Estado_Devolucion");
+                    },
+                  ),
+                  DataColumn2(
+                    label: Text('Comentario'),
+                    size: ColumnSize.M,
+                    numeric: true,
+                    onSort: (columnIndex, ascending) {
+                      sortFunc("Comentario");
                     },
                   ),
                   DataColumn2(
@@ -333,6 +597,12 @@ class _ReturnsSellerState extends State<ReturnsSeller> {
                         DataCell(Text(
                           data[index]['attributes']['Estado_Devolucion']
                               .toString(),
+                          style: TextStyle(
+                            color: rowColor,
+                          ),
+                        )),
+                        DataCell(Text(
+                          data[index]['attributes']['Comentario'].toString(),
                           style: TextStyle(
                             color: rowColor,
                           ),
@@ -560,253 +830,20 @@ class _ReturnsSellerState extends State<ReturnsSeller> {
       ),
       child: TextField(
         controller: controller,
-        onSubmitted: (value) {
+        onSubmitted: (value) async {
+          setState(() {
+            _controllers.searchController.text = value;
+          });
+          loadData();
           getLoadingModal(context, false);
 
-          setState(() {
-            data = dataTemporal;
+          Future.delayed(Duration(milliseconds: 500), () {
+            Navigator.pop(context);
           });
-          if (value.isEmpty) {
-            setState(() {
-              data = dataTemporal;
-            });
-          } else {
-            if (option.isEmpty) {
-              var dataTemp = data
-                  .where((objeto) =>
-                      objeto['attributes']['Marca_Tiempo_Envio']
-                          .toString()
-                          .split(" ")[0]
-                          .toString()
-                          .toLowerCase()
-                          .contains(value.toLowerCase()) ||
-                      objeto['attributes']['NumeroOrden']
-                          .toString()
-                          .toLowerCase()
-                          .contains(value.toLowerCase()) ||
-                      objeto['attributes']['CiudadShipping']
-                          .toString()
-                          .toLowerCase()
-                          .contains(value.toLowerCase()) ||
-                      objeto['attributes']['NombreShipping']
-                          .toString()
-                          .toLowerCase()
-                          .contains(value.toLowerCase()) ||
-                      objeto['attributes']['DireccionShipping']
-                          .toString()
-                          .toLowerCase()
-                          .contains(value.toLowerCase()) ||
-                      objeto['attributes']['TelefonoShipping']
-                          .toString()
-                          .toLowerCase()
-                          .contains(value.toLowerCase()) ||
-                      objeto['attributes']['Cantidad_Total']
-                          .toString()
-                          .toLowerCase()
-                          .contains(value.toLowerCase()) ||
-                      objeto['attributes']['ProductoP']
-                          .toString()
-                          .toLowerCase()
-                          .contains(value.toLowerCase()) ||
-                      objeto['attributes']['ProductoExtra']
-                          .toString()
-                          .toLowerCase()
-                          .contains(value.toLowerCase()) ||
-                      objeto['attributes']['PrecioTotal']
-                          .toString()
-                          .toLowerCase()
-                          .contains(value.toLowerCase()) ||
-                      objeto['attributes']['Observacion'].toString().toLowerCase().contains(value.toLowerCase()) ||
-                      objeto['attributes']['Comentario'].toString().toLowerCase().contains(value.toLowerCase()) ||
-                      objeto['attributes']['Status'].toString().toLowerCase().contains(value.toLowerCase()) ||
-                      objeto['attributes']['Fecha_Entrega'].toString().toLowerCase().contains(value.toLowerCase()) ||
-                      objeto['attributes']['DO'].toString().toLowerCase().contains(value.toLowerCase()))
-                  .toList();
-              setState(() {
-                data = dataTemp;
-              });
-            } else {
-              switch (option) {
-                case "Fecha":
-                  var dataTemp = data
-                      .where((objeto) => objeto['attributes']
-                              ['Marca_Tiempo_Envio']
-                          .toString()
-                          .toLowerCase()
-                          .contains(value.toLowerCase()))
-                      .toList();
-                  setState(() {
-                    data = dataTemp;
-                  });
-                  break;
-                case "Código":
-                  var dataTemp = data
-                      .where((objeto) => objeto['attributes']['NumeroOrden']
-                          .toString()
-                          .toLowerCase()
-                          .contains(value.toLowerCase()))
-                      .toList();
-                  setState(() {
-                    data = dataTemp;
-                  });
-                  break;
-                case "Ciudad":
-                  var dataTemp = data
-                      .where((objeto) => objeto['attributes']['CiudadShipping']
-                          .toString()
-                          .toLowerCase()
-                          .contains(value.toLowerCase()))
-                      .toList();
-                  setState(() {
-                    data = dataTemp;
-                  });
-                  break;
-                case "Nombre Cliente":
-                  var dataTemp = data
-                      .where((objeto) => objeto['attributes']['NombreShipping']
-                          .toString()
-                          .toLowerCase()
-                          .contains(value.toLowerCase()))
-                      .toList();
-                  setState(() {
-                    data = dataTemp;
-                  });
-                  break;
-                case "Dirección":
-                  var dataTemp = data
-                      .where((objeto) => objeto['attributes']
-                              ['DireccionShipping']
-                          .toString()
-                          .toLowerCase()
-                          .contains(value.toLowerCase()))
-                      .toList();
-                  setState(() {
-                    data = dataTemp;
-                  });
-                  break;
-                case "Teléfono Cliente":
-                  var dataTemp = data
-                      .where((objeto) => objeto['attributes']
-                              ['TelefonoShipping']
-                          .toString()
-                          .toLowerCase()
-                          .contains(value.toLowerCase()))
-                      .toList();
-                  setState(() {
-                    data = dataTemp;
-                  });
-                  break;
-                case "Cantidad":
-                  var dataTemp = data
-                      .where((objeto) => objeto['attributes']['Cantidad_Total']
-                          .toString()
-                          .toLowerCase()
-                          .contains(value.toLowerCase()))
-                      .toList();
-                  setState(() {
-                    data = dataTemp;
-                  });
-                  break;
-                case "Producto":
-                  var dataTemp = data
-                      .where((objeto) => objeto['attributes']['ProductoP']
-                          .toString()
-                          .toLowerCase()
-                          .contains(value.toLowerCase()))
-                      .toList();
-                  setState(() {
-                    data = dataTemp;
-                  });
-                  break;
-                case "Producto Extra":
-                  var dataTemp = data
-                      .where((objeto) => objeto['attributes']['ProductoExtra']
-                          .toString()
-                          .toLowerCase()
-                          .contains(value.toLowerCase()))
-                      .toList();
-                  setState(() {
-                    data = dataTemp;
-                  });
-                  break;
-                case "Precio Total":
-                  var dataTemp = data
-                      .where((objeto) => objeto['attributes']['PrecioTotal']
-                          .toString()
-                          .toLowerCase()
-                          .contains(value.toLowerCase()))
-                      .toList();
-                  setState(() {
-                    data = dataTemp;
-                  });
-                  break;
-                case "Observación":
-                  var dataTemp = data
-                      .where((objeto) => objeto['attributes']['Observacion']
-                          .toString()
-                          .toLowerCase()
-                          .contains(value.toLowerCase()))
-                      .toList();
-                  setState(() {
-                    data = dataTemp;
-                  });
-                  break;
-                case "Comentario":
-                  var dataTemp = data
-                      .where((objeto) => objeto['attributes']['Comentario']
-                          .toString()
-                          .toLowerCase()
-                          .contains(value.toLowerCase()))
-                      .toList();
-                  setState(() {
-                    data = dataTemp;
-                  });
-                  break;
-                case "Status":
-                  var dataTemp = data
-                      .where((objeto) => objeto['attributes']['Status']
-                          .toString()
-                          .toLowerCase()
-                          .contains(value.toLowerCase()))
-                      .toList();
-                  setState(() {
-                    data = dataTemp;
-                  });
-                  break;
-                case "Fecha Entrega":
-                  var dataTemp = data
-                      .where((objeto) => objeto['attributes']['Fecha_Entrega']
-                          .toString()
-                          .toLowerCase()
-                          .contains(value.toLowerCase()))
-                      .toList();
-                  setState(() {
-                    data = dataTemp;
-                  });
-                  break;
-
-                case "Devolución":
-                  var dataTemp = data
-                      .where((objeto) => objeto['attributes']['DO']
-                          .toString()
-                          .toLowerCase()
-                          .contains(value.toLowerCase()))
-                      .toList();
-                  setState(() {
-                    data = dataTemp;
-                  });
-                  break;
-                default:
-              }
-            }
-          }
-          Navigator.pop(context);
-
-          // loadData();
         },
-        onChanged: (value) {},
         style: TextStyle(fontWeight: FontWeight.bold),
         decoration: InputDecoration(
+          fillColor: Colors.grey[500],
           prefixIcon: Icon(Icons.search),
           suffixIcon: _controllers.searchController.text.isNotEmpty
               ? GestureDetector(
@@ -815,23 +852,17 @@ class _ReturnsSellerState extends State<ReturnsSeller> {
                     setState(() {
                       _controllers.searchController.clear();
                     });
+
                     setState(() {
-                      data = dataTemporal;
+                      loadData();
                     });
                     Navigator.pop(context);
                   },
                   child: Icon(Icons.close))
               : null,
           hintText: text,
-          enabledBorder: OutlineInputBorder(
-            borderSide:
-                BorderSide(width: 1, color: Color.fromRGBO(237, 241, 245, 1.0)),
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderSide:
-                BorderSide(width: 1, color: Color.fromRGBO(237, 241, 245, 1.0)),
-            borderRadius: BorderRadius.circular(10.0),
+          border: const OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey),
           ),
           focusColor: Colors.black,
           iconColor: Colors.black,
@@ -840,3 +871,5 @@ class _ReturnsSellerState extends State<ReturnsSeller> {
     );
   }
 }
+
+paginateData() {}

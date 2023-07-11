@@ -81,8 +81,9 @@ class _TransportationBillingState extends State<TransportationBilling> {
     setState(() {});
     for (var i = 0; i < response.length; i++) {
       if (response[i]['attributes']['Status'].toString() == "ENTREGADO") {
-        suma +=
-            double.parse(response[i]['attributes']['PrecioTotal'].toString().replaceAll(",", "."));
+        suma += double.parse(response[i]['attributes']['PrecioTotal']
+            .toString()
+            .replaceAll(",", "."));
       }
     }
     for (var i = 0; i < response.length; i++) {
@@ -90,7 +91,8 @@ class _TransportationBillingState extends State<TransportationBilling> {
           response[i]['attributes']['Status'].toString() == "NO ENTREGADO") {
         sumaCosto += double.parse(response[i]['attributes']['operadore']['data']
                 ['attributes']['Costo_Operador']
-            .toString().replaceAll(",", "."));
+            .toString()
+            .replaceAll(",", "."));
       }
     }
     operatorsList = await Connections().getOperatorByTransport();
@@ -288,9 +290,12 @@ class _TransportationBillingState extends State<TransportationBilling> {
               width: double.infinity,
               height: 800,
               child: DataTable2(
-                  headingTextStyle: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-                  dataTextStyle:
-                      TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black),
+                  headingTextStyle: TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.black),
+                  dataTextStyle: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black),
                   columnSpacing: 12,
                   horizontalMargin: 12,
                   minWidth: 2500,
@@ -382,6 +387,13 @@ class _TransportationBillingState extends State<TransportationBilling> {
                       },
                     ),
                     DataColumn2(
+                      label: Text('Comentario'),
+                      size: ColumnSize.M,
+                      onSort: (columnIndex, ascending) {
+                        sortFunc("Comentario");
+                      },
+                    ),
+                    DataColumn2(
                       label: Text('Tipo de Pago'),
                       size: ColumnSize.M,
                       numeric: true,
@@ -444,68 +456,84 @@ class _TransportationBillingState extends State<TransportationBilling> {
                                         ['Marca_Tiempo_Envio']
                                     .toString()
                                     .split(" ")[0]), onTap: () {
-                                info(context, index);
+                              info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['Fecha_Entrega']
                                     .toString()), onTap: () {
-                                info(context, index);
+                              info(context, index);
                             }),
-                            DataCell(Text(
-                                '${data[index]['attributes']['Name_Comercial'].toString()}-${data[index]['attributes']['NumeroOrden'].toString()}'), onTap: (){
-                                        info(context, index);
-                                }),
+                            DataCell(
+                                Text(
+                                    style: TextStyle(
+                                        color: GetColor(data[index]
+                                                ['attributes']['Status']
+                                            .toString())!),
+                                    '${data[index]['attributes']['Name_Comercial'].toString()}-${data[index]['attributes']['NumeroOrden'].toString()}'),
+                                onTap: () {
+                              info(context, index);
+                            }),
                             DataCell(
                                 Text(data[index]['attributes']['NombreShipping']
                                     .toString()), onTap: () {
-                           info(context, index);
+                              info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['CiudadShipping']
                                     .toString()), onTap: () {
-                                   info(context, index);
+                              info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']
                                         ['DireccionShipping']
                                     .toString()), onTap: () {
-                                  info(context, index);
+                              info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']
                                         ['TelefonoShipping']
                                     .toString()), onTap: () {
-                               info(context, index);
+                              info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['Cantidad_Total']
                                     .toString()), onTap: () {
-                                  info(context, index);
+                              info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['ProductoP']
                                     .toString()), onTap: () {
-                                   info(context, index);
+                              info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['ProductoExtra']
                                     .toString()), onTap: () {
-                                info(context, index);
+                              info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['PrecioTotal']
                                     .toString()), onTap: () {
-                                 info(context, index);
+                              info(context, index);
                             }),
                             DataCell(
-                                Text(data[index]['attributes']['Status']
+                                Text(
+                                    style: TextStyle(
+                                        color: GetColor(data[index]
+                                                ['attributes']['Status']
+                                            .toString())!),
+                                    data[index]['attributes']['Status']
+                                        .toString()), onTap: () {
+                              info(context, index);
+                            }),
+                            DataCell(
+                                Text(data[index]['attributes']['Comentario']
                                     .toString()), onTap: () {
-                          info(context, index);
+                              info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['TipoPago']
                                     .toString()), onTap: () {
-                                 info(context, index);
+                              info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['operadore']
@@ -515,18 +543,18 @@ class _TransportationBillingState extends State<TransportationBilling> {
                                             ['data']['attributes']['user']
                                         ['data']['attributes']['username']
                                     : "".toString()), onTap: () {
-                                info(context, index);
+                              info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']
                                         ['Estado_Devolucion']
                                     .toString()), onTap: () {
-                               info(context, index);
+                              info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['Estado_Pagado']
                                     .toString()), onTap: () {
-                                info(context, index);
+                              info(context, index);
                             }),
                           ]))),
             ),
@@ -585,7 +613,8 @@ class _TransportationBillingState extends State<TransportationBilling> {
       });
     }
   }
-    Future<dynamic> info(BuildContext context, int index) {
+
+  Future<dynamic> info(BuildContext context, int index) {
     return showDialog(
         context: context,
         builder: (context) {
@@ -728,6 +757,36 @@ class _TransportationBillingState extends State<TransportationBilling> {
         ),
       ),
     );
+  }
+
+  Color? GetColor(state) {
+    int color = 0xFF000000;
+
+    switch (state) {
+      case "ENTREGADO":
+        color = 0xFF33FF6D;
+        break;
+      case "NOVEDAD":
+        color = 0xFFD6DC27;
+        break;
+      case "NO ENTREGADO":
+        color = 0xFFFF3333;
+        break;
+      case "REAGENDADO":
+        color = 0xFFFA37BF;
+        break;
+      case "EN RUTA":
+        color = 0xFF3341FF;
+        break;
+      case "EN OFICINA":
+        color = 0xFF4B4C4B;
+        break;
+
+      default:
+        color = 0xFF000000;
+    }
+
+    return Color(color);
   }
 
   sortFunc(name) {
