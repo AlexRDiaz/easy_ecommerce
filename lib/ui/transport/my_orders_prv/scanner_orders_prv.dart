@@ -53,7 +53,7 @@ class _ScannerOrdersPrvState extends State<ScannerOrdersPrv> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    Text("MARCAR DEVOLUCIÓN COMO EN RUTA",
+                    Text("SE MARCARÁ COMO REVISADO",
                         style: TextStyle(fontWeight: FontWeight.bold)),
                     SizedBox(
                       height: 30,
