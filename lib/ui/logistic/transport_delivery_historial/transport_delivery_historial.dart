@@ -478,7 +478,8 @@ class _TransportDeliveryHistorialState
                                         return RoutesModal(
                                             idOrder: optionsCheckBox,
                                             someOrders: true,
-                                            phoneClient: "");
+                                            phoneClient: "",
+                                            codigo: "");
                                       });
 
                                   setState(() {});

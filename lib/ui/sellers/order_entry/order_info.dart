@@ -11,13 +11,15 @@ import 'package:frontend/main.dart';
 class OrderInfo extends StatefulWidget {
   final String id;
   final int index;
+  final String codigo;
   final Function(BuildContext, int) sumarNumero;
 
   const OrderInfo(
       {super.key,
       required this.id,
       required this.index,
-      required this.sumarNumero});
+      required this.sumarNumero,
+      required this.codigo});
 
   @override
   State<OrderInfo> createState() => _OrderInfoState();
@@ -117,11 +119,13 @@ class _OrderInfoState extends State<OrderInfo> {
                                     context: context,
                                     builder: (context) {
                                       return RoutesModal(
-                                          idOrder: widget.id,
-                                          someOrders: false,
-                                          phoneClient: data['attributes']
-                                                  ['TelefonoShipping']
-                                              .toString());
+                                        idOrder: widget.id,
+                                        someOrders: false,
+                                        phoneClient: data['attributes']
+                                                ['TelefonoShipping']
+                                            .toString(),
+                                        codigo: widget.codigo,
+                                      );
                                     });
                                 loadData();
                               },

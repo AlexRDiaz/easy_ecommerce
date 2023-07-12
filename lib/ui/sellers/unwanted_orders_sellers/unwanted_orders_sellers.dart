@@ -724,7 +724,8 @@ class _UnwantedOrdersSellersState extends State<UnwantedOrdersSellers> {
                                               idOrder:
                                                   data[index]['id'].toString(),
                                               someOrders: false,
-                                              phoneClient: "");
+                                              phoneClient: "",
+                                              codigo: "");
                                         });
                                     loadData();
                                   },
@@ -820,7 +821,8 @@ class _UnwantedOrdersSellersState extends State<UnwantedOrdersSellers> {
                       return RoutesModal(
                           idOrder: optionsCheckBox,
                           someOrders: true,
-                          phoneClient: "");
+                          phoneClient: "",
+                          codigo: "");
                     });
 
                 setState(() {});

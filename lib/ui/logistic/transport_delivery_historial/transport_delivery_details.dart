@@ -226,7 +226,8 @@ class _TransportDeliveryHistoryDetailsState
                                                     return RoutesModal(
                                                         idOrder: widget.id,
                                                         someOrders: false,
-                                                        phoneClient: "");
+                                                        phoneClient: "",
+                                                        codigo: "");
                                                   });
 
                                               setState(() {});

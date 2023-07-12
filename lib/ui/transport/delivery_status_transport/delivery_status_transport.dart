@@ -9,6 +9,7 @@ import 'package:frontend/helpers/responsive.dart';
 import 'package:frontend/main.dart';
 import 'package:frontend/ui/transport/delivery_status_transport/delivery_details.dart';
 import 'package:frontend/ui/transport/my_orders_prv/controllers/controllers.dart';
+import 'package:frontend/ui/widgets/box_values_transport.dart';
 import 'package:frontend/ui/widgets/loading.dart';
 import 'package:intl/intl.dart';
 import 'package:number_paginator/number_paginator.dart';
@@ -385,10 +386,10 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
                           ],
                         ),
                       ),
-                      // boxValuesTransport(
-                      //   totalValoresRecibidos: totalValoresRecibidos,
-                      //   costoDeEntregas: costoTransportadora,
-                      // ),
+                      boxValuesTransport(
+                        totalValoresRecibidos: totalValoresRecibidos,
+                        costoDeEntregas: costoTransportadora,
+                      ),
                       Expanded(child: numberPaginator()),
                     ],
                   ),
@@ -417,11 +418,11 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
                           ),
                         ],
                       ),
-                      // boxValuesTransport(
-                      //   totalValoresRecibidos: totalValoresRecibidos,
-                      //   costoDeEntregas: costoTransportadora,
-                      // ),
-                      Expanded(child: numberPaginator()),
+                      boxValuesTransport(
+                        totalValoresRecibidos: totalValoresRecibidos,
+                        costoDeEntregas: costoTransportadora,
+                      ),
+                      numberPaginator(),
                     ],
                   ),
                   context),
@@ -1491,7 +1492,7 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
     });
 
     await loadData();
-    // calculateValues();
+    calculateValues();
     isFirst = false;
   }
 
@@ -1635,7 +1636,7 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
     totalValoresRecibidos = 0;
     costoTransportadora = 0;
 
-    for (var element in data) {
+    for (var element in allData) {
       // if (element['id'] == 567) {
       //   print('hello');
       // }
@@ -1643,28 +1644,14 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
       //     element['attributes']['users'][0]['vendedores'][0]['CostoEnvio'];
       // print("aqui esta el test" + test);
       // var m = 2;
-      element['attributes']['PrecioTotal'] =
-          element['attributes']['PrecioTotal'].replaceAll(',', '.');
-      if (element['attributes']['users'][0]['vendedores'][0]['CostoEnvio'] !=
-          null) {
-        element['attributes']['users'][0]['vendedores'][0]['CostoEnvio'] =
-            element['attributes']['users'][0]['vendedores'][0]['CostoEnvio']
-                .replaceAll(',', '.');
-      } else {
-        element['attributes']['users'][0]['vendedores'][0]['CostoEnvio'] = 0;
-      }
+      element['attributes']['PrecioTotal'] != null
+          ? element['attributes']['PrecioTotal'].replaceAll(',', '.')
+          : 0;
 
-      if (element['attributes']['users'][0]['vendedores'][0]
-              ['CostoDevolucion'] !=
-          null) {
-        element['attributes']['users'][0]['vendedores'][0]['CostoDevolucion'] =
-            element['attributes']['users'][0]['vendedores'][0]
-                    ['CostoDevolucion']
-                .replaceAll(',', '.');
-      } else {
-        element['attributes']['users'][0]['vendedores'][0]['CostoDevolucion'] =
-            0;
-      }
+      element['attributes']['transportadora']['Costo_Transportadora'] != null
+          ? element['attributes']['transportadora']['Costo_Transportadora']
+              .replaceAll(',', '.')
+          : 0;
 
       if (element['attributes']['Status'] == 'ENTREGADO') {
         totalValoresRecibidos +=

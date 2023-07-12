@@ -2184,9 +2184,9 @@ class Connections {
     bodyParams['and'] = jsonEncode(filtersAndEq);
 
     // "$server/api/pedidos-shopifies?populate=transportadora&populate=users&populate=users.vendedores&populate=pedido_fecha&populate=sub_ruta&populate=operadore&populate=operadore.user&filters[Status][\$ne]=PEDIDO PROGRAMADO&filters[IdComercial][\$eq]=${sharedPrefs!.getString("idComercialMasterSeller").toString()}&filters[\$or][0][NumeroOrden][\$contains]=$code&filters[\$or][1][Fecha_Entrega][\$contains]=$code&filters[\$or][2][CiudadShipping][\$contains]=$code&filters[\$or][3][NombreShipping][\$contains]=$code&filters[\$or][4][DireccionShipping][\$contains]=$code&filters[\$or][5][TelefonoShipping][\$contains]=$code&filters[\$or][6][Cantidad_Total][\$contains]=$code&filters[\$or][7][ProductoP][\$contains]=$code&filters[\$or][8][ProductoExtra][\$contains]=$code&filters[\$or][9][PrecioTotal][\$contains]=$code&filters[\$or][10][Comentario][\$contains]=$code&filters[\$or][11][Status][\$contains]=$code&filters[\$or][12][Estado_Interno][\$contains]=$code&filters[\$or][13][Estado_Logistico][\$contains]=$code&filters[\$or][14][Estado_Devolucion][\$contains]=$code&filters[\$or][15][Marca_T_I][\$contains]=$code&pagination[limit]=-1"
-    print("body: " + bodyParams.toString());
+    // print("body: " + bodyParams.toString());
 
-    print('se ha actualizado ' + url);
+    // print('se ha actualizado ' + url);
     var request = await http.post(Uri.parse(url),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(bodyParams));

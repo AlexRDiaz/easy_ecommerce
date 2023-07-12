@@ -814,10 +814,13 @@ class _OrderEntryState extends State<OrderEntry> {
                                         context: context,
                                         builder: (context) {
                                           return RoutesModal(
-                                              idOrder:
-                                                  data[index]['id'].toString(),
-                                              someOrders: false,
-                                              phoneClient: "");
+                                            idOrder:
+                                                data[index]['id'].toString(),
+                                            someOrders: false,
+                                            phoneClient: "",
+                                            codigo:
+                                                "${sharedPrefs!.getString("NameComercialSeller").toString()}-${data[index]['attributes']['NumeroOrden']}",
+                                          );
                                         });
                                     loadData();
                                   },
@@ -1102,6 +1105,8 @@ class _OrderEntryState extends State<OrderEntry> {
                         id: data[index]['id'].toString(),
                         index: index,
                         sumarNumero: sumarNumero,
+                        codigo:
+                            "${sharedPrefs!.getString("NameComercialSeller").toString()}-${data[index]['attributes']['NumeroOrden']}",
                       )),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -1154,9 +1159,12 @@ class _OrderEntryState extends State<OrderEntry> {
                         ),
                         Expanded(
                             child: OrderInfo(
-                                id: data[index]['id'].toString(),
-                                index: index,
-                                sumarNumero: sumarNumero)),
+                          id: data[index]['id'].toString(),
+                          index: index,
+                          sumarNumero: sumarNumero,
+                          codigo:
+                              "${sharedPrefs!.getString("NameComercialSeller").toString()}-${data[index]['attributes']['NumeroOrden']}",
+                        )),
                       ],
                     ),
                   ),

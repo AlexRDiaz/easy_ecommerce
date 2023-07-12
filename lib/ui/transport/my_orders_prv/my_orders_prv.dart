@@ -35,8 +35,7 @@ class _MyOrdersPRVTransportState extends State<MyOrdersPRVTransport> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getLoadingModal(context, false);
     });
-        var response = [];
-
+    var response = [];
 
     response = await Connections()
         .getOrdersForTransportPRV(_controllers.searchController.text);
@@ -79,29 +78,45 @@ class _MyOrdersPRVTransportState extends State<MyOrdersPRVTransport> {
         width: double.infinity,
         child: Column(
           children: [
-                        SizedBox(height: 10,),
-             Align(
+            SizedBox(
+              height: 10,
+            ),
+            Align(
               alignment: Alignment.centerRight,
-               child: GestureDetector(
-                      onTap: ()async{
-                       await loadData();
-                      },
-                      child: Container(
-                        color: Colors.transparent,
-                        
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                          Icon(Icons.replay_outlined, color: Colors.green,),
-                          SizedBox(width: 10,),
-                          Text("Recargar Información", style: TextStyle(decoration: TextDecoration.underline, color: Colors.green),),                          SizedBox(width: 10,),
-
-                        ],),
+              child: GestureDetector(
+                onTap: () async {
+                  await loadData();
+                },
+                child: Container(
+                  color: Colors.transparent,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Icon(
+                        Icons.replay_outlined,
+                        color: Colors.green,
                       ),
-                    ),
-             ),
-                  SizedBox(height: 10,),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Text(
+                        "Recargar Información",
+                        style: TextStyle(
+                            decoration: TextDecoration.underline,
+                            color: Colors.green),
+                      ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 10,
+            ),
             Container(
               width: double.infinity,
               child: counterChecks != 0
@@ -127,9 +142,12 @@ class _MyOrdersPRVTransportState extends State<MyOrdersPRVTransport> {
             ),
             Expanded(
               child: DataTable2(
-                  headingTextStyle: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-                  dataTextStyle:
-                      TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black),
+                  headingTextStyle: TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.black),
+                  dataTextStyle: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black),
                   columnSpacing: 12,
                   horizontalMargin: 12,
                   minWidth: 3000,
@@ -270,18 +288,18 @@ class _MyOrdersPRVTransportState extends State<MyOrdersPRVTransport> {
                                 Text(data[index]['attributes']
                                         ['Marca_Tiempo_Envio']
                                     .toString()), onTap: () {
-                        info(context, index);
+                              info(context, index);
                             }),
                             DataCell(
                                 Text(
                                     '${data[index]['attributes']['Name_Comercial'].toString()}-${data[index]['attributes']['NumeroOrden'].toString()}'),
                                 onTap: () {
-                            info(context, index);
+                              info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['CiudadShipping']
                                     .toString()), onTap: () {
-                            info(context, index);
+                              info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['NombreShipping']
@@ -292,7 +310,7 @@ class _MyOrdersPRVTransportState extends State<MyOrdersPRVTransport> {
                                 Text(data[index]['attributes']
                                         ['DireccionShipping']
                                     .toString()), onTap: () {
-                                 info(context, index);
+                              info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['sub_ruta']
@@ -301,7 +319,7 @@ class _MyOrdersPRVTransportState extends State<MyOrdersPRVTransport> {
                                     ? data[index]['attributes']['sub_ruta']
                                         ['data']['attributes']['Titulo']
                                     : "".toString()), onTap: () {
-                        info(context, index);
+                              info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['operadore']
@@ -311,49 +329,49 @@ class _MyOrdersPRVTransportState extends State<MyOrdersPRVTransport> {
                                             ['data']['attributes']['user']
                                         ['data']['attributes']['username']
                                     : "".toString()), onTap: () {
-                                info(context, index);
+                              info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']
                                         ['TelefonoShipping']
                                     .toString()), onTap: () {
-                                 info(context, index);
+                              info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['Cantidad_Total']
                                     .toString()), onTap: () {
-                          info(context, index);
+                              info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['ProductoP']
                                     .toString()), onTap: () {
-                          info(context, index);
+                              info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['ProductoExtra']
                                     .toString()), onTap: () {
-                                  info(context, index);
+                              info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['PrecioTotal']
                                     .toString()), onTap: () {
-                             info(context, index);
+                              info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['Status']
                                     .toString()), onTap: () {
-                            info(context, index);
+                              info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['Estado_Interno']
                                     .toString()), onTap: () {
-                             info(context, index);
+                              info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']
                                         ['Estado_Logistico']
                                     .toString()), onTap: () {
-                         info(context, index);
+                              info(context, index);
                             }),
                           ]))),
             ),
@@ -416,11 +434,11 @@ class _MyOrdersPRVTransportState extends State<MyOrdersPRVTransport> {
           prefixIcon: Icon(Icons.search),
           suffixIcon: _controllers.searchController.text.isNotEmpty
               ? GestureDetector(
-                  onTap: () async{
+                  onTap: () async {
                     setState(() {
                       _controllers.searchController.clear();
                     });
-                   await loadData();
+                    await loadData();
                   },
                   child: Icon(Icons.close))
               : null,
@@ -551,7 +569,8 @@ class _MyOrdersPRVTransportState extends State<MyOrdersPRVTransport> {
       });
     }
   }
-   Future<dynamic> info(BuildContext context, int index) {
+
+  Future<dynamic> info(BuildContext context, int index) {
     return showDialog(
         context: context,
         builder: (context) {

@@ -541,7 +541,8 @@ class _PrintGuidesState extends State<PrintGuides> {
                       return RoutesModal(
                           idOrder: optionsCheckBox,
                           someOrders: true,
-                          phoneClient: "");
+                          phoneClient: "",
+                          codigo: "");
                     });
 
                 setState(() {});

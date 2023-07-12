@@ -577,10 +577,10 @@ class _TableOrdersGuidesSentState extends State<TableOrdersGuidesSent> {
                     context: context,
                     builder: (context) {
                       return RoutesModal(
-                        idOrder: optionsCheckBox,
-                        someOrders: true,
-                        phoneClient: "",
-                      );
+                          idOrder: optionsCheckBox,
+                          someOrders: true,
+                          phoneClient: "",
+                          codigo: "");
                     });
 
                 setState(() {});

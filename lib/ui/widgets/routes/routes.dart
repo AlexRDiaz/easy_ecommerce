@@ -11,12 +11,14 @@ class RoutesModal extends StatefulWidget {
   final idOrder;
   final bool someOrders;
   final String phoneClient;
+  final String codigo;
 
   const RoutesModal(
       {super.key,
       required this.idOrder,
       required this.someOrders,
-      required this.phoneClient});
+      required this.phoneClient,
+      required this.codigo});
 
   @override
   State<RoutesModal> createState() => _RoutesModalState();
@@ -198,7 +200,7 @@ class _RoutesModalState extends State<RoutesModal> {
                           }
                         }
                         if (widget.phoneClient != "") {
-                          sendMessage(widget.phoneClient);
+                          sendMessage(widget.phoneClient, widget.codigo);
                         }
                         setState(() {});
                         Navigator.pop(context);
@@ -213,9 +215,9 @@ class _RoutesModalState extends State<RoutesModal> {
     );
   }
 
-  sendMessage(phone) async {
+  sendMessage(phone, codigo) async {
     String message =
-        "Gracias por confirmar tu compra, tu pedido a sido enviado a tu Ciudad, el codigo de tu pedido es CODIGO, si tu producto llega sin envoltura, sin caja o sin guia no lo reciba y comuniquese a este numero caso contrario perdera su garantia";
+        "Gracias por confirmar tu compra, tu pedido ha sido enviado a tu Ciudad, el código de tu pedido es $codigo, si tu producto llega sin envoltura, sin caja o sin guía no lo reciba y comuniquese a este número caso contrario perderá su garantía";
     var _url =
         Uri.parse("https://api.whatsapp.com/send?phone=$phone&text=$message");
     if (!await launchUrl(_url)) {
