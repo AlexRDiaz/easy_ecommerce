@@ -6,8 +6,10 @@ import 'package:frontend/connections/connections.dart';
 import 'package:frontend/helpers/navigators.dart';
 import 'package:frontend/ui/transport/my_orders_prv/controllers/controllers.dart';
 import 'package:frontend/ui/transport/my_orders_prv/prv_info.dart';
+import 'package:frontend/ui/transport/my_orders_prv/scanner_orders_prv.dart';
 import 'package:frontend/ui/widgets/loading.dart';
 import 'package:frontend/ui/widgets/routes/sub_routes.dart';
+import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 
 class MyOrdersPRVTransport extends StatefulWidget {
@@ -24,6 +26,8 @@ class _MyOrdersPRVTransportState extends State<MyOrdersPRVTransport> {
   List optionsCheckBox = [];
   int counterChecks = 0;
   bool sort = false;
+  bool buttonLeft = false;
+  bool buttonRigth = false;
 
   @override
   void didChangeDependencies() {
@@ -124,6 +128,22 @@ class _MyOrdersPRVTransportState extends State<MyOrdersPRVTransport> {
                   : _modelTextField(
                       text: "Busqueda",
                       controller: _controllers.searchController),
+            ),
+            Container(
+              padding: EdgeInsets.only(left: 250, right: 15),
+              child: ElevatedButton(
+                  onPressed: () async {
+                    await showDialog(
+                        context: context,
+                        builder: (context) {
+                          return ScannerOrdersPrv();
+                        });
+                    await loadData();
+                  },
+                  child: Text(
+                    "SCANNER",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  )),
             ),
             Row(
               children: [
@@ -292,6 +312,9 @@ class _MyOrdersPRVTransportState extends State<MyOrdersPRVTransport> {
                             }),
                             DataCell(
                                 Text(
+                                    style: TextStyle(
+                                        color: GetColor(data[index]
+                                            ['attributes']['revisado'])!),
                                     '${data[index]['attributes']['Name_Comercial'].toString()}-${data[index]['attributes']['NumeroOrden'].toString()}'),
                                 onTap: () {
                               info(context, index);
@@ -570,7 +593,42 @@ class _MyOrdersPRVTransportState extends State<MyOrdersPRVTransport> {
     }
   }
 
+  Color? GetColor(state) {
+    var color;
+    if (state == true) {
+      color = 0xFF2991DB;
+    } else {
+      color = 0xFF000000;
+    }
+    return Color(color);
+  }
+
+  NextInfo(index) {
+    Navigator.pop(context);
+
+    if (index + 1 < data.length) {
+      info(context, index + 1);
+    }
+  }
+
+  PreviusInfo(index) {
+    Navigator.pop(context);
+    if (index - 1 >= 0) {
+      info(context, index - 1);
+    }
+  }
+
   Future<dynamic> info(BuildContext context, int index) {
+    if (index - 1 >= 0) {
+      buttonLeft = true;
+    } else {
+      buttonLeft = false;
+    }
+    if (index + 1 < data.length) {
+      buttonRigth = true;
+    } else {
+      buttonRigth = false;
+    }
     return showDialog(
         context: context,
         builder: (context) {
@@ -592,7 +650,31 @@ class _MyOrdersPRVTransportState extends State<MyOrdersPRVTransport> {
                   Expanded(
                       child: MyOrdersPRVInfo(
                     id: data[index]['id'].toString(),
-                  ))
+                  )),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Visibility(
+                        visible: buttonLeft,
+                        child: IconButton(
+                          iconSize: 60,
+                          onPressed: () => {PreviusInfo(index)},
+                          icon: Icon(Icons.arrow_circle_left),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 70,
+                      ),
+                      Visibility(
+                        visible: buttonRigth,
+                        child: IconButton(
+                          iconSize: 60,
+                          onPressed: () => {NextInfo(index)},
+                          icon: Icon(Icons.arrow_circle_right),
+                        ),
+                      ),
+                    ],
+                  )
                 ],
               ),
             ),

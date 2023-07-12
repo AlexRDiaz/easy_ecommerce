@@ -1059,13 +1059,13 @@ class _OrderEntryState extends State<OrderEntry> {
     Navigator.pop(context);
 
     if (index + 1 < pageSize) {
-      info(context, 1);
+      info(context, index + 1);
     }
   }
 
   PreviusInfo(index) {
     Navigator.pop(context);
-    if (index - 1 != 0) {
+    if (index - 1 >= 0) {
       info(context, index - 1);
     }
   }
