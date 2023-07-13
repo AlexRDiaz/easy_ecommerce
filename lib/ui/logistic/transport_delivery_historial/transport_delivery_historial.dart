@@ -2,17 +2,17 @@ import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:frontend/config/exports.dart';
+
 import 'package:frontend/connections/connections.dart';
+import 'package:frontend/helpers/responsive.dart';
 import 'package:frontend/main.dart';
 import 'package:frontend/ui/logistic/print_guides/model_guide/model_guide.dart';
 import 'package:frontend/ui/logistic/transport_delivery_historial/transport_delivery_details.dart';
 import 'package:frontend/ui/logistic/vendor_invoices/controllers/controllers.dart';
-import 'package:frontend/ui/utils/utils.dart';
-import 'package:frontend/ui/widgets/amount_row.dart';
+
 import 'package:frontend/ui/widgets/routes/routes.dart';
 import 'package:frontend/ui/widgets/routes/sub_routes_historial.dart';
+import 'package:number_paginator/number_paginator.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../helpers/navigators.dart';
@@ -33,6 +33,8 @@ class TransportDeliveryHistorial extends StatefulWidget {
 class _TransportDeliveryHistorialState
     extends State<TransportDeliveryHistorial> {
   TextEditingController _search = TextEditingController();
+  List allData = [];
+
   List data = [];
   bool sort = false;
   ScreenshotController screenshotController = ScreenshotController();
@@ -44,7 +46,72 @@ class _TransportDeliveryHistorialState
   String url = "";
   int counterChecks = 0;
   List optionsCheckBox = [];
+  int currentPage = 1;
+  int pageSize = 75;
+  int pageCount = 100;
+  bool isLoading = false;
+  List populate = [
+    'pedido_fecha',
+    'transportadora',
+    'ruta',
+    'sub_ruta',
+    'operadore',
+    "operadore.user",
+    "users",
+    "users.vendedores"
+  ];
+  List arrayFiltersAnd = [];
+  NumberPaginatorController paginatorController = NumberPaginatorController();
 
+  TextEditingController codigoController = TextEditingController(text: "");
+  TextEditingController marcaTiController = TextEditingController(text: "");
+  TextEditingController fecha = TextEditingController(text: "");
+
+  TextEditingController ciudadShippingController =
+      TextEditingController(text: "");
+  TextEditingController nombreShippingController =
+      TextEditingController(text: "");
+  TextEditingController direccionShippingController =
+      TextEditingController(text: "");
+  TextEditingController telefonoShippingController =
+      TextEditingController(text: "");
+
+  TextEditingController cantidadTotalController =
+      TextEditingController(text: "");
+  TextEditingController productoPController = TextEditingController(text: "");
+  TextEditingController productoExtraController =
+      TextEditingController(text: "");
+  TextEditingController precioTotalController = TextEditingController(text: "");
+  TextEditingController observacionController = TextEditingController(text: "");
+  TextEditingController comentarioController = TextEditingController(text: "");
+  TextEditingController statusController = TextEditingController(text: "");
+  TextEditingController tipoPagoController = TextEditingController(text: "");
+  TextEditingController rutaAsignadaController =
+      TextEditingController(text: "");
+  TextEditingController transportadoraController =
+      TextEditingController(text: "");
+  TextEditingController subRutaController = TextEditingController(text: "");
+  TextEditingController operadorController = TextEditingController(text: "");
+  TextEditingController fechaEntregaController =
+      TextEditingController(text: "");
+  TextEditingController vendedorController = TextEditingController(text: "");
+  TextEditingController estadoConfirmacionController =
+      TextEditingController(text: "");
+  TextEditingController estadoLogisticoController =
+      TextEditingController(text: "");
+  TextEditingController costoTransController = TextEditingController(text: "");
+  TextEditingController costoOperadorController =
+      TextEditingController(text: "");
+  TextEditingController costoEntregaController =
+      TextEditingController(text: "");
+  TextEditingController costoDevolucionController =
+      TextEditingController(text: "");
+  TextEditingController estadoDevolucionController =
+      TextEditingController(text: "");
+  TextEditingController marcaTiempoDevolucionController =
+      TextEditingController(text: "");
+  TextEditingController estPagoLogisticoController =
+      TextEditingController(text: "");
   List bools = [
     false,
     false,
@@ -98,10 +165,12 @@ class _TransportDeliveryHistorialState
   @override
   void didChangeDependencies() {
     loadData();
+
     super.didChangeDependencies();
   }
 
   loadData() async {
+    isLoading = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getLoadingModal(context, false);
     });
@@ -109,26 +178,21 @@ class _TransportDeliveryHistorialState
       data = [];
     });
 
-    if (_controllers.searchController.text.isEmpty) {
-      setState(() {
-        search = false;
-      });
-      var response =
-          await Connections().getOrdersForHistorialTransportByDates();
-      setState(() {
-        data = response;
-      });
-    } else {
-      setState(() {
-        search = true;
-      });
-      var response = await Connections()
-          .getOrdersForHistorialTransportByCode(_search.text, url);
+    //if (_controllers.searchController.text.isEmpty) {
+    setState(() {
+      search = false;
+    });
+    var response = await Connections()
+        .getOrdersForHistorialTransportByDates(populate, arrayFiltersAnd);
+    setState(() {
+      allData = response;
+      pageCount = calcularTotalPaginas(allData.length, pageSize);
+      //if (allData.isEmpty) {
+      paginate();
+      //}
+      paginatorController.navigateToPage(0);
+    });
 
-      setState(() {
-        data = response;
-      });
-    }
     setState(() {
       optionsCheckBox = [];
       counterChecks = 0;
@@ -151,12 +215,43 @@ class _TransportDeliveryHistorialState
         "obervation": "",
         "qrLink": "",
       });
+
+      isLoading = false;
     }
 
     Future.delayed(const Duration(milliseconds: 500), () {
       Navigator.pop(context);
     });
     setState(() {});
+  }
+
+  int calcularTotalPaginas(int totalRegistros, int registrosPorPagina) {
+    final int totalPaginas = totalRegistros ~/ registrosPorPagina;
+    final int registrosRestantes = totalRegistros % registrosPorPagina;
+
+    return registrosRestantes > 0
+        ? totalPaginas + 1
+        : totalPaginas == 0
+            ? 1
+            : totalPaginas;
+  }
+
+  paginateData() {
+    paginate();
+  }
+
+  paginate() {
+    if (allData.isNotEmpty) {
+      if (currentPage == pageCount) {
+        data = allData.sublist((pageSize * (currentPage - 1)), allData.length);
+      } else {
+        data = allData.sublist(
+            (pageSize * (currentPage - 1)), (pageSize * currentPage));
+      }
+    } else {
+      data = [];
+    }
+    var res = 1;
   }
 
   final VendorInvoicesControllers _controllers = VendorInvoicesControllers();
@@ -167,21 +262,47 @@ class _TransportDeliveryHistorialState
         width: double.infinity,
         child: Column(
           children: [
-            counterChecks != 0
-                ? _buttons()
-                : SizedBox(
-                    width: double.infinity,
-                    child: _modelTextField(
-                        text: "Busqueda",
-                        controller: _controllers.searchController),
-                  ),
-            counterChecks != 0 ? Container() : _filters(context),
+            //  counterChecks != 0
+            //  ?
+            _buttons(),
+            // :
+            //  counterChecks != 0 ? Container() : _filters(context),
             SizedBox(
               height: 10,
             ),
             Text(
               "BUSQUEDA POR RANGO DE FECHA",
               style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Container(
+              width: double.infinity,
+              color: Colors.white,
+              padding: EdgeInsets.only(top: 5, bottom: 5),
+              child: responsive(
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _modelTextField(
+                            text: "Buscar",
+                            controller: _controllers.searchController),
+                      ),
+                      Expanded(child: numberPaginator()),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Container(
+                        child: _modelTextField(
+                            text: "Buscar",
+                            controller: _controllers.searchController),
+                      ),
+                      numberPaginator(),
+                    ],
+                  ),
+                  context),
             ),
             SizedBox(
               height: 10,
@@ -205,35 +326,39 @@ class _TransportDeliveryHistorialState
                         size: ColumnSize.S,
                       ),
                       DataColumn2(
-                        label: Text('Marca de Tiempo'),
+                        label: InputFilter(
+                            'Marca de Tiempo', 'Marca_T_I', marcaTiController),
                         size: ColumnSize.M,
                         onSort: (columnIndex, ascending) {
                           sortFunc("Marca_T_I");
                         },
                       ),
                       DataColumn2(
-                        label: Text('Fecha'),
+                        label: InputFilter('Fecha', 'Fecha', marcaTiController),
                         size: ColumnSize.M,
                         onSort: (columnIndex, ascending) {
                           sortFunc("Fecha");
                         },
                       ),
                       DataColumn2(
-                        label: Text('Código'),
+                        label: InputFilter(
+                            'Código', 'NumeroOrden', codigoController),
                         size: ColumnSize.M,
                         onSort: (columnIndex, ascending) {
                           sortFunc("NumeroOrden");
                         },
                       ),
                       DataColumn2(
-                        label: Text('Ciudad'),
+                        label: InputFilter('Ciudad', 'CiudadShipping',
+                            ciudadShippingController),
                         size: ColumnSize.L,
                         onSort: (columnIndex, ascending) {
                           sortFunc("CiudadShipping");
                         },
                       ),
                       DataColumn2(
-                        label: Text('Nombre Cliente'),
+                        label: InputFilter('Nombre Cliente', 'NombreShipping',
+                            nombreShippingController),
                         size: ColumnSize.M,
                         numeric: true,
                         onSort: (columnIndex, ascending) {
@@ -241,7 +366,8 @@ class _TransportDeliveryHistorialState
                         },
                       ),
                       DataColumn2(
-                        label: Text('Dirección'),
+                        label: InputFilter('Dirección', 'DireccionShipping',
+                            direccionShippingController),
                         size: ColumnSize.M,
                         numeric: true,
                         onSort: (columnIndex, ascending) {
@@ -249,7 +375,8 @@ class _TransportDeliveryHistorialState
                         },
                       ),
                       DataColumn2(
-                        label: Text('Teléfono Cliente'),
+                        label: InputFilter('Teléfono Cliente',
+                            'TelefonoShipping', telefonoShippingController),
                         size: ColumnSize.M,
                         numeric: true,
                         onSort: (columnIndex, ascending) {
@@ -257,14 +384,16 @@ class _TransportDeliveryHistorialState
                         },
                       ),
                       DataColumn2(
-                        label: Text('Cantidad'),
+                        label: InputFilter('Cantidad', 'Cantidad_Total',
+                            cantidadTotalController),
                         size: ColumnSize.M,
                         onSort: (columnIndex, ascending) {
                           sortFunc("Cantidad_Total");
                         },
                       ),
                       DataColumn2(
-                        label: Text('Producto'),
+                        label: InputFilter(
+                            'Producto', 'ProductoP', productoPController),
                         numeric: true,
                         size: ColumnSize.M,
                         onSort: (columnIndex, ascending) {
@@ -272,7 +401,8 @@ class _TransportDeliveryHistorialState
                         },
                       ),
                       DataColumn2(
-                        label: Text('Producto Extra'),
+                        label: InputFilter('Producto Extra', 'ProductoExtra',
+                            productoExtraController),
                         size: ColumnSize.M,
                         numeric: true,
                         onSort: (columnIndex, ascending) {
@@ -280,14 +410,16 @@ class _TransportDeliveryHistorialState
                         },
                       ),
                       DataColumn2(
-                        label: Text('Precio Total'),
+                        label: InputFilter('Precio Total', 'PrecioTotal',
+                            precioTotalController),
                         size: ColumnSize.L,
                         onSort: (columnIndex, ascending) {
                           sortFunc("PrecioTotal");
                         },
                       ),
                       DataColumn2(
-                        label: Text('Observación'),
+                        label: InputFilter('Observación', 'Observacion',
+                            observacionController),
                         size: ColumnSize.M,
                         numeric: true,
                         onSort: (columnIndex, ascending) {
@@ -295,14 +427,16 @@ class _TransportDeliveryHistorialState
                         },
                       ),
                       DataColumn2(
-                        label: Text('Comentario'),
+                        label: InputFilter(
+                            'Comentario', 'Comentario', comentarioController),
                         size: ColumnSize.L,
                         onSort: (columnIndex, ascending) {
                           sortFunc("Comentario");
                         },
                       ),
                       DataColumn2(
-                        label: Text('Estado de Entrega'),
+                        label: InputFilter(
+                            'Estado de Entrega', 'Status', statusController),
                         size: ColumnSize.M,
                         numeric: true,
                         onSort: (columnIndex, ascending) {
@@ -310,49 +444,56 @@ class _TransportDeliveryHistorialState
                         },
                       ),
                       DataColumn2(
-                        label: Text('Tipo de Pago'),
+                        label: InputFilter(
+                            'Tipo de Pago', 'TipoPago', tipoPagoController),
                         size: ColumnSize.M,
                         onSort: (columnIndex, ascending) {
                           sortFunc("TipoPago");
                         },
                       ),
                       DataColumn2(
-                        label: Text('Ruta Asignada'),
+                        label: InputFilter('Ruta Asignada', 'DireccionShipping',
+                            rutaAsignadaController),
                         size: ColumnSize.S,
                         onSort: (columnIndex, ascending) {
                           sortFunc("DireccionShipping");
                         },
                       ),
                       DataColumn2(
-                        label: Text('Transportadora'),
+                        label: InputFilter('Transportadora',
+                            'DireccionShipping', transportadoraController),
                         size: ColumnSize.S,
                         onSort: (columnIndex, ascending) {
                           sortFunc("DireccionShipping");
                         },
                       ),
                       DataColumn2(
-                        label: Text('Sub Ruta'),
+                        label: InputFilter(
+                            'Sub Ruta', 'DireccionShipping', subRutaController),
                         size: ColumnSize.S,
                         onSort: (columnIndex, ascending) {
                           sortFunc("DireccionShipping");
                         },
                       ),
                       DataColumn2(
-                        label: Text('Operador'),
+                        label: InputFilter('Operador', 'DireccionShipping',
+                            operadorController),
                         size: ColumnSize.M,
                         onSort: (columnIndex, ascending) {
                           sortFunc("DireccionShipping");
                         },
                       ),
                       DataColumn2(
-                        label: Text('Fecha Entrega'),
+                        label: InputFilter('Fecha Entrega', 'Fecha_Entrega',
+                            fechaEntregaController),
                         size: ColumnSize.M,
                         onSort: (columnIndex, ascending) {
                           sortFunc("Fecha_Entrega");
                         },
                       ),
                       DataColumn2(
-                        label: Text('Vendedor'),
+                        label: InputFilter(
+                            'Vendedor', 'Name_Comercial', vendedorController),
                         size: ColumnSize.M,
                         numeric: true,
                         onSort: (columnIndex, ascending) {
@@ -360,7 +501,8 @@ class _TransportDeliveryHistorialState
                         },
                       ),
                       DataColumn2(
-                        label: Text('Estado Confirmacion'),
+                        label: InputFilter('Estado Confirmacion',
+                            'Estado_Interno', estadoConfirmacionController),
                         size: ColumnSize.M,
                         numeric: true,
                         onSort: (columnIndex, ascending) {
@@ -368,7 +510,8 @@ class _TransportDeliveryHistorialState
                         },
                       ),
                       DataColumn2(
-                        label: Text('Estado Logistico'),
+                        label: InputFilter('Estado Logistico',
+                            'Estado_Logistico', estadoLogisticoController),
                         size: ColumnSize.M,
                         numeric: true,
                         onSort: (columnIndex, ascending) {
@@ -376,7 +519,8 @@ class _TransportDeliveryHistorialState
                         },
                       ),
                       DataColumn2(
-                        label: Text('Costo Trans'),
+                        label: InputFilter('Costo Trans', 'DireccionShipping',
+                            costoTransController),
                         size: ColumnSize.M,
                         numeric: true,
                         onSort: (columnIndex, ascending) {
@@ -384,7 +528,8 @@ class _TransportDeliveryHistorialState
                         },
                       ),
                       DataColumn2(
-                        label: Text('Costo Operador'),
+                        label: InputFilter('Costo Operador',
+                            'DireccionShipping', costoOperadorController),
                         size: ColumnSize.M,
                         numeric: true,
                         onSort: (columnIndex, ascending) {
@@ -392,7 +537,8 @@ class _TransportDeliveryHistorialState
                         },
                       ),
                       DataColumn2(
-                        label: Text('Costo Entrega'),
+                        label: InputFilter('Costo Entrega', 'DireccionShipping',
+                            costoEntregaController),
                         size: ColumnSize.M,
                         numeric: true,
                         onSort: (columnIndex, ascending) {
@@ -400,7 +546,8 @@ class _TransportDeliveryHistorialState
                         },
                       ),
                       DataColumn2(
-                        label: Text('Costo Devolucion'),
+                        label: InputFilter('Costo Devolucion',
+                            'DireccionShipping', costoDevolucionController),
                         size: ColumnSize.M,
                         numeric: true,
                         onSort: (columnIndex, ascending) {
@@ -408,7 +555,8 @@ class _TransportDeliveryHistorialState
                         },
                       ),
                       DataColumn2(
-                        label: Text('Estado Devolución'),
+                        label: InputFilter('Estado Devolución',
+                            'Estado_Devolucion', estadoDevolucionController),
                         size: ColumnSize.M,
                         numeric: true,
                         onSort: (columnIndex, ascending) {
@@ -416,7 +564,8 @@ class _TransportDeliveryHistorialState
                         },
                       ),
                       DataColumn2(
-                        label: Text('Marca Tiempo Devolucion '),
+                        label: InputFilter('Marca Tiempo Devolucion',
+                            'Marca_T_D', marcaTiempoDevolucionController),
                         size: ColumnSize.M,
                         numeric: true,
                         onSort: (columnIndex, ascending) {
@@ -424,7 +573,8 @@ class _TransportDeliveryHistorialState
                         },
                       ),
                       DataColumn2(
-                        label: Text('Est. Pago Logistico'),
+                        label: InputFilter('Est. Pago Logistico',
+                            'Estado_Pagado', estPagoLogisticoController),
                         size: ColumnSize.M,
                         numeric: true,
                         onSort: (columnIndex, ascending) {
@@ -440,6 +590,45 @@ class _TransportDeliveryHistorialState
           ],
         ),
       ),
+    );
+  }
+
+  Column InputFilter(String title, String filter, var controller) {
+    return Column(
+      children: [
+        Text(title),
+        Expanded(
+            child: Container(
+          margin: EdgeInsets.only(left: 8, right: 8, top: 4, bottom: 4),
+          child: TextField(
+            controller: controller,
+            onChanged: (value) {
+              if (value == '') {
+                {
+                  arrayFiltersAnd
+                      .removeWhere((element) => element.containsKey(filter));
+                }
+              }
+            },
+            onSubmitted: (value) {
+              if (value != '') {
+                arrayFiltersAnd.add({
+                  filter: {"\$contains": value}
+                });
+              }
+              // else {
+              //   arrayFiltersAnd
+              //       .removeWhere((element) => element.containsKey(filter));
+              // }
+              loadData();
+            },
+            decoration: InputDecoration(
+                border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(5)),
+            )),
+          ),
+        ))
+      ],
     );
   }
 
@@ -1008,2261 +1197,1130 @@ class _TransportDeliveryHistorialState
   List<DataCell> getRows(index) {
     Color rowColor = Colors.black;
 
-    if (_controllers.searchController.text.isEmpty) {
-      return [
-        DataCell(Checkbox(
-            value: optionsCheckBox[index]['check'],
-            onChanged: (value) {
-              setState(() {
-                if (value!) {
-                  optionsCheckBox[index]['check'] = value;
-                  optionsCheckBox[index]['id'] = data[index]['id'].toString();
-                  optionsCheckBox[index]['numPedido'] =
-                      "${data[index]['users'] != null ? data[index]['users'][0]['vendedores'][0]['Nombre_Comercial'] : data[index]['Tienda_Temporal'].toString()}-${data[index]['NumeroOrden']}"
-                          .toString();
-                  optionsCheckBox[index]['date'] =
-                      data[index]['pedido_fecha']['Fecha'].toString();
-                  optionsCheckBox[index]['city'] =
-                      data[index]['CiudadShipping'].toString();
-                  optionsCheckBox[index]['product'] =
-                      data[index]['ProductoP'].toString();
-                  optionsCheckBox[index]['extraProduct'] =
-                      data[index]['ProductoExtra'].toString();
-                  optionsCheckBox[index]['quantity'] =
-                      data[index]['Cantidad_Total'].toString();
-                  optionsCheckBox[index]['phone'] =
-                      data[index]['TelefonoShipping'].toString();
-                  optionsCheckBox[index]['price'] =
-                      data[index]['PrecioTotal'].toString();
-                  optionsCheckBox[index]['name'] =
-                      data[index]['NombreShipping'].toString();
-                  optionsCheckBox[index]['transport'] =
-                      "${data[index]['transportadora'] != null ? data[index]['transportadora']['Nombre'].toString() : ""}";
-                  optionsCheckBox[index]['address'] =
-                      data[index]['DireccionShipping'].toString();
-                  optionsCheckBox[index]['obervation'] =
-                      data[index]['Observacion'].toString();
-                  optionsCheckBox[index]['qrLink'] = data[index]['users'] !=
-                          null
-                      ? data[index]['users'][0]['vendedores'][0]['Url_Tienda']
-                          .toString()
-                      : "";
+    return [
+      DataCell(Checkbox(
+          value: verificarIndice(index),
+          onChanged: (value) {
+            setState(() {
+              var subIndex = index + ((currentPage - 1) * pageSize);
 
-                  counterChecks += 1;
-                } else {
-                  optionsCheckBox[index]['check'] = value;
-                  optionsCheckBox[index]['id'] = '';
-                  counterChecks -= 1;
-                }
-              });
-            })),
-        DataCell(Text('${data[index]['Marca_T_I'].toString()}'), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
-                        ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
-                  ),
-                );
-              });
-        }),
-        DataCell(
-            Text(
-              data[index]['Marca_T_I'].toString().split(' ')[0].toString(),
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
-                        ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
-                  ),
-                );
-              });
-        }),
-        DataCell(
-            Text(
-              "${data[index]['users'] != null && data[index]['users'].toString() != "[]" ? data[index]['users'][0]['vendedores'][0]['Nombre_Comercial'] : data[index]['Tienda_Temporal']}-${data[index]['NumeroOrden']}",
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
-                        ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
-                  ),
-                );
-              });
-        }),
-        DataCell(
-            Text(
-              '${data[index]['CiudadShipping'].toString()}',
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
-                        ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
-                  ),
-                );
-              });
-        }),
-        DataCell(
-            Text(
-              data[index]['NombreShipping'].toString(),
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
-                        ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
-                  ),
-                );
-              });
-        }),
+              if (value!) {
+                optionsCheckBox[subIndex]['check'] = value;
+                optionsCheckBox[subIndex]['id'] = data[index]['id'].toString();
+                optionsCheckBox[subIndex]['numPedido'] =
+                    "${data[index]['users'] != null ? data[index]['users'][0]['vendedores'][0]['Nombre_Comercial'] : data[index]['Tienda_Temporal'].toString()}-${data[index]['NumeroOrden']}"
+                        .toString();
+                optionsCheckBox[subIndex]['date'] =
+                    data[index]['pedido_fecha']['Fecha'].toString();
+                optionsCheckBox[subIndex]['city'] =
+                    data[index]['CiudadShipping'].toString();
+                optionsCheckBox[subIndex]['product'] =
+                    data[index]['ProductoP'].toString();
+                optionsCheckBox[subIndex]['extraProduct'] =
+                    data[index]['ProductoExtra'].toString();
+                optionsCheckBox[subIndex]['quantity'] =
+                    data[index]['Cantidad_Total'].toString();
+                optionsCheckBox[subIndex]['phone'] =
+                    data[index]['TelefonoShipping'].toString();
+                optionsCheckBox[subIndex]['price'] =
+                    data[index]['PrecioTotal'].toString();
+                optionsCheckBox[subIndex]['name'] =
+                    data[index]['NombreShipping'].toString();
+                optionsCheckBox[subIndex]['transport'] =
+                    "${data[index]['transportadora'] != null ? data[index]['transportadora']['Nombre'].toString() : ""}";
+                optionsCheckBox[subIndex]['address'] =
+                    data[index]['DireccionShipping'].toString();
+                optionsCheckBox[subIndex]['obervation'] =
+                    data[index]['Observacion'].toString();
+                optionsCheckBox[subIndex]['qrLink'] =
+                    data[index]['users'] != null
+                        ? data[index]['users'][0]['vendedores'][0]['Url_Tienda']
+                            .toString()
+                        : "";
 
-        DataCell(
-            Text(
-              '${data[index]['DireccionShipping'].toString()}',
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
+                counterChecks += 1;
+              } else {
+                optionsCheckBox[subIndex]['check'] = value;
+                optionsCheckBox[subIndex]['id'] = '';
+                counterChecks -= 1;
+              }
+            });
+          })),
+      DataCell(Text('${data[index]['Marca_T_I'].toString()}'), onTap: () {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Icon(Icons.close),
                         ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
+                      ),
+                      Expanded(
+                          child: TransportDeliveryHistoryDetails(
+                        id: data[index]['id'].toString(),
+                      ))
+                    ],
                   ),
-                );
-              });
-        }),
-        DataCell(
-            Text(
-              data[index]['TelefonoShipping'].toString(),
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
+                ),
+              );
+            });
+      }),
+      DataCell(
+          Text(
+            data[index]['Marca_T_I'].toString().split(' ')[0].toString(),
+            style: TextStyle(
+              color: rowColor,
+            ),
+          ), onTap: () {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Icon(Icons.close),
                         ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
+                      ),
+                      Expanded(
+                          child: TransportDeliveryHistoryDetails(
+                        id: data[index]['id'].toString(),
+                      ))
+                    ],
                   ),
-                );
-              });
-        }),
-        DataCell(
-            Text(
-              data[index]['Cantidad_Total'].toString(),
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
+                ),
+              );
+            });
+      }),
+      DataCell(
+          Text(
+            "${data[index]['users'] != null && data[index]['users'].toString() != "[]" ? data[index]['users'][0]['vendedores'][0]['Nombre_Comercial'] : data[index]['Tienda_Temporal']}-${data[index]['NumeroOrden']}",
+            style: TextStyle(
+              color: rowColor,
+            ),
+          ), onTap: () {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Icon(Icons.close),
                         ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
+                      ),
+                      Expanded(
+                          child: TransportDeliveryHistoryDetails(
+                        id: data[index]['id'].toString(),
+                      ))
+                    ],
                   ),
-                );
-              });
-        }),
-        DataCell(
-            Text(
-              data[index]['ProductoP'].toString(),
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
+                ),
+              );
+            });
+      }),
+      DataCell(
+          Text(
+            '${data[index]['CiudadShipping'].toString()}',
+            style: TextStyle(
+              color: rowColor,
+            ),
+          ), onTap: () {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Icon(Icons.close),
                         ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
+                      ),
+                      Expanded(
+                          child: TransportDeliveryHistoryDetails(
+                        id: data[index]['id'].toString(),
+                      ))
+                    ],
                   ),
-                );
-              });
-        }),
-        DataCell(
-            Text(
-              data[index]['ProductoExtra'].toString(),
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
+                ),
+              );
+            });
+      }),
+      DataCell(
+          Text(
+            data[index]['NombreShipping'].toString(),
+            style: TextStyle(
+              color: rowColor,
+            ),
+          ), onTap: () {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Icon(Icons.close),
                         ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
+                      ),
+                      Expanded(
+                          child: TransportDeliveryHistoryDetails(
+                        id: data[index]['id'].toString(),
+                      ))
+                    ],
                   ),
-                );
-              });
-        }),
-        DataCell(
-            Text(
-              data[index]['PrecioTotal'].toString(),
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
-                        ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
-                  ),
-                );
-              });
-        }),
-        DataCell(
-            Text(
-              data[index]['Observacion'].toString(),
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
-                        ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
-                  ),
-                );
-              });
-        }),
+                ),
+              );
+            });
+      }),
 
-        DataCell(
-            Text(
-              '${data[index]['Comentario'].toString()}',
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
+      DataCell(
+          Text(
+            '${data[index]['DireccionShipping'].toString()}',
+            style: TextStyle(
+              color: rowColor,
+            ),
+          ), onTap: () {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Icon(Icons.close),
                         ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
+                      ),
+                      Expanded(
+                          child: TransportDeliveryHistoryDetails(
+                        id: data[index]['id'].toString(),
+                      ))
+                    ],
                   ),
-                );
-              });
-        }),
+                ),
+              );
+            });
+      }),
+      DataCell(
+          Text(
+            data[index]['TelefonoShipping'].toString(),
+            style: TextStyle(
+              color: rowColor,
+            ),
+          ), onTap: () {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Icon(Icons.close),
+                        ),
+                      ),
+                      Expanded(
+                          child: TransportDeliveryHistoryDetails(
+                        id: data[index]['id'].toString(),
+                      ))
+                    ],
+                  ),
+                ),
+              );
+            });
+      }),
+      DataCell(
+          Text(
+            data[index]['Cantidad_Total'].toString(),
+            style: TextStyle(
+              color: rowColor,
+            ),
+          ), onTap: () {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Icon(Icons.close),
+                        ),
+                      ),
+                      Expanded(
+                          child: TransportDeliveryHistoryDetails(
+                        id: data[index]['id'].toString(),
+                      ))
+                    ],
+                  ),
+                ),
+              );
+            });
+      }),
+      DataCell(
+          Text(
+            data[index]['ProductoP'].toString(),
+            style: TextStyle(
+              color: rowColor,
+            ),
+          ), onTap: () {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Icon(Icons.close),
+                        ),
+                      ),
+                      Expanded(
+                          child: TransportDeliveryHistoryDetails(
+                        id: data[index]['id'].toString(),
+                      ))
+                    ],
+                  ),
+                ),
+              );
+            });
+      }),
+      DataCell(
+          Text(
+            data[index]['ProductoExtra'].toString(),
+            style: TextStyle(
+              color: rowColor,
+            ),
+          ), onTap: () {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Icon(Icons.close),
+                        ),
+                      ),
+                      Expanded(
+                          child: TransportDeliveryHistoryDetails(
+                        id: data[index]['id'].toString(),
+                      ))
+                    ],
+                  ),
+                ),
+              );
+            });
+      }),
+      DataCell(
+          Text(
+            data[index]['PrecioTotal'].toString(),
+            style: TextStyle(
+              color: rowColor,
+            ),
+          ), onTap: () {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Icon(Icons.close),
+                        ),
+                      ),
+                      Expanded(
+                          child: TransportDeliveryHistoryDetails(
+                        id: data[index]['id'].toString(),
+                      ))
+                    ],
+                  ),
+                ),
+              );
+            });
+      }),
+      DataCell(
+          Text(
+            data[index]['Observacion'].toString(),
+            style: TextStyle(
+              color: rowColor,
+            ),
+          ), onTap: () {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Icon(Icons.close),
+                        ),
+                      ),
+                      Expanded(
+                          child: TransportDeliveryHistoryDetails(
+                        id: data[index]['id'].toString(),
+                      ))
+                    ],
+                  ),
+                ),
+              );
+            });
+      }),
 
-        DataCell(
-            Text(
-              data[index]['Status'].toString(),
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
+      DataCell(
+          Text(
+            '${data[index]['Comentario'].toString()}',
+            style: TextStyle(
+              color: rowColor,
+            ),
+          ), onTap: () {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Icon(Icons.close),
                         ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
+                      ),
+                      Expanded(
+                          child: TransportDeliveryHistoryDetails(
+                        id: data[index]['id'].toString(),
+                      ))
+                    ],
                   ),
-                );
-              });
-        }),
+                ),
+              );
+            });
+      }),
 
-        DataCell(
-            Text(
-              data[index]['TipoPago'].toString(),
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
+      DataCell(
+          Text(
+            data[index]['Status'].toString(),
+            style: TextStyle(
+              color: rowColor,
+            ),
+          ), onTap: () {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Icon(Icons.close),
                         ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
+                      ),
+                      Expanded(
+                          child: TransportDeliveryHistoryDetails(
+                        id: data[index]['id'].toString(),
+                      ))
+                    ],
                   ),
-                );
-              });
-        }),
-        DataCell(
-            Text(
-              data[index]['ruta'] != null &&
-                      data[index]['ruta'].toString() != "[]"
-                  ? data[index]['ruta']['Titulo'].toString()
-                  : "",
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
-                        ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
-                  ),
-                );
-              });
-        }),
-        DataCell(
-            Text(
-              data[index]['transportadora'] != null &&
-                      data[index]['transportadora'].toString() != "[]"
-                  ? data[index]['transportadora']['Nombre'].toString()
-                  : "",
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
-                        ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
-                  ),
-                );
-              });
-        }),
-        DataCell(
-            Text(
-              data[index]['sub_ruta'] != null &&
-                      data[index]['sub_ruta'].toString() != "[]"
-                  ? data[index]['sub_ruta']['Titulo'].toString()
-                  : "",
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
-                        ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
-                  ),
-                );
-              });
-        }),
-        DataCell(
-            Text(
-              data[index]['operadore'] != null &&
-                      data[index]['operadore'].toString() != "[]"
-                  ? data[index]['operadore']['user']['username'].toString()
-                  : "",
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
-                        ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
-                  ),
-                );
-              });
-        }),
-        DataCell(
-            Text(
-              data[index]['Fecha_Entrega'].toString(),
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
-                        ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
-                  ),
-                );
-              });
-        }),
-        DataCell(
-            Text(
-              data[index]['Tienda_Temporal'].toString(),
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
-                        ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
-                  ),
-                );
-              });
-        }),
-        DataCell(
-            Text(
-              data[index]['Estado_Interno'].toString(),
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
-                        ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
-                  ),
-                );
-              });
-        }),
-        DataCell(
-            Text(
-              data[index]['Estado_Logistico'].toString(),
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
-                        ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
-                  ),
-                );
-              });
-        }),
+                ),
+              );
+            });
+      }),
 
-        DataCell(
-            Text(
-              data[index]['transportadora'] != null &&
-                      data[index]['transportadora'].toString() != "[]"
-                  ? data[index]['transportadora']['Costo_Transportadora']
-                      .toString()
-                  : "",
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
+      DataCell(
+          Text(
+            data[index]['TipoPago'].toString(),
+            style: TextStyle(
+              color: rowColor,
+            ),
+          ), onTap: () {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Icon(Icons.close),
                         ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
+                      ),
+                      Expanded(
+                          child: TransportDeliveryHistoryDetails(
+                        id: data[index]['id'].toString(),
+                      ))
+                    ],
                   ),
-                );
-              });
-        }),
-        DataCell(
-            Text(
-              data[index]['operadore'] != null &&
-                      data[index]['operadore'].toString() != "[]"
-                  ? data[index]['operadore']['Costo_Operador'].toString()
-                  : "",
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
+                ),
+              );
+            });
+      }),
+      DataCell(
+          Text(
+            data[index]['ruta'] != null &&
+                    data[index]['ruta'].toString() != "[]"
+                ? data[index]['ruta']['Titulo'].toString()
+                : "",
+            style: TextStyle(
+              color: rowColor,
+            ),
+          ), onTap: () {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Icon(Icons.close),
                         ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
+                      ),
+                      Expanded(
+                          child: TransportDeliveryHistoryDetails(
+                        id: data[index]['id'].toString(),
+                      ))
+                    ],
                   ),
-                );
-              });
-        }),
+                ),
+              );
+            });
+      }),
+      DataCell(
+          Text(
+            data[index]['transportadora'] != null &&
+                    data[index]['transportadora'].toString() != "[]"
+                ? data[index]['transportadora']['Nombre'].toString()
+                : "",
+            style: TextStyle(
+              color: rowColor,
+            ),
+          ), onTap: () {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Icon(Icons.close),
+                        ),
+                      ),
+                      Expanded(
+                          child: TransportDeliveryHistoryDetails(
+                        id: data[index]['id'].toString(),
+                      ))
+                    ],
+                  ),
+                ),
+              );
+            });
+      }),
+      DataCell(
+          Text(
+            data[index]['sub_ruta'] != null &&
+                    data[index]['sub_ruta'].toString() != "[]"
+                ? data[index]['sub_ruta']['Titulo'].toString()
+                : "",
+            style: TextStyle(
+              color: rowColor,
+            ),
+          ), onTap: () {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Icon(Icons.close),
+                        ),
+                      ),
+                      Expanded(
+                          child: TransportDeliveryHistoryDetails(
+                        id: data[index]['id'].toString(),
+                      ))
+                    ],
+                  ),
+                ),
+              );
+            });
+      }),
+      DataCell(
+          Text(
+            data[index]['operadore'] != null &&
+                    data[index]['operadore'].toString() != "[]"
+                ? data[index]['operadore']['user']['username'].toString()
+                : "",
+            style: TextStyle(
+              color: rowColor,
+            ),
+          ), onTap: () {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Icon(Icons.close),
+                        ),
+                      ),
+                      Expanded(
+                          child: TransportDeliveryHistoryDetails(
+                        id: data[index]['id'].toString(),
+                      ))
+                    ],
+                  ),
+                ),
+              );
+            });
+      }),
+      DataCell(
+          Text(
+            data[index]['Fecha_Entrega'].toString(),
+            style: TextStyle(
+              color: rowColor,
+            ),
+          ), onTap: () {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Icon(Icons.close),
+                        ),
+                      ),
+                      Expanded(
+                          child: TransportDeliveryHistoryDetails(
+                        id: data[index]['id'].toString(),
+                      ))
+                    ],
+                  ),
+                ),
+              );
+            });
+      }),
+      DataCell(
+          Text(
+            data[index]['Tienda_Temporal'].toString(),
+            style: TextStyle(
+              color: rowColor,
+            ),
+          ), onTap: () {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Icon(Icons.close),
+                        ),
+                      ),
+                      Expanded(
+                          child: TransportDeliveryHistoryDetails(
+                        id: data[index]['id'].toString(),
+                      ))
+                    ],
+                  ),
+                ),
+              );
+            });
+      }),
+      DataCell(
+          Text(
+            data[index]['Estado_Interno'].toString(),
+            style: TextStyle(
+              color: rowColor,
+            ),
+          ), onTap: () {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Icon(Icons.close),
+                        ),
+                      ),
+                      Expanded(
+                          child: TransportDeliveryHistoryDetails(
+                        id: data[index]['id'].toString(),
+                      ))
+                    ],
+                  ),
+                ),
+              );
+            });
+      }),
+      DataCell(
+          Text(
+            data[index]['Estado_Logistico'].toString(),
+            style: TextStyle(
+              color: rowColor,
+            ),
+          ), onTap: () {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Icon(Icons.close),
+                        ),
+                      ),
+                      Expanded(
+                          child: TransportDeliveryHistoryDetails(
+                        id: data[index]['id'].toString(),
+                      ))
+                    ],
+                  ),
+                ),
+              );
+            });
+      }),
 
-        DataCell(
-            Text(data[index]['users'] != null &&
-                    data[index]['users'].toString() != "[]"
-                ? data[index]['users'][0]['vendedores'][0]['CostoEnvio']
+      DataCell(
+          Text(
+            data[index]['transportadora'] != null &&
+                    data[index]['transportadora'].toString() != "[]"
+                ? data[index]['transportadora']['Costo_Transportadora']
                     .toString()
-                : ""), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
+                : "",
+            style: TextStyle(
+              color: rowColor,
+            ),
+          ), onTap: () {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Icon(Icons.close),
                         ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
+                      ),
+                      Expanded(
+                          child: TransportDeliveryHistoryDetails(
+                        id: data[index]['id'].toString(),
+                      ))
+                    ],
                   ),
-                );
-              });
-        }),
-        DataCell(
-            Text(data[index]['users'] != null &&
-                    data[index]['users'].toString() != "[]"
-                ? data[index]['users'][0]['vendedores'][0]['CostoDevolucion']
-                    .toString()
-                : ""), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
+                ),
+              );
+            });
+      }),
+      DataCell(
+          Text(
+            data[index]['operadore'] != null &&
+                    data[index]['operadore'].toString() != "[]"
+                ? data[index]['operadore']['Costo_Operador'].toString()
+                : "",
+            style: TextStyle(
+              color: rowColor,
+            ),
+          ), onTap: () {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Icon(Icons.close),
                         ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
+                      ),
+                      Expanded(
+                          child: TransportDeliveryHistoryDetails(
+                        id: data[index]['id'].toString(),
+                      ))
+                    ],
                   ),
-                );
-              });
-        }),
+                ),
+              );
+            });
+      }),
 
-        // DataCell(Text(
-        //   data[index]['operadore']['Costo_Operador'].toString(),
-        //   style: TextStyle(
-        //     color: rowColor,
-        //   ),
-        // )),
-        DataCell(
-            Text(
-              data[index]['Estado_Devolucion'].toString(),
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
+      DataCell(
+          Text(data[index]['users'] != null &&
+                  data[index]['users'].toString() != "[]"
+              ? data[index]['users'][0]['vendedores'][0]['CostoEnvio']
+                  .toString()
+              : ""), onTap: () {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Icon(Icons.close),
                         ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
+                      ),
+                      Expanded(
+                          child: TransportDeliveryHistoryDetails(
+                        id: data[index]['id'].toString(),
+                      ))
+                    ],
                   ),
-                );
-              });
-        }),
-        DataCell(
-            Text(
-              data[index]['Marca_T_D'].toString(),
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
+                ),
+              );
+            });
+      }),
+      DataCell(
+          Text(data[index]['users'] != null &&
+                  data[index]['users'].toString() != "[]"
+              ? data[index]['users'][0]['vendedores'][0]['CostoDevolucion']
+                  .toString()
+              : ""), onTap: () {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Icon(Icons.close),
                         ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
+                      ),
+                      Expanded(
+                          child: TransportDeliveryHistoryDetails(
+                        id: data[index]['id'].toString(),
+                      ))
+                    ],
                   ),
-                );
-              });
-        }),
-        DataCell(
-            Text(
-              data[index]['Estado_Pago_Logistica'].toString(),
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
-                        ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
-                  ),
-                );
-              });
-        }),
-      ];
-    } else {
-      return [
-        DataCell(Checkbox(
-            value: optionsCheckBox[index]['check'],
-            onChanged: (value) {
-              setState(() {
-                if (value!) {
-                  optionsCheckBox[index]['check'] = value;
-                  optionsCheckBox[index]['id'] = data[index]['id'].toString();
-                  optionsCheckBox[index]['numPedido'] =
-                      "${data[index]['attributes']['users']['data'] != null ? data[index]['attributes']['users']['data'][0]['attributes']['vendedores']['data'][0]['attributes']['Nombre_Comercial'] : data[index]['attributes']['Tienda_Temporal'].toString()}-${data[index]['attributes']['NumeroOrden']}"
-                          .toString();
-                  optionsCheckBox[index]['date'] = data[index]['attributes']
-                          ['pedido_fecha']['data']['attributes']['Fecha']
-                      .toString();
-                  optionsCheckBox[index]['city'] =
-                      data[index]['attributes']['CiudadShipping'].toString();
-                  optionsCheckBox[index]['product'] =
-                      data[index]['attributes']['ProductoP'].toString();
-                  optionsCheckBox[index]['extraProduct'] =
-                      data[index]['attributes']['ProductoExtra'].toString();
-                  optionsCheckBox[index]['quantity'] =
-                      data[index]['attributes']['Cantidad_Total'].toString();
-                  optionsCheckBox[index]['phone'] =
-                      data[index]['attributes']['TelefonoShipping'].toString();
-                  optionsCheckBox[index]['price'] =
-                      data[index]['attributes']['PrecioTotal'].toString();
-                  optionsCheckBox[index]['name'] =
-                      data[index]['attributes']['NombreShipping'].toString();
-                  optionsCheckBox[index]['transport'] =
-                      "${data[index]['attributes']['transportadora']['data'] != null ? data[index]['attributes']['transportadora']['data']['attributes']['Nombre'].toString() : ''}";
-                  optionsCheckBox[index]['address'] =
-                      data[index]['attributes']['DireccionShipping'].toString();
-                  optionsCheckBox[index]['obervation'] =
-                      data[index]['attributes']['Observacion'].toString();
-                  optionsCheckBox[index]['qrLink'] = data[index]['attributes']
-                              ['users']['data'][0]['attributes']['vendedores']
-                          ['data'][0]['attributes']['Url_Tienda']
-                      .toString();
+                ),
+              );
+            });
+      }),
 
-                  counterChecks += 1;
-                } else {
-                  optionsCheckBox[index]['check'] = value;
-                  optionsCheckBox[index]['id'] = '';
-                  counterChecks -= 1;
-                }
-              });
-            })),
-        DataCell(Text('${data[index]['attributes']['Marca_T_I'].toString()}'),
-            onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
+      // DataCell(Text(
+      //   data[index]['operadore']['Costo_Operador'].toString(),
+      //   style: TextStyle(
+      //     color: rowColor,
+      //   ),
+      // )),
+      DataCell(
+          Text(
+            data[index]['Estado_Devolucion'].toString(),
+            style: TextStyle(
+              color: rowColor,
+            ),
+          ), onTap: () {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Icon(Icons.close),
                         ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
+                      ),
+                      Expanded(
+                          child: TransportDeliveryHistoryDetails(
+                        id: data[index]['id'].toString(),
+                      ))
+                    ],
                   ),
-                );
-              });
-        }),
-        DataCell(
-            Text(
-              data[index]['attributes']['Marca_T_I'].toString(),
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
+                ),
+              );
+            });
+      }),
+      DataCell(
+          Text(
+            data[index]['Marca_T_D'].toString(),
+            style: TextStyle(
+              color: rowColor,
+            ),
+          ), onTap: () {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Icon(Icons.close),
                         ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
+                      ),
+                      Expanded(
+                          child: TransportDeliveryHistoryDetails(
+                        id: data[index]['id'].toString(),
+                      ))
+                    ],
                   ),
-                );
-              });
-        }),
-        DataCell(
-            Text(
-              "${data[index]['attributes']['users']['data'] != null ? data[index]['attributes']['users']['data'][0]['attributes']['vendedores']['data'][0]['attributes']['Nombre_Comercial'] : data[index]['attributes']['Tienda_Temporal'].toString()}-${data[index]['attributes']['NumeroOrden']}",
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
+                ),
+              );
+            });
+      }),
+      DataCell(
+          Text(
+            data[index]['Estado_Pago_Logistica'].toString(),
+            style: TextStyle(
+              color: rowColor,
+            ),
+          ), onTap: () {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Icon(Icons.close),
                         ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
+                      ),
+                      Expanded(
+                          child: TransportDeliveryHistoryDetails(
+                        id: data[index]['id'].toString(),
+                      ))
+                    ],
                   ),
-                );
-              });
-        }),
-        DataCell(
-            Text(
-              '${data[index]['attributes']['CiudadShipping'].toString()}',
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
-                        ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
-                  ),
-                );
-              });
-        }),
-        DataCell(
-            Text(
-              data[index]['attributes']['NombreShipping'].toString(),
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
-                        ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
-                  ),
-                );
-              });
-        }),
-
-        DataCell(
-            Text(
-              '${data[index]['attributes']['DireccionShipping'].toString()}',
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
-                        ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
-                  ),
-                );
-              });
-        }),
-        DataCell(
-            Text(
-              data[index]['attributes']['TelefonoShipping'].toString(),
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
-                        ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
-                  ),
-                );
-              });
-        }),
-        DataCell(
-            Text(
-              data[index]['attributes']['Cantidad_Total'].toString(),
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
-                        ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
-                  ),
-                );
-              });
-        }),
-        DataCell(
-            Text(
-              data[index]['attributes']['ProductoP'].toString(),
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
-                        ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
-                  ),
-                );
-              });
-        }),
-        DataCell(
-            Text(
-              data[index]['attributes']['ProductoExtra'].toString(),
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
-                        ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
-                  ),
-                );
-              });
-        }),
-        DataCell(
-            Text(
-              data[index]['attributes']['PrecioTotal'].toString(),
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
-                        ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
-                  ),
-                );
-              });
-        }),
-        DataCell(
-            Text(
-              data[index]['attributes']['Observacion'].toString(),
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
-                        ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
-                  ),
-                );
-              });
-        }),
-
-        DataCell(
-            Text(
-              '${data[index]['attributes']['Comentario'].toString()}',
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
-                        ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
-                  ),
-                );
-              });
-        }),
-
-        DataCell(
-            Text(
-              data[index]['attributes']['Status'].toString(),
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
-                        ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
-                  ),
-                );
-              });
-        }),
-
-        DataCell(
-            Text(
-              data[index]['attributes']['TipoPago'].toString(),
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
-                        ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
-                  ),
-                );
-              });
-        }),
-        DataCell(
-            Text(
-              data[index]['attributes']['ruta']['data'] != null
-                  ? data[index]['attributes']['ruta']["data"]['attributes']
-                          ['Titulo']
-                      .toString()
-                  : "",
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
-                        ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
-                  ),
-                );
-              });
-        }),
-        DataCell(
-            Text(
-              data[index]['attributes']['transportadora']['data'] != null
-                  ? data[index]['attributes']['transportadora']['data']
-                          ['attributes']['Nombre']
-                      .toString()
-                  : "",
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
-                        ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
-                  ),
-                );
-              });
-        }),
-        DataCell(
-            Text(
-              data[index]['attributes']['sub_ruta']['data'] != null
-                  ? data[index]['attributes']['sub_ruta']['data']['attributes']
-                          ['Titulo']
-                      .toString()
-                  : "",
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
-                        ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
-                  ),
-                );
-              });
-        }),
-        DataCell(
-            Text(
-              data[index]['attributes']['operadore']['data'] != null
-                  ? data[index]['attributes']['operadore']['data']['attributes']
-                          ['user']['data']['attributes']['username']
-                      .toString()
-                  : "",
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
-                        ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
-                  ),
-                );
-              });
-        }),
-        DataCell(
-            Text(
-              data[index]['attributes']['Fecha_Entrega'].toString(),
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
-                        ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
-                  ),
-                );
-              });
-        }),
-        DataCell(
-            Text(
-              data[index]['attributes']['Tienda_Temporal'].toString(),
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
-                        ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
-                  ),
-                );
-              });
-        }),
-        DataCell(
-            Text(
-              data[index]['attributes']['Estado_Interno'].toString(),
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
-                        ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
-                  ),
-                );
-              });
-        }),
-        DataCell(
-            Text(
-              data[index]['attributes']['Estado_Logistico'].toString(),
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
-                        ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
-                  ),
-                );
-              });
-        }),
-
-        DataCell(
-            Text(
-              data[index]['attributes']['transportadora']['data'] != null
-                  ? data[index]['attributes']['transportadora']['data']
-                          ['attributes']['Costo_Transportadora']
-                      .toString()
-                  : "",
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
-                        ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
-                  ),
-                );
-              });
-        }),
-        DataCell(
-            Text(
-              data[index]['attributes']['operadore']['data'] != null
-                  ? data[index]['attributes']['operadore']['data']['attributes']
-                          ['Costo_Operador']
-                      .toString()
-                  : "", //este,
-
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
-                        ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
-                  ),
-                );
-              });
-        }),
-
-        DataCell(
-            Text(data[index]['attributes']['users'] != null
-                ? data[index]['attributes']['users']['data'][0]['attributes']
-                        ['vendedores']['data'][0]['attributes']['CostoEnvio']
-                    .toString()
-                : ""), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
-                        ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
-                  ),
-                );
-              });
-        }),
-        DataCell(
-            Text(data[index]['attributes']['users']['data'] != null
-                ? data[index]['attributes']['users']['data'][0]['attributes']
-                            ['vendedores']['data'][0]['attributes']
-                        ['CostoDevolucion']
-                    .toString()
-                : ""), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
-                        ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
-                  ),
-                );
-              });
-        }),
-
-        // DataCell(Text(
-        //   data[index]['operadore']['Costo_Operador'].toString(),
-        //   style: TextStyle(
-        //     color: rowColor,
-        //   ),
-        // )),
-        DataCell(
-            Text(
-              data[index]['attributes']['Estado_Devolucion'].toString(),
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
-                        ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
-                  ),
-                );
-              });
-        }),
-        DataCell(
-            Text(
-              data[index]['attributes']['Marca_T_D'].toString(),
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
-                        ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
-                  ),
-                );
-              });
-        }),
-        DataCell(
-            Text(
-              data[index]['attributes']['Estado_Pago_Logistica'].toString(),
-              style: TextStyle(
-                color: rowColor,
-              ),
-            ), onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(Icons.close),
-                          ),
-                        ),
-                        Expanded(
-                            child: TransportDeliveryHistoryDetails(
-                          id: data[index]['id'].toString(),
-                        ))
-                      ],
-                    ),
-                  ),
-                );
-              });
-        }),
-      ];
-    }
+                ),
+              );
+            });
+      }),
+    ];
   }
 
   SizedBox _dates(BuildContext context) {
@@ -3541,186 +2599,108 @@ class _TransportDeliveryHistorialState
       ),
       child: TextField(
         controller: controller,
-        onSubmitted: (value) async {
-          setState(() {
-            data = [];
+        onSubmitted: (value) {
+          arrayFiltersAnd.add({
+            '\$or': [
+              {
+                'NumeroOrden': {
+                  '\$contains': _controllers.searchController.text
+                }
+              },
+              {
+                'CiudadShipping': {
+                  '\$contains': _controllers.searchController.text
+                },
+              },
+              {
+                'NombreShipping': {
+                  '\$contains': _controllers.searchController.text
+                },
+              },
+              {
+                'DireccionShipping': {
+                  '\$contains': _controllers.searchController.text
+                },
+              },
+              {
+                'TelefonoShipping': {
+                  '\$contains': _controllers.searchController.text
+                },
+              },
+              {
+                'Cantidad_Total': {
+                  '\$contains': _controllers.searchController.text
+                },
+              },
+              {
+                'ProductoP': {'\$contains': _controllers.searchController.text},
+              },
+              {
+                'ProductoExtra': {
+                  '\$contains': _controllers.searchController.text
+                },
+              },
+              {
+                'PrecioTotal': {
+                  '\$contains': _controllers.searchController.text
+                },
+              },
+              {
+                'Observacion': {
+                  '\$contains': _controllers.searchController.text
+                },
+              },
+              {
+                'Comentario': {
+                  '\$contains': _controllers.searchController.text
+                },
+              },
+              {
+                'Status': {'\$contains': _controllers.searchController.text},
+              },
+              {
+                'TipoPago': {'\$contains': _controllers.searchController.text},
+              },
+              //falta parametro Ruta asignada
+              //falta parametro transportadora
+
+              //falta parametro SubRuta asignada
+
+              //falta parametro Operador
+              {
+                'Fecha_Entrega': {
+                  '\$contains': _controllers.searchController.text
+                },
+              },
+              //falta parametro vendedor
+              {
+                'Estado_Interno': {
+                  '\$contains': _controllers.searchController.text
+                },
+              },
+              {
+                'Estado_Logistico': {
+                  '\$contains': _controllers.searchController.text
+                },
+              },
+              //falta parametro costo_transportadora
+              //falta parametro costo_operador
+              //falta parametro costo_entrega
+              //falta parametro costo_devolucion
+              //falta parametro estado_devolucion
+              //falta parametro marca T D
+              //falta parametro estado pago logistico
+            ]
           });
-          switch (option) {
-            case "Fecha":
-              setState(() {
-                url =
-                    "&filters[\$or][1][Marca_Tiempo_Envio][\$contains]=${_controllers.searchController.text}";
-              });
-              break;
-            case "Código":
-              setState(() {
-                url =
-                    "&filters[\$or][1][NumeroOrden][\$contains]=${_controllers.searchController.text}";
-              });
 
-              break;
-            case "Ciudad":
-              setState(() {
-                url =
-                    "&filters[\$or][1][CiudadShipping][\$contains]=${_controllers.searchController.text}";
-              });
-
-              break;
-            case "Nombre Cliente":
-              setState(() {
-                url =
-                    "&filters[\$or][1][NombreShipping][\$contains]=${_controllers.searchController.text}";
-              });
-
-              break;
-            case "Dirección":
-              setState(() {
-                url =
-                    "&filters[\$or][1][DireccionShipping][\$contains]=${_controllers.searchController.text}";
-              });
-
-              break;
-            case "Teléfono Cliente":
-              setState(() {
-                url =
-                    "&filters[\$or][1][TelefonoShipping][\$contains]=${_controllers.searchController.text}";
-              });
-
-              break;
-            case "Cantidad":
-              setState(() {
-                url =
-                    "&filters[\$or][1][Cantidad_Total][\$contains]=${_controllers.searchController.text}";
-              });
-
-              break;
-            case "Producto":
-              setState(() {
-                url =
-                    "&filters[\$or][1][ProductoP][\$contains]=${_controllers.searchController.text}";
-              });
-
-              break;
-            case "Producto Extra":
-              setState(() {
-                url =
-                    "&filters[\$or][1][ProductoExtra][\$contains]=${_controllers.searchController.text}";
-              });
-
-              break;
-            case "Precio Total":
-              setState(() {
-                url =
-                    "&filters[\$or][1][PrecioTotal][\$contains]=${_controllers.searchController.text}";
-              });
-
-              break;
-            case "Observación":
-              setState(() {
-                url =
-                    "&filters[\$or][1][Observacion][\$contains]=${_controllers.searchController.text}";
-              });
-
-              break;
-            case "Comentario":
-              setState(() {
-                url =
-                    "&filters[\$or][1][Comentario][\$contains]=${_controllers.searchController.text}";
-              });
-
-              break;
-            case "Status":
-              setState(() {
-                url =
-                    "&filters[\$or][1][Status][\$contains]=${_controllers.searchController.text}";
-              });
-
-              break;
-            case "Fecha Entrega":
-              setState(() {
-                url =
-                    "&filters[\$or][1][Fecha_Entrega][\$contains]=${_controllers.searchController.text}";
-              });
-
-              break;
-
-            case "Devolución":
-              setState(() {
-                url =
-                    "&filters[\$or][1][Estado_Devolucion][\$contains]=${_controllers.searchController.text}";
-              });
-
-              break;
-            case "Vendedor":
-              setState(() {
-                url =
-                    "&filters[\$or][1][Tienda_Temporal][\$contains]=${_controllers.searchController.text}";
-              });
-
-              break;
-            case "Transportadora":
-              setState(() {
-                url =
-                    "&filters[\$or][1][transportadora][Nombre][\$contains]=${_controllers.searchController.text}";
-              });
-
-              break;
-            case "Operador":
-              setState(() {
-                url =
-                    "&filters[\$or][1][operadore][user][username][\$contains]=${_controllers.searchController.text}";
-              });
-
-              break;
-            case "Estado Pago":
-              setState(() {
-                url =
-                    "&filters[\$or][1][Estado_Pagado][\$contains]=${_controllers.searchController.text}";
-              });
-
-              break;
-            case "Est. logistic":
-              setState(() {
-                url =
-                    "&filters[\$or][1][Estado_Logistico][\$contains]=${_controllers.searchController.text}";
-              });
-
-              break;
-            case "Est. Confir":
-              setState(() {
-                url =
-                    "&filters[\$or][1][Estado_Interno][\$contains]=${_controllers.searchController.text}";
-              });
-
-              break;
-            case "Ruta":
-              setState(() {
-                url =
-                    "&filters[\$or][1][ruta][Titulo][\$contains]=${_controllers.searchController.text}";
-              });
-
-              break;
-            case "SubRuta":
-              setState(() {
-                url =
-                    "&filters[\$or][1][sub_ruta][Titulo][\$contains]=${_controllers.searchController.text}";
-              });
-
-              break;
-            default:
-              setState(() {
-                url =
-                    "&filters[\$or][0][NumeroOrden][\$contains]=${_controllers.searchController.text}&filters[\$or][1][Marca_Tiempo_Envio][\$contains]=${_controllers.searchController.text}&filters[\$or][2][NumeroOrden][\$contains]=${_controllers.searchController.text}&filters[\$or][3][CiudadShipping][\$contains]=${_controllers.searchController.text}&filters[\$or][4][NombreShipping][\$contains]=${_controllers.searchController.text}&filters[\$or][5][DireccionShipping][\$contains]=${_controllers.searchController.text}&filters[\$or][6][TelefonoShipping][\$contains]=${_controllers.searchController.text}&filters[\$or][7][Cantidad_Total][\$contains]=${_controllers.searchController.text}&filters[\$or][8][ProductoP][\$contains]=${_controllers.searchController.text}&filters[\$or][9][ProductoExtra][\$contains]=${_controllers.searchController.text}&filters[\$or][10][PrecioTotal][\$contains]=${_controllers.searchController.text}&filters[\$or][11][Observacion][\$contains]=${_controllers.searchController.text}&filters[\$or][12][Comentario][\$contains]=${_controllers.searchController.text}&filters[\$or][13][Status][\$contains]=${_controllers.searchController.text}&filters[\$or][14][Fecha_Entrega][\$contains]=${_controllers.searchController.text}&filters[\$or][15][Estado_Devolucion][\$contains]=${_controllers.searchController.text}&filters[\$or][16][Tienda_Temporal][\$contains]=${_controllers.searchController.text}&filters[\$or][17][transportadora][Nombre][\$contains]=${_controllers.searchController.text}&filters[\$or][18][operadore][user][username][\$contains]=${_controllers.searchController.text}&filters[\$or][19][Estado_Pagado][\$contains]=${_controllers.searchController.text}&filters[\$or][20][Estado_Logistico][\$contains]=${_controllers.searchController.text}&filters[\$or][21][Estado_Interno][\$contains]=${_controllers.searchController.text}&filters[\$or][22][ruta][Titulo][\$contains]=${_controllers.searchController.text}&filters[\$or][23][sub_ruta][Titulo][\$contains]=${_controllers.searchController.text}";
-              });
-              break;
-          }
-          Future.delayed(const Duration(milliseconds: 500), () {
-            loadData();
-          });
+          loadData();
         },
-        onChanged: (value) {},
+        onChanged: (value) {
+          setState(() {});
+        },
         style: TextStyle(fontWeight: FontWeight.bold),
         decoration: InputDecoration(
+          fillColor: Colors.grey[500],
           prefixIcon: Icon(Icons.search),
           suffixIcon: _controllers.searchController.text.isNotEmpty
               ? GestureDetector(
@@ -3729,21 +2709,17 @@ class _TransportDeliveryHistorialState
                     setState(() {
                       _controllers.searchController.clear();
                     });
-                    loadData();
+
+                    setState(() {
+                      loadData();
+                    });
                     Navigator.pop(context);
                   },
                   child: Icon(Icons.close))
               : null,
           hintText: text,
-          enabledBorder: OutlineInputBorder(
-            borderSide:
-                BorderSide(width: 1, color: Color.fromRGBO(237, 241, 245, 1.0)),
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderSide:
-                BorderSide(width: 1, color: Color.fromRGBO(237, 241, 245, 1.0)),
-            borderRadius: BorderRadius.circular(10.0),
+          border: const OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey),
           ),
           focusColor: Colors.black,
           iconColor: Colors.black,
@@ -3910,6 +2886,45 @@ class _TransportDeliveryHistorialState
                 .toString()));
       }
     }
+  }
+
+  bool verificarIndice(int index) {
+    try {
+      dynamic elemento =
+          optionsCheckBox.elementAt(index + ((currentPage - 1) * pageSize));
+      // print("elemento="+elemento.toString());
+      var e = elemento['id'];
+      var m = data[index]['id'];
+      if (elemento['id'] != data[index]['id'].toString()) {
+        return false;
+      } else {
+        return true;
+      }
+    } catch (error) {
+      return false;
+    }
+  }
+
+  NumberPaginator numberPaginator() {
+    return NumberPaginator(
+      config: NumberPaginatorUIConfig(
+        buttonShape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(5), // Customize the button shape
+        ),
+      ),
+      controller: paginatorController,
+      numberPages: pageCount > 0 ? pageCount : 1,
+      // initialPage: 0,
+      onPageChange: (index) async {
+        //  print("indice="+index.toString());
+        setState(() {
+          currentPage = index + 1;
+        });
+        if (!isLoading) {
+          await paginateData();
+        }
+      },
+    );
   }
 
   sortFuncOperador() {

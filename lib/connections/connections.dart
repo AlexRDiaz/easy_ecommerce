@@ -818,7 +818,7 @@ class Connections {
     return decodeData['data'];
   }
 
-  getOrdersForHistorialTransportByDates() async {
+  getOrdersForHistorialTransportByDates(List populate, List and) async {
     print('start: ${sharedPrefs!.getString("dateDesdeTransportHistorial")}');
     print('end: ${sharedPrefs!.getString("dateHastaTransportHistorial")}');
 
@@ -827,7 +827,9 @@ class Connections {
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
           "start": sharedPrefs!.getString("dateDesdeTransportHistorial"),
-          "end": sharedPrefs!.getString("dateHastaTransportHistorial")
+          "end": sharedPrefs!.getString("dateHastaTransportHistorial"),
+          "populate": jsonEncode(populate),
+          "and": jsonEncode(and)
         }));
 
     var response = await request.body;
