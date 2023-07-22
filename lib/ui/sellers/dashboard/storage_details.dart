@@ -13,14 +13,12 @@ class StorageDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        color: Color(0xFF1A2B3C),
-      ),
       child: Row(
         children: [
           Container(
             margin: EdgeInsets.only(left: 10, top: 10, bottom: 10, right: 5),
             decoration: BoxDecoration(
+              color: Color(0xFF1A2B3C),
               borderRadius: const BorderRadius.all(Radius.circular(10)),
               border: Border.all(color: Colors.black),
             ),
@@ -105,6 +103,7 @@ class StorageDetails extends StatelessWidget {
             width: 600,
             margin: EdgeInsets.only(left: 5, top: 10, bottom: 10, right: 10),
             decoration: BoxDecoration(
+              color: Color(0xFF1A2B3C),
               borderRadius: const BorderRadius.all(Radius.circular(10)),
               border: Border.all(color: Colors.black),
             ),

@@ -15,7 +15,7 @@ class FileInfoCard extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(11.0),
       decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 63, 54, 244),
+        color: info.color,
         borderRadius: const BorderRadius.all(Radius.circular(10)),
       ),
       child: Column(
@@ -35,8 +35,7 @@ class FileInfoCard extends StatelessWidget {
                 ),
                 child: SvgPicture.asset(
                   info.svgSrc!,
-                  colorFilter: ColorFilter.mode(
-                      info.color ?? Colors.black, BlendMode.srcIn),
+                  colorFilter: ColorFilter.mode(Colors.black, BlendMode.srcIn),
                 ),
               ),
               Icon(Icons.more_vert, color: Colors.white54)

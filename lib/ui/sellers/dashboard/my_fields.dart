@@ -33,7 +33,7 @@ class MyFiles extends StatelessWidget {
         ),
         SizedBox(height: 16.0),
         FileInfoCardGridView(
-          childAspectRatio: _size.width < 1400 ? 1.1 : 1.4,
+          childAspectRatio: _size.width < 1400 ? 1.0 : 1.3,
         ),
       ],
     );
