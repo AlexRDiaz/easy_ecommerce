@@ -46,7 +46,7 @@ class _LayoutOperatorPageState extends State<LayoutOperatorPage> {
       key: _key,
       backgroundColor: Colors.white,
       appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.black),
+        //iconTheme: IconThemeData(color: Colors.black),
         centerTitle: true,
         leading: GestureDetector(
           onTap: () {

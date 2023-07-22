@@ -36,15 +36,12 @@ class _ScannerPrintedTransportState extends State<ScannerPrintedTransport> {
                   getLoadingModal(context, false);
 
                   var responseOrder = await Connections().getOrderByID(barcode);
-                  //var m = responseOrder['Status'];
                   if (responseOrder['attributes']['Status'] == 'NO ENTREGADO' ||
                       responseOrder['attributes']['Status'] == 'NOVEDAD') {
                     setState(() {
                       _barcode =
                           "No se puede alterar el pedido con código ${responseOrder['attributes']['Name_Comercial']}-${responseOrder['attributes']['NumeroOrden']}";
                     });
-
-                    // var responseOrder = await Connections().getOrderByID(barcode);
                   } else {
                     var response = await Connections()
                         .updateOrderReturnTransport(

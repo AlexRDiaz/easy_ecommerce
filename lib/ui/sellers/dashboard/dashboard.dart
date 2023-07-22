@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:frontend/connections/connections.dart';
+import 'package:frontend/ui/sellers/dashboard/storage_details.dart';
 import 'package:frontend/ui/widgets/loading.dart';
 
 class DashBoardSellers extends StatefulWidget {
@@ -78,107 +79,115 @@ class _DashBoardSellersState extends State<DashBoardSellers> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        color: Colors.white,
-        width: double.infinity,
-        height: double.infinity,
-        child: ListView(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Column(
-                children: [
-                  Text(
-                    "FILTROS",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  _desde(context),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  _hasta(context),
-                  // SizedBox(
-                  //   height: 10,
-                  // ),
-                  // _sellersTransport(context),
-                  // SizedBox(
-                  //   height: 10,
-                  // ),
-                  // _operators(context),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Column(
-                    children: [
-                      Text(
-                        "Status",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 14),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      _checks()
-                    ],
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  ElevatedButton(
-                      onPressed: dateDesde == "" || dateHasta == ""
-                          ? null
-                          : () async {
-                              getLoadingModal(context, false);
-                              var response = await Connections()
-                                  .getInfoDashboardSellers(
-                                      dateDesde.toString(),
-                                      dateHasta.toString(),
-                                      selectValueTransport != null
-                                          ? selectValueTransport
-                                              .toString()
-                                              .split("-")[1]
-                                              .toString()
-                                          : "null",
-                                      selectValueOperator != null
-                                          ? selectValueOperator
-                                              .toString()
-                                              .split("-")[1]
-                                              .toString()
-                                          : "null",
-                                      checks);
-                              setState(() {
-                                dataChart = [...response];
-                              });
-                              Navigator.pop(context);
-                            },
-                      child: Text(
-                        "Buscar",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      )),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Container(
-                    height: 600,
-                    child: DChartPie(
-                      data: dataChart,
-                      fillColor: (pieData, index) => Colors.greenAccent,
-                      pieLabel: (pieData, index) {
-                        return "${pieData['domain'].toString()}:\nC:${pieData['measure'].toString()} \n%:${generatePorcent(pieData['measure'])}%";
-                      },
-                      labelPosition: PieLabelPosition.inside,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+        body: Center(
+            child: Container(
+                padding: EdgeInsets.all(15),
+                width: 1700,
+                height: 700,
+                child: StorageDetails()))
+
+        // Container(
+        //   color: Colors.white,
+        //   width: double.infinity,
+        //   height: double.infinity,
+        //   child: ListView(
+        //     children: [
+        //       Padding(
+        //         padding: const EdgeInsets.all(12.0),
+        //         child: Column(
+        //           children: [
+        //             Text(
+        //               "FILTROS",
+        //               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+        //             ),
+        //             SizedBox(
+        //               height: 10,
+        //             ),
+        //             _desde(context),
+        //             SizedBox(
+        //               height: 10,
+        //             ),
+        //             _hasta(context),
+        //             // SizedBox(
+        //             //   height: 10,
+        //             // ),
+        //             // _sellersTransport(context),
+        //             // SizedBox(
+        //             //   height: 10,
+        //             // ),
+        //             // _operators(context),
+        //             SizedBox(
+        //               height: 10,
+        //             ),
+        //             Column(
+        //               children: [
+        //                 Text(
+        //                   "Status",
+        //                   style: TextStyle(
+        //                       fontWeight: FontWeight.bold, fontSize: 14),
+        //                 ),
+        //                 SizedBox(
+        //                   height: 10,
+        //                 ),
+        //                 _checks()
+        //               ],
+        //             ),
+        //             SizedBox(
+        //               height: 10,
+        //             ),
+        //             ElevatedButton(
+        //                 onPressed: dateDesde == "" || dateHasta == ""
+        //                     ? null
+        //                     : () async {
+        //                         getLoadingModal(context, false);
+        //                         var response = await Connections()
+        //                             .getInfoDashboardSellers(
+        //                                 dateDesde.toString(),
+        //                                 dateHasta.toString(),
+        //                                 selectValueTransport != null
+        //                                     ? selectValueTransport
+        //                                         .toString()
+        //                                         .split("-")[1]
+        //                                         .toString()
+        //                                     : "null",
+        //                                 selectValueOperator != null
+        //                                     ? selectValueOperator
+        //                                         .toString()
+        //                                         .split("-")[1]
+        //                                         .toString()
+        //                                     : "null",
+        //                                 checks);
+        //                         setState(() {
+        //                           dataChart = [...response];
+        //                         });
+        //                         Navigator.pop(context);
+        //                       },
+        //                 child: Text(
+        //                   "Buscar",
+        //                   style: TextStyle(fontWeight: FontWeight.bold),
+        //                 )),
+        //             SizedBox(
+        //               height: 10,
+        //             ),
+        //             Container(
+        //               height: 600,
+        //               child: DChartPie(
+        //                 data: dataChart,
+        //                 fillColor: (pieData, index) => Colors.greenAccent,
+        //                 pieLabel: (pieData, index) {
+        //                   return "${pieData['domain'].toString()}:\nC:${pieData['measure'].toString()} \n%:${generatePorcent(pieData['measure'])}%";
+        //                 },
+        //                 labelPosition: PieLabelPosition.inside,
+        //               ),
+        //             ),
+        //           ],
+        //         ),
+        //       ),
+        //     ],
+        //   ),
+        // ),
+
+        );
   }
 
   DropdownButtonHideUnderline _sellersTransport(BuildContext context) {
