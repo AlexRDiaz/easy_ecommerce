@@ -837,6 +837,19 @@ class Connections {
     return decodeData['data'];
   }
 
+  getOperatorsByTransport(var id) async {
+    String url = "$server/api/operator/transport/" + id;
+    print(url);
+    var request = await http.post(
+      Uri.parse("$server/api/operator/transport/" + id),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    var response = await request.body;
+    var decodeData = json.decode(response);
+    return decodeData['data'];
+  }
+
   getOrdersForHistorialTransportByCode(code, url) async {
     var request = await http.get(
       Uri.parse(

@@ -260,7 +260,6 @@ class _ReturnsTransportState extends State<ReturnsTransport> {
                             controller: _controllers.searchController),
                       ),
                       Container(
-                        padding: EdgeInsets.only(left: 250, right: 15),
                         child: ElevatedButton(
                             onPressed: () async {
                               await showDialog(
@@ -275,7 +274,7 @@ class _ReturnsTransportState extends State<ReturnsTransport> {
                               style: TextStyle(fontWeight: FontWeight.bold),
                             )),
                       ),
-                      Expanded(child: numberPaginator()),
+                      numberPaginator(),
                     ],
                   ),
                   context),

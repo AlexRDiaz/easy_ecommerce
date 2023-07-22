@@ -21,7 +21,7 @@ class boxValuesTransport extends StatelessWidget {
           child: Column(
             children: [
               const Text(
-                'Valores recibidos:',
+                'Val. recibidos:',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 9,

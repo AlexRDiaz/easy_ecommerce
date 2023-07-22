@@ -35,15 +35,25 @@ class _ScannerPrintedTransportState extends State<ScannerPrintedTransport> {
                   if (!visible) return;
                   getLoadingModal(context, false);
 
-                  var response = await Connections().updateOrderReturnTransport(
-                      barcode.toString(), "DEVOLUCION EN RUTA");
-
                   var responseOrder = await Connections().getOrderByID(barcode);
+                  //var m = responseOrder['Status'];
+                  if (responseOrder['attributes']['Status'] == 'NO ENTREGADO' ||
+                      responseOrder['attributes']['Status'] == 'NOVEDAD') {
+                    setState(() {
+                      _barcode =
+                          "No se puede alterar el pedido con código ${responseOrder['attributes']['Name_Comercial']}-${responseOrder['attributes']['NumeroOrden']}";
+                    });
 
-                  setState(() {
-                    _barcode =
-                        "${responseOrder['attributes']['Name_Comercial']}-${responseOrder['attributes']['NumeroOrden']}";
-                  });
+                    // var responseOrder = await Connections().getOrderByID(barcode);
+                  } else {
+                    var response = await Connections()
+                        .updateOrderReturnTransport(
+                            barcode.toString(), "DEVOLUCION EN RUTA");
+                    setState(() {
+                      _barcode =
+                          "${responseOrder['attributes']['Name_Comercial']}-${responseOrder['attributes']['NumeroOrden']}";
+                    });
+                  }
                   Navigator.pop(context);
                 },
                 child: Column(
