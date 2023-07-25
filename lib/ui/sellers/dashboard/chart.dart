@@ -12,32 +12,7 @@ class Chart extends StatefulWidget {
 }
 
 class _ChartState extends State<Chart> {
-  // List lista = [
-  //   {
-  //     'color': Color(0xFF2697FF),
-  //     'value': 25,
-  //     'showTitle': false,
-  //     'radius': 25,
-  //   },
-  //   {
-  //     'color': Color.fromARGB(255, 170, 204, 3),
-  //     'value': 25,
-  //     'showTitle': false,
-  //     'radius': 25,
-  //   },
-  //   {
-  //     'color': Color.fromARGB(255, 223, 28, 197),
-  //     'value': 25,
-  //     'showTitle': false,
-  //     'radius': 25,
-  //   },
-  //   {
-  //     'color': Color.fromARGB(255, 4, 130, 8),
-  //     'value': 25,
-  //     'showTitle': false,
-  //     'radius': 25,
-  //   }
-  // ];
+  int touchedIndex = -1;
 
   @override
   Widget build(BuildContext context) {
@@ -47,11 +22,26 @@ class _ChartState extends State<Chart> {
         children: [
           PieChart(
             PieChartData(
-              sectionsSpace: 0,
-              centerSpaceRadius: 70,
-              startDegreeOffset: -90,
-              sections: generateChartData(),
-            ),
+                sectionsSpace: 0,
+                centerSpaceRadius: 70,
+                startDegreeOffset: -90,
+                sections: generateChartData(),
+                pieTouchData: PieTouchData(
+                  touchCallback: (FlTouchEvent event, pieTouchResponse) {
+                    setState(() {
+                      if (!event.isInterestedForInteractions ||
+                          pieTouchResponse == null ||
+                          pieTouchResponse.touchedSection == null) {
+                        touchedIndex = -1;
+                        return;
+                      }
+                      touchedIndex =
+                          pieTouchResponse.touchedSection!.touchedSectionIndex;
+                    });
+                  },
+                )),
+            swapAnimationCurve: accelerateEasing,
+            swapAnimationDuration: Duration(seconds: 1),
           ),
           Positioned.fill(
             child: Column(
@@ -93,15 +83,23 @@ class _ChartState extends State<Chart> {
       );
     } else {
       for (var sec in widget.sections) {
+        const shadows = [Shadow(color: Colors.black, blurRadius: 2)];
+
         double percentage = sec['value'] / widget.total;
 
         PieChartSectionData section = PieChartSectionData(
           color: sec['color'],
           value: sec['value'],
           title: '${(percentage * 100).toStringAsFixed(1)}%',
-          radius: 100,
+          radius: 40,
           showTitle: true,
-          titleStyle: TextStyle(fontSize: 16, color: Colors.white),
+          titleStyle: percentage * 100 < 5
+              ? TextStyle(
+                  fontSize: 10, color: const Color.fromARGB(255, 12, 2, 2))
+              : TextStyle(
+                  fontSize: 10,
+                  color: const Color.fromARGB(255, 253, 252, 252)),
+          titlePositionPercentageOffset: porcentajeOff(percentage * 100),
         );
         chartData.add(section);
       }
@@ -110,35 +108,19 @@ class _ChartState extends State<Chart> {
   }
 }
 
-// List<PieChartSectionData> paiChartSelectionData = [
-//   PieChartSectionData(
-//     color: Color(0xFF2697FF),
-//     value: 25,
-//     showTitle: false,
-//     radius: 25,
-//   ),
-//   PieChartSectionData(
-//     color: Color(0xFF26E5FF),
-//     value: 25,
-//     showTitle: false,
-//     radius: 22,
-//   ),
-//   PieChartSectionData(
-//     color: Color(0xFFFFCF26),
-//     value: 25,
-//     showTitle: false,
-//     radius: 19,
-//   ),
-//   PieChartSectionData(
-//     color: Color(0xFFEE2727),
-//     value: 25,
-//     showTitle: false,
-//     radius: 16,
-//   ),
-//   // PieChartSectionData(
-//   //   color: Color(0xFF2697FF).withOpacity(0.1),
-//   //   value: 25,
-//   //   showTitle: false,
-//   //   radius: 13,
-//   // ),
-//];
+porcentajeOff(double percentaje) {
+  double val = 0.5;
+  if (percentaje < 1) {
+    val = 2.0;
+  }
+  if (percentaje >= 1 && percentaje < 2) {
+    val = 1.8;
+  }
+  if (percentaje >= 2 && percentaje < 3) {
+    val = 1.6;
+  }
+  if (percentaje >= 3 && percentaje < 5) {
+    val = 1.4;
+  }
+  return val;
+}

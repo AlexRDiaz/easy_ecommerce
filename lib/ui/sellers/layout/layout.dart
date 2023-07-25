@@ -5,7 +5,7 @@ import 'package:frontend/main.dart';
 import 'package:frontend/providers/sellers/navigation_provider.dart';
 import 'package:frontend/ui/sellers/add_seller_user/add_seller_user.dart';
 import 'package:frontend/ui/sellers/cash_withdrawals_sellers/cash_withdrawals_sellers.dart';
-import 'package:frontend/ui/sellers/dashboard/dashboardNew.dart';
+import 'package:frontend/ui/sellers/dashboard/dashboard.dart';
 import 'package:frontend/ui/sellers/delivery_status/delivery_status.dart';
 import 'package:frontend/ui/sellers/my_cart_sellers/my_cart_sellers.dart';
 import 'package:frontend/ui/sellers/my_seller_account/my_seller_account.dart';

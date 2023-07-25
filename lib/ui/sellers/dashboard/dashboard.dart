@@ -1,5 +1,6 @@
 import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:d_chart/d_chart.dart';
+import 'package:data_table_2/data_table_2.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -33,6 +34,7 @@ class _DashBoardSellersState extends State<DashBoardSellers> {
 
   List data = [];
   List subData = [];
+  List tableData = [];
   List subFilters = [];
   // String dateDesde = "";
   // String dateHasta = "";
@@ -59,6 +61,9 @@ class _DashBoardSellersState extends State<DashBoardSellers> {
   int reagendados = 0;
   double totalValoresRecibidos = 0;
   double costoTransportadora = 0;
+  double costoDevoluciones = 0;
+  double utilidades = 0;
+
   bool isFirst = true;
   int counterLoad = 0;
   String transporterOperator = 'TODO';
@@ -213,7 +218,7 @@ class _DashBoardSellersState extends State<DashBoardSellers> {
     addCounts();
 
     updateChartValues();
-
+    calculateValues();
     setState(() {});
   }
 
@@ -245,65 +250,163 @@ class _DashBoardSellersState extends State<DashBoardSellers> {
             ]),
           ),
         ),
-
-        Expanded(
-          child: Container(
-            padding: EdgeInsets.only(left: 20, bottom: 20),
-            child: InputDecorator(
-              decoration: InputDecoration(
-                labelText: 'Estados de entrega',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-              ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
               child: Container(
-                height: 700,
-                width: 600,
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        children: filters
-                            .map((elemento) => FilterInfoCard(
-                                  svgSrc: elemento.svgSrc!,
-                                  title: elemento.title!,
-                                  filter: elemento.filter!,
-                                  percentage: elemento.percentage!,
-                                  numOfFiles: elemento.numOfFiles!,
-                                  function: changeValue,
-                                ))
-                            .toList(),
-                      ),
+                padding: EdgeInsets.only(left: 20, bottom: 20),
+                child: InputDecorator(
+                  decoration: InputDecoration(
+                    labelText: 'Estados de entrega',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
                     ),
-                    Expanded(
-                      child: Chart(
-                        sections: sections,
-                        total: calculatetotal(),
-                      ),
+                  ),
+                  child: Container(
+                    height: 550,
+                    width: 600,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            children: filters
+                                .map((elemento) => FilterInfoCard(
+                                      svgSrc: elemento.svgSrc!,
+                                      title: elemento.title!,
+                                      filter: elemento.filter!,
+                                      color: elemento.color!,
+                                      details: addTableRows,
+                                      percentage: elemento.percentage!,
+                                      numOfFiles: elemento.numOfFiles!,
+                                      function: changeValue,
+                                    ))
+                                .toList(),
+                          ),
+                        ),
+                        Expanded(
+                          child: Chart(
+                            sections: sections,
+                            total: calculatetotal(),
+                          ),
+                        ),
+                      ],
                     ),
-                    TextButton(
-                        onPressed: () {
-                          setState(() {
-                            sections.add({
-                              'color': Color.fromARGB(255, 8, 8, 8),
-                              'value': 25,
-                              'showTitle': false,
-                              'radius': 25,
-                            });
-                          });
-                        },
-                        child: Text("agregar"))
-                  ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ),
-        // Expanded(
-        //     child: FilterDetails(
+            Expanded(
+                child: Column(
+              children: [
+                FilterDetails(
+                    total: totalValoresRecibidos,
+                    costoEntregas: costoTransportadora,
+                    costoDevoluciones: costoDevoluciones,
+                    utilidades: utilidades),
+                Container(
+                  height: 400,
+                  width: 690,
+                  child: InputDecorator(
+                    decoration: InputDecoration(
+                      labelText: 'Datos',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                    ),
+                    child: DataTable2(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(4)),
+                          border: Border.all(color: Colors.blueGrey),
+                        ),
+                        headingRowHeight: 63,
+                        headingTextStyle: const TextStyle(
+                            fontWeight: FontWeight.bold, color: Colors.black),
+                        dataTextStyle: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black),
+                        columnSpacing: 12,
+                        horizontalMargin: 12,
+                        minWidth: 200,
+                        columns: [
+                          DataColumn2(
+                            label: Text('Fecha Entrega'),
+                            size: ColumnSize.S,
+                          ),
+                          DataColumn2(
+                            label: Text('Código'),
+                            size: ColumnSize.S,
+                          ),
+                          DataColumn2(
+                            label: Text('Precio'),
+                            size: ColumnSize.S,
+                          ),
+                          DataColumn2(
+                            label: Text('Status'),
+                            size: ColumnSize.S,
+                          ),
+                          DataColumn2(
+                            label: Text('Comentario'),
+                            size: ColumnSize.S,
+                          ),
+                        ],
+                        rows: List<DataRow>.generate(tableData.length, (index) {
+                          Color rowColor = Colors.black;
 
-        //   filters: filters,
-        // )),
+                          return DataRow(cells: [
+                            DataCell(
+                                Text(
+                                  tableData[index]['Fecha_Entrega'],
+                                  style: TextStyle(
+                                    color: rowColor,
+                                  ),
+                                ),
+                                onTap: () {}),
+                            DataCell(
+                                Text(
+                                  '${tableData[index]['Name_Comercial'].toString()}-${tableData[index]['NumeroOrden'].toString()}',
+                                  style: TextStyle(
+                                    color: rowColor,
+                                  ),
+                                ),
+                                onTap: () {}),
+                            DataCell(
+                                Text(
+                                  tableData[index]['PrecioTotal'],
+                                  style: TextStyle(
+                                    color: rowColor,
+                                  ),
+                                ),
+                                onTap: () {}),
+                            DataCell(
+                                Text(
+                                  tableData[index]['Status'].toString(),
+                                  style: TextStyle(
+                                    color: rowColor,
+                                  ),
+                                ),
+                                onTap: () {}),
+                            DataCell(
+                                Text(
+                                  tableData[index]['Comentario'],
+                                  style: TextStyle(
+                                    color: rowColor,
+                                  ),
+                                ),
+                                onTap: () {}),
+                          ]);
+                        })),
+                  ),
+                )
+              ],
+            )),
+          ],
+        )
       ],
     )));
   }
@@ -1014,12 +1117,8 @@ class _DashBoardSellersState extends State<DashBoardSellers> {
   }
 
   addCounts() {
-    // var val = value['value'];
-    // var filter = value['filter'];
-    subData = [];
-
-    // if (val) {
     for (var filter in filters) {
+      subData = [];
       for (var element in data) {
         if (element['Status'] == filter.filter) {
           subData.add(element);
@@ -1034,6 +1133,95 @@ class _DashBoardSellersState extends State<DashBoardSellers> {
         "color": filter.color
       });
     }
+  }
+
+  addTableRows(value) {
+    tableData = [];
+    for (var element in data) {
+      if (element['Status'] == value) {
+        setState(() {
+          tableData.add(element);
+        });
+      }
+    }
+  }
+
+  calculateValues() {
+    totalValoresRecibidos = 0;
+    costoTransportadora = 0;
+    costoDevoluciones = 0;
+    utilidades = 0;
+    double total = 0;
+    double costoEntregas = 0;
+    double devol = 0;
+
+    // costoDeEntregas = 0;
+    // devoluciones = 0;
+
+    for (var element in data) {
+      // element['attributes']['PrecioTotal'] =
+      //     element['attributes']['PrecioTotal'].replaceAll(',', '.');
+      // if (element['attributes']['users'][0]['vendedores'][0]['CostoEnvio'] !=
+      //     null) {
+      //   element['attributes']['users'][0]['vendedores'][0]['CostoEnvio'] =
+      //       element['attributes']['users'][0]['vendedores'][0]['CostoEnvio']
+      //           .replaceAll(',', '.');
+      // } else {
+      //   element['attributes']['users'][0]['vendedores'][0]['CostoEnvio'] = 0;
+      // }
+
+      // if (element['attributes']['users'][0]['vendedores'][0]
+      //         ['CostoDevolucion'] !=
+      //     null) {
+      //   element['attributes']['users'][0]['vendedores'][0]['CostoDevolucion'] =
+      //       element['attributes']['users'][0]['vendedores'][0]
+      //               ['CostoDevolucion']
+      //           .replaceAll(',', '.');
+      // } else {
+      //   element['attributes']['users'][0]['vendedores'][0]['CostoDevolucion'] =
+      //       0;
+      // }
+
+      if (element['Status'] == 'ENTREGADO') {
+        print("precioTotal" + element['PrecioTotal']);
+        element['PrecioTotal'] =
+            element['PrecioTotal'].toString().replaceAll(',', '.');
+        total += double.parse(element['PrecioTotal']);
+      }
+
+      if (element['Status'] == 'ENTREGADO' ||
+          element['Status'] == 'NO ENTREGADO') {
+        element['users'][0]['vendedores'][0]['CostoEnvio'] =
+            element['users'][0]['vendedores'][0]['CostoEnvio'] ?? 0;
+
+        element['users'][0]['vendedores'][0]['CostoEnvio'] = element['users'][0]
+                ['vendedores'][0]['CostoEnvio']
+            .toString()
+            .replaceAll(',', '.');
+
+        costoEntregas +=
+            double.parse(element['users'][0]['vendedores'][0]['CostoEnvio']);
+      }
+
+      if (element['Status'] == 'NOVEDAD' &&
+          element['Estado_Devolucion'] != 'PENDIENTE') {
+        element['users'][0]['vendedores'][0]['CostoDevolucion'] =
+            element['users'][0]['vendedores'][0]['CostoDevolucion'] ?? 0;
+        element['users'][0]['vendedores'][0]['CostoDevolucion'] =
+            element['users'][0]['vendedores'][0]['CostoDevolucion']
+                .toString()
+                .replaceAll(',', '.');
+        devol += double.parse(
+            element['users'][0]['vendedores'][0]['CostoDevolucion']);
+      }
+    }
+    setState(() {
+      totalValoresRecibidos = total;
+      costoTransportadora = costoEntregas;
+      costoDevoluciones = devol;
+      utilidades =
+          totalValoresRecibidos - costoTransportadora - costoDevoluciones;
+    });
   }
 
   calculatetotal() {
@@ -1054,11 +1242,16 @@ class _DashBoardSellersState extends State<DashBoardSellers> {
               'color': subFilter['color'],
               'value': subFilter["total"],
               'showTitle': true,
+              'title': subFilter["title"],
               'radius': 20,
             });
           });
         }
       }
+    } else {
+      setState(() {
+        sections.removeWhere((element) => element['title'] == value['filter']);
+      });
     }
   }
 }

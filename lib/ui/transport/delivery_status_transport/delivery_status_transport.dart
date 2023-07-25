@@ -1270,14 +1270,6 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
     costoTransportadora = 0;
 
     for (var element in allData) {
-      // if (element['id'] == 567) {
-      //   print('hello');
-      // }
-      // var test =
-      //     element['attributes']['users'][0]['vendedores'][0]['CostoEnvio'];
-      // print("aqui esta el test" + test);
-      // var m = 2;
-
       element['attributes']['transportadora']['Costo_Transportadora'] != null
           ? element['attributes']['transportadora']['Costo_Transportadora']
               .replaceAll(',', '.')
