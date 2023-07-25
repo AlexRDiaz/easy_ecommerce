@@ -13,25 +13,6 @@ class MyFiles extends StatelessWidget {
     final Size _size = MediaQuery.of(context).size;
     return Column(
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              "My Files",
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            ElevatedButton.icon(
-              style: TextButton.styleFrom(
-                padding: EdgeInsets.symmetric(
-                    horizontal: 16.0 * 1.5, vertical: 16.0),
-              ),
-              onPressed: () {},
-              icon: Icon(Icons.add),
-              label: Text("Add New"),
-            ),
-          ],
-        ),
-        SizedBox(height: 16.0),
         FileInfoCardGridView(
           childAspectRatio: _size.width < 1400 ? 1.0 : 1.3,
         ),

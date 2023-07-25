@@ -3,7 +3,6 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_barcode_listener/flutter_barcode_listener.dart';
 import 'package:frontend/connections/connections.dart';
 import 'package:frontend/ui/transport/delivery_status_transport/delivery_details.dart';
-import 'package:frontend/ui/widgets/loading.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 class ScannerDeliveryStatusTransport extends StatefulWidget {

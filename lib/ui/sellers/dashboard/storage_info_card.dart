@@ -1,23 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class StorageInfoCard extends StatelessWidget {
-  const StorageInfoCard({
-    Key? key,
-    required this.title,
-    required this.svgSrc,
-    required this.amountOfFiles,
-    required this.numOfFiles,
-  }) : super(key: key);
-
-  final String title, svgSrc, amountOfFiles;
+class FilterInfoCard extends StatefulWidget {
+  final String title, filter, svgSrc;
   final int numOfFiles;
+  final double percentage;
+  final Function(dynamic) function;
 
+  const FilterInfoCard(
+      {Key? key,
+      required this.title,
+      required this.filter,
+      required this.svgSrc,
+      required this.percentage,
+      required this.numOfFiles,
+      required this.function})
+      : super(key: key);
+
+  @override
+  State<FilterInfoCard> createState() => _FilterInfoCardState();
+}
+
+class _FilterInfoCardState extends State<FilterInfoCard> {
+  bool checked = false;
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(top: 10.0),
-      padding: EdgeInsets.all(10.0),
+      margin: EdgeInsets.only(top: 6.0),
+      padding: EdgeInsets.all(6.0),
       decoration: BoxDecoration(
         border:
             Border.all(width: 2, color: Color(0xFF2697FF).withOpacity(0.15)),
@@ -30,7 +40,7 @@ class StorageInfoCard extends StatelessWidget {
           SizedBox(
             height: 15,
             width: 15,
-            child: SvgPicture.asset(svgSrc),
+            child: SvgPicture.asset(widget.svgSrc),
           ),
           Expanded(
             child: Padding(
@@ -39,24 +49,29 @@ class StorageInfoCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    title,
+                    widget.title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                   Text(
-                    "$numOfFiles Files",
+                    "${widget.numOfFiles} Files",
                     style: Theme.of(context)
                         .textTheme
                         .bodySmall!
-                        .copyWith(color: Colors.white70),
+                        .copyWith(color: Colors.black),
                   ),
                 ],
               ),
             ),
           ),
           Checkbox(
-            value: false,
-            onChanged: (value) {},
+            value: checked,
+            onChanged: (value) {
+              setState(() {
+                checked = value!;
+              });
+              widget.function({"value": checked, "filter": widget.filter});
+            },
           )
         ],
       ),
