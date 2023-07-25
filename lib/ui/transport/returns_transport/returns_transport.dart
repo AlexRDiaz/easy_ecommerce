@@ -240,7 +240,19 @@ class _ReturnsTransportState extends State<ReturnsTransport> {
                               await showDialog(
                                   context: context,
                                   builder: (context) {
-                                    return ScannerPrintedTransport();
+                                    return ScannerPrintedTransport(
+                                      function: (value) async {
+                                        await showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return TransportReturn(
+                                                id: value['id'],
+                                                status: value['estado'],
+                                              );
+                                            });
+                                        await loadData();
+                                      },
+                                    );
                                   });
                               await loadData();
                             },
@@ -265,7 +277,20 @@ class _ReturnsTransportState extends State<ReturnsTransport> {
                               await showDialog(
                                   context: context,
                                   builder: (context) {
-                                    return ScannerPrintedTransport();
+                                    return ScannerPrintedTransport(
+                                      function: (value) async {
+                                        await showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return TransportReturn(
+                                                id: value['id'].toString(),
+                                                status:
+                                                    value['estado'].toString(),
+                                              );
+                                            });
+                                        await loadData();
+                                      },
+                                    );
                                   });
                               await loadData();
                             },
@@ -463,6 +488,7 @@ class _ReturnsTransportState extends State<ReturnsTransport> {
                   data.length,
                   (index) {
                     Color rowColor = Colors.black;
+
                     return DataRow(
                       // onSelectChanged: (bool? selected) {},
                       cells: [
@@ -489,7 +515,8 @@ class _ReturnsTransportState extends State<ReturnsTransport> {
                             Text(
                               "${data[index]['attributes']['Name_Comercial']}-${data[index]['attributes']['NumeroOrden']}",
                               style: TextStyle(
-                                color: rowColor,
+                                color: getColor(data[index]['attributes']
+                                    ['Estado_Devolucion']),
                               ),
                             ),
                             onTap: () {}),
@@ -857,5 +884,26 @@ class _ReturnsTransportState extends State<ReturnsTransport> {
         }
       });
     }
+  }
+
+  Color getColor(returnStatus) {
+    Color color = Colors.black;
+    switch (returnStatus) {
+      case "PENDIENTE":
+        color = Colors.red;
+        break;
+      case "ENTREGADO EN OFICINA":
+        color = Colors.lightBlue;
+        break;
+      case "DEVOLUCION EN RUTA":
+        color = Color.fromARGB(255, 8, 61, 153);
+        break;
+      case "EN BODEGA":
+        color = Colors.yellow;
+        break;
+      default:
+    }
+
+    return color;
   }
 }

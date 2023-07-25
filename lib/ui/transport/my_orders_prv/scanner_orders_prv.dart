@@ -32,21 +32,31 @@ class _ScannerOrdersPrvState extends State<ScannerOrdersPrv> {
               child: BarcodeKeyboardListener(
                 bufferDuration: Duration(milliseconds: 200),
                 onBarcodeScanned: (barcode) async {
+                  barcode = "20381";
                   if (!visible) return;
                   getLoadingModal(context, false);
 
-                  var response = await Connections()
-                      .updateReviewStatus(barcode.toString());
-
                   var responseOrder = await Connections().getOrderByID(barcode);
+                  var m = responseOrder['attributes']['sub_ruta'];
+                  if (responseOrder['attributes']['sub_ruta']['data'] != null) {
+                    var response = await Connections()
+                        .updateReviewStatus(barcode.toString());
 
-                  setState(() {
-                    _barcode =
-                        "${responseOrder['attributes']['Name_Comercial']}-${responseOrder['attributes']['NumeroOrden']}";
-                    _operador = responseOrder['attributes']['operadore']['data']
-                            ['attributes']['user']['data']['attributes']
-                        ['username'];
-                  });
+                    setState(() {
+                      _barcode =
+                          "${responseOrder['attributes']['Name_Comercial']}-${responseOrder['attributes']['NumeroOrden']}";
+                      _operador = responseOrder['attributes']['operadore']
+                              ['data']['attributes']['user']['data']
+                          ['attributes']['username'];
+                    });
+                  } else {
+                    setState(() {
+                      _barcode =
+                          "${responseOrder['attributes']['Name_Comercial']}-${responseOrder['attributes']['NumeroOrden']}";
+                      _operador = "RUTA NO ASIGNADA";
+                    });
+                  }
+
                   Navigator.pop(context);
                 },
                 child: Column(

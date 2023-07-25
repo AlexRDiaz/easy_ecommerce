@@ -1825,7 +1825,7 @@ class Connections {
   Future getOrderByID(id) async {
     var request = await http.get(
       Uri.parse(
-          "$server/api/pedidos-shopifies/$id?populate=operadore&populate=operadore.user"),
+          "$server/api/pedidos-shopifies/$id?populate=operadore&populate=operadore.user&populate=sub_ruta"),
       headers: {'Content-Type': 'application/json'},
     );
     var response = await request.body;

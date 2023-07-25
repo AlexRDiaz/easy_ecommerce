@@ -6,7 +6,8 @@ import 'package:frontend/ui/widgets/loading.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 class ScannerPrintedTransport extends StatefulWidget {
-  const ScannerPrintedTransport({super.key});
+  final Function(dynamic) function;
+  const ScannerPrintedTransport({super.key, required this.function});
 
   @override
   State<ScannerPrintedTransport> createState() =>
@@ -45,13 +46,19 @@ class _ScannerPrintedTransportState extends State<ScannerPrintedTransport> {
                       _barcode =
                           "${responseOrder['attributes']['Name_Comercial']}-${responseOrder['attributes']['NumeroOrden']}";
                     });
+
+                    Navigator.pop(context);
+                    widget.function({
+                      'id': barcode,
+                      'estado': responseOrder['attributes']['Estado_Devolucion']
+                    });
                   } else {
                     setState(() {
                       _barcode =
                           "No se puede alterar el pedido con código ${responseOrder['attributes']['Name_Comercial']}-${responseOrder['attributes']['NumeroOrden']}";
                     });
+                    Navigator.pop(context);
                   }
-                  Navigator.pop(context);
                 },
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
