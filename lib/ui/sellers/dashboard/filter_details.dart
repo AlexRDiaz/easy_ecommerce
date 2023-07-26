@@ -68,7 +68,7 @@ class _FilterDetailsState extends State<FilterDetails> {
         children: [
           Expanded(
             child: Container(
-              padding: EdgeInsets.only(left: 15, right: 20, bottom: 20),
+              padding: EdgeInsets.only(left: 15, right: 15, bottom: 20),
               child: InputDecorator(
                 decoration: InputDecoration(
                   labelText: 'Calculo de valores',
@@ -87,8 +87,8 @@ class _FilterDetailsState extends State<FilterDetails> {
                       itemCount: demoMyFiles.length,
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 4,
-                        crossAxisSpacing: 16.0,
-                        mainAxisSpacing: 16.0,
+                        crossAxisSpacing: 7.0,
+                        mainAxisSpacing: 7.0,
                         childAspectRatio: _size.width < 1400 ? 1.0 : 1.3,
                       ),
                       itemBuilder: (context, index) =>

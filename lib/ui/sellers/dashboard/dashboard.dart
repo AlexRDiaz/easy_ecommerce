@@ -1,10 +1,7 @@
 import 'package:calendar_date_picker2/calendar_date_picker2.dart';
-import 'package:d_chart/d_chart.dart';
 import 'package:data_table_2/data_table_2.dart';
-import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:frontend/connections/connections.dart';
 import 'package:frontend/helpers/responsive.dart';
 import 'package:frontend/main.dart';
@@ -175,19 +172,6 @@ class _DashBoardSellersState extends State<DashBoardSellers> {
       responseOperator = await Connections().getAllOperators();
     }
 
-    // for (var i = 0; i < responseTransports.length; i++) {
-    //   setState(() {
-    //     transports.add(
-    //         '${responseTransports[i]['attributes']['Nombre']}-${responseTransports[i]['id']}');
-    //   });
-    // }
-    // for (var i = 0; i < responseOperator.length; i++) {
-    //   setState(() {
-    //     operators.add(
-    //         '${responseOperator[i]['username']}-${responseOperator[i]['operadore'] != null ? responseOperator[i]['operadore']['id'] : '0'}');
-    //   });
-    // }
-
     Future.delayed(Duration(milliseconds: 500), () {
       Navigator.pop(context);
     });
@@ -235,7 +219,7 @@ class _DashBoardSellersState extends State<DashBoardSellers> {
             child: Column(
       children: [
         Container(
-          padding: EdgeInsets.all(15),
+          padding: EdgeInsets.only(left: 20, right: 15, top: 20, bottom: 20),
           child: InputDecorator(
             decoration: InputDecoration(
               labelText: 'Configuraciones',
@@ -250,703 +234,283 @@ class _DashBoardSellersState extends State<DashBoardSellers> {
             ]),
           ),
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Container(
-                padding: EdgeInsets.only(left: 20, bottom: 20),
-                child: InputDecorator(
-                  decoration: InputDecoration(
-                    labelText: 'Estados de entrega',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                  ),
+        responsive(
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
                   child: Container(
-                    height: 550,
-                    width: 600,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            children: filters
-                                .map((elemento) => FilterInfoCard(
-                                      svgSrc: elemento.svgSrc!,
-                                      title: elemento.title!,
-                                      filter: elemento.filter!,
-                                      color: elemento.color!,
-                                      details: addTableRows,
-                                      percentage: elemento.percentage!,
-                                      numOfFiles: elemento.numOfFiles!,
-                                      function: changeValue,
-                                    ))
-                                .toList(),
-                          ),
+                    height: MediaQuery.of(context).size.height * 0.73,
+                    padding: EdgeInsets.only(left: 20),
+                    child: InputDecorator(
+                      decoration: InputDecoration(
+                        labelText: 'Estados de entrega',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
                         ),
-                        Expanded(
-                          child: Chart(
-                            sections: sections,
-                            total: calculatetotal(),
-                          ),
+                      ),
+                      child: Container(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                children: filters
+                                    .map((elemento) => FilterInfoCard(
+                                          svgSrc: elemento.svgSrc!,
+                                          title: elemento.title!,
+                                          filter: elemento.filter!,
+                                          color: elemento.color!,
+                                          details: addTableRows,
+                                          percentage: elemento.percentage!,
+                                          numOfFiles: elemento.numOfFiles!,
+                                          function: changeValue,
+                                        ))
+                                    .toList(),
+                              ),
+                            ),
+                            Chart(
+                              sections: sections,
+                              total: calculatetotal(),
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
-              ),
+                Expanded(
+                    child: Column(
+                  children: [
+                    FilterDetails(
+                        total: totalValoresRecibidos,
+                        costoEntregas: costoTransportadora,
+                        costoDevoluciones: costoDevoluciones,
+                        utilidades: utilidades),
+                    dataTableDetails()
+                  ],
+                )),
+              ],
             ),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.start,
+            //   crossAxisAlignment: CrossAxisAlignment.start,
+            //   children: [
+            //     Expanded(
+            //       child: Container(
+            //         height: MediaQuery.of(context).size.height * 0.73,
+            //         padding: EdgeInsets.only(left: 20),
+            //         child: InputDecorator(
+            //           decoration: InputDecoration(
+            //             labelText: 'Estados de entrega',
+            //             border: OutlineInputBorder(
+            //               borderRadius: BorderRadius.circular(10.0),
+            //             ),
+            //           ),
+            //           child: Container(
+            //             child: Row(
+            //               crossAxisAlignment: CrossAxisAlignment.center,
+            //               children: [
+            //                 Chart(
+            //                   sections: sections,
+            //                   total: calculatetotal(),
+            //                 ),
+            //               ],
+            //             ),
+            //           ),
+            //         ),
+            //       ),
+            //     ),
+            //   ],
+            // ),
+
+            //  Text("hola mundo"),
+
             Expanded(
-                child: Column(
-              children: [
-                FilterDetails(
-                    total: totalValoresRecibidos,
-                    costoEntregas: costoTransportadora,
-                    costoDevoluciones: costoDevoluciones,
-                    utilidades: utilidades),
-                Container(
-                  height: 400,
-                  width: 690,
-                  child: InputDecorator(
-                    decoration: InputDecoration(
-                      labelText: 'Datos',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
+              child: ListView(
+                padding: const EdgeInsets.all(8),
+                children: <Widget>[
+                  Container(
+                    padding: EdgeInsets.only(left: 20, right: 14, bottom: 20),
+                    child: InputDecorator(
+                      decoration: InputDecoration(
+                        labelText: 'Estados de entrega',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                      ),
+                      child: Container(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                children: filters
+                                    .map((elemento) => FilterInfoCard(
+                                          svgSrc: elemento.svgSrc!,
+                                          title: elemento.title!,
+                                          filter: elemento.filter!,
+                                          color: elemento.color!,
+                                          details: addTableRows,
+                                          percentage: elemento.percentage!,
+                                          numOfFiles: elemento.numOfFiles!,
+                                          function: changeValue,
+                                        ))
+                                    .toList(),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                    child: DataTable2(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(4)),
-                          border: Border.all(color: Colors.blueGrey),
-                        ),
-                        headingRowHeight: 63,
-                        headingTextStyle: const TextStyle(
-                            fontWeight: FontWeight.bold, color: Colors.black),
-                        dataTextStyle: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black),
-                        columnSpacing: 12,
-                        horizontalMargin: 12,
-                        minWidth: 200,
-                        columns: [
-                          DataColumn2(
-                            label: Text('Fecha Entrega'),
-                            size: ColumnSize.S,
-                          ),
-                          DataColumn2(
-                            label: Text('Código'),
-                            size: ColumnSize.S,
-                          ),
-                          DataColumn2(
-                            label: Text('Precio'),
-                            size: ColumnSize.S,
-                          ),
-                          DataColumn2(
-                            label: Text('Status'),
-                            size: ColumnSize.S,
-                          ),
-                          DataColumn2(
-                            label: Text('Comentario'),
-                            size: ColumnSize.S,
-                          ),
-                        ],
-                        rows: List<DataRow>.generate(tableData.length, (index) {
-                          Color rowColor = Colors.black;
-
-                          return DataRow(cells: [
-                            DataCell(
-                                Text(
-                                  tableData[index]['Fecha_Entrega'],
-                                  style: TextStyle(
-                                    color: rowColor,
-                                  ),
-                                ),
-                                onTap: () {}),
-                            DataCell(
-                                Text(
-                                  '${tableData[index]['Name_Comercial'].toString()}-${tableData[index]['NumeroOrden'].toString()}',
-                                  style: TextStyle(
-                                    color: rowColor,
-                                  ),
-                                ),
-                                onTap: () {}),
-                            DataCell(
-                                Text(
-                                  tableData[index]['PrecioTotal'],
-                                  style: TextStyle(
-                                    color: rowColor,
-                                  ),
-                                ),
-                                onTap: () {}),
-                            DataCell(
-                                Text(
-                                  tableData[index]['Status'].toString(),
-                                  style: TextStyle(
-                                    color: rowColor,
-                                  ),
-                                ),
-                                onTap: () {}),
-                            DataCell(
-                                Text(
-                                  tableData[index]['Comentario'],
-                                  style: TextStyle(
-                                    color: rowColor,
-                                  ),
-                                ),
-                                onTap: () {}),
-                          ]);
-                        })),
                   ),
-                )
-              ],
-            )),
-          ],
-        )
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          height: MediaQuery.of(context).size.height * 0.53,
+                          padding:
+                              EdgeInsets.only(left: 18, right: 13, bottom: 20),
+                          child: InputDecorator(
+                            decoration: InputDecoration(
+                              labelText: 'Porcentajes por estado',
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                            ),
+                            child: StreamBuilder<Object>(
+                                stream: null,
+                                builder: (context, snapshot) {
+                                  return Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Chart(
+                                        sections: sections,
+                                        total: calculatetotal(),
+                                      ),
+                                    ],
+                                  );
+                                }),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  FilterDetails(
+                      total: totalValoresRecibidos,
+                      costoEntregas: costoTransportadora,
+                      costoDevoluciones: costoDevoluciones,
+                      utilidades: utilidades),
+                  dataTableDetails()
+                ],
+              ),
+            ),
+            context)
       ],
     )));
   }
 
-  // DropdownButtonHideUnderline _sellersTransport(BuildContext context) {
-  //   return DropdownButtonHideUnderline(
-  //     child: DropdownButton2<String>(
-  //       dropdownWidth: 500,
-  //       buttonWidth: 500,
-  //       isExpanded: true,
-  //       hint: Text(
-  //         'Transporte',
-  //         style: TextStyle(
-  //             fontSize: 14,
-  //             color: Theme.of(context).hintColor,
-  //             fontWeight: FontWeight.bold),
-  //       ),
-  //       items: transports
-  //           .map((item) => DropdownMenuItem(
-  //                 value: item,
-  //                 child: Row(
-  //                   children: [
-  //                     Flexible(
-  //                       child: Text(
-  //                         item.split('-')[0],
-  //                         style: const TextStyle(
-  //                             fontSize: 14, fontWeight: FontWeight.bold),
-  //                       ),
-  //                     ),
-  //                     SizedBox(
-  //                       width: 5,
-  //                     ),
-  //                     GestureDetector(
-  //                         onTap: () async {
-  //                           setState(() {
-  //                             idTransport = "";
-  //                             selectValueTransport = null;
-  //                             selectValueOperator = null;
-  //                           });
-  //                           await loadConfigs();
-  //                         },
-  //                         child: Icon(Icons.close))
-  //                   ],
-  //                 ),
-  //               ))
-  //           .toList(),
-  //       value: selectValueTransport,
-  //       onChanged: (value) async {
-  //         setState(() {
-  //           selectValueTransport = value as String;
-  //           idTransport = value.split('-')[1];
-  //           selectValueOperator = null;
-  //         });
-  //         arrayFiltersAnd.add({"transportadora": idTransport});
-  //         await loadConfigs();
-  //       },
-
-  //       //This to clear the search value when you close the menu
-  //       onMenuStateChange: (isOpen) {
-  //         if (!isOpen) {}
-  //       },
-  //     ),
-  //   );
-  // }
-
-  // DropdownButtonHideUnderline _operators(BuildContext context) {
-  //   return DropdownButtonHideUnderline(
-  //     child: DropdownButton2<String>(
-  //       dropdownWidth: 500,
-  //       buttonWidth: 500,
-  //       isExpanded: true,
-  //       hint: Text(
-  //         'Operadores',
-  //         style: TextStyle(
-  //             fontSize: 14,
-  //             color: Theme.of(context).hintColor,
-  //             fontWeight: FontWeight.bold),
-  //       ),
-  //       items: operators
-  //           .map((item) => DropdownMenuItem(
-  //                 value: item,
-  //                 child: Row(
-  //                   children: [
-  //                     Flexible(
-  //                       child: Text(
-  //                         item.split('-')[0],
-  //                         style: const TextStyle(
-  //                             fontSize: 14, fontWeight: FontWeight.bold),
-  //                       ),
-  //                     ),
-  //                     SizedBox(
-  //                       width: 5,
-  //                     ),
-  //                     GestureDetector(
-  //                         onTap: () async {
-  //                           setState(() {
-  //                             selectValueOperator = null;
-  //                           });
-  //                         },
-  //                         child: Icon(Icons.close))
-  //                   ],
-  //                 ),
-  //               ))
-  //           .toList(),
-  //       value: selectValueOperator,
-  //       onChanged: (value) async {
-  //         setState(() {
-  //           selectValueOperator = value as String;
-  //         });
-  //         print("operador" + selectValueOperator.toString());
-  //         arrayFiltersAnd.add({
-  //           "operadore": {"id": value!.split('-')[1]}
-  //         });
-  //         await loadConfigs();
-  //       },
-
-  //       //This to clear the search value when you close the menu
-  //       onMenuStateChange: (isOpen) {
-  //         if (!isOpen) {}
-  //       },
-  //     ),
-  //   );
-  // }
-
-  // Container _desde(BuildContext context) {
-  //   return Container(
-  //       width: 500,
-  //       child: Wrap(
-  //         children: [
-  //           TextButton(
-  //               onPressed: () async {
-  //                 setState(() {});
-  //                 var results = await showCalendarDatePicker2Dialog(
-  //                   context: context,
-  //                   config: CalendarDatePicker2WithActionButtonsConfig(
-  //                     dayTextStyle: TextStyle(fontWeight: FontWeight.bold),
-  //                     yearTextStyle: TextStyle(fontWeight: FontWeight.bold),
-  //                     selectedYearTextStyle:
-  //                         TextStyle(fontWeight: FontWeight.bold),
-  //                     weekdayLabelTextStyle:
-  //                         TextStyle(fontWeight: FontWeight.bold),
-  //                   ),
-  //                   dialogSize: const Size(325, 400),
-  //                   value: _dates,
-  //                   borderRadius: BorderRadius.circular(15),
-  //                 );
-  //                 setState(() {
-  //                   if (results != null) {
-  //                     String fechaOriginal = results![0]
-  //                         .toString()
-  //                         .split(" ")[0]
-  //                         .split('-')
-  //                         .reversed
-  //                         .join('-')
-  //                         .replaceAll("-", "/");
-  //                     List<String> componentes = fechaOriginal.split('/');
-
-  //                     String dia = int.parse(componentes[0]).toString();
-  //                     String mes = int.parse(componentes[1]).toString();
-  //                     String anio = componentes[2];
-
-  //                     String nuevaFecha = "$dia/$mes/$anio";
-  //                     setState(() {
-  //                       startDate = nuevaFecha;
-  //                     });
-  //                   }
-  //                 });
-  //               },
-  //               child: Text(
-  //                 "DESDE",
-  //                 style: TextStyle(fontWeight: FontWeight.bold),
-  //               )),
-  //           SizedBox(
-  //             width: 10,
-  //           ),
-  //           Text(
-  //             "Fecha: $startDate",
-  //             style: TextStyle(fontWeight: FontWeight.bold),
-  //           )
-  //         ],
-  //       ));
-  // }
-
-  // Container _hasta(BuildContext context) {
-  //   return Container(
-  //       width: 500,
-  //       child: Wrap(
-  //         children: [
-  //           TextButton(
-  //               onPressed: () async {
-  //                 setState(() {});
-  //                 var results = await showCalendarDatePicker2Dialog(
-  //                   context: context,
-  //                   config: CalendarDatePicker2WithActionButtonsConfig(
-  //                     dayTextStyle: TextStyle(fontWeight: FontWeight.bold),
-  //                     yearTextStyle: TextStyle(fontWeight: FontWeight.bold),
-  //                     selectedYearTextStyle:
-  //                         TextStyle(fontWeight: FontWeight.bold),
-  //                     weekdayLabelTextStyle:
-  //                         TextStyle(fontWeight: FontWeight.bold),
-  //                   ),
-  //                   dialogSize: const Size(325, 400),
-  //                   value: _dates,
-  //                   borderRadius: BorderRadius.circular(15),
-  //                 );
-  //                 setState(() {
-  //                   if (results != null) {
-  //                     String fechaOriginal = results![0]
-  //                         .toString()
-  //                         .split(" ")[0]
-  //                         .split('-')
-  //                         .reversed
-  //                         .join('-')
-  //                         .replaceAll("-", "/");
-  //                     List<String> componentes = fechaOriginal.split('/');
-
-  //                     String dia = int.parse(componentes[0]).toString();
-  //                     String mes = int.parse(componentes[1]).toString();
-  //                     String anio = componentes[2];
-
-  //                     String nuevaFecha = "$dia/$mes/$anio";
-  //                     setState(() {
-  //                       endDate = nuevaFecha;
-  //                     });
-  //                   }
-  //                 });
-  //               },
-  //               child: Text(
-  //                 "HASTA",
-  //                 style: TextStyle(fontWeight: FontWeight.bold),
-  //               )),
-  //           SizedBox(
-  //             width: 10,
-  //           ),
-  //           Text(
-  //             "Fecha: $endDate",
-  //             style: TextStyle(fontWeight: FontWeight.bold),
-  //           )
-  //         ],
-  //       ));
-  // }
-
-  Container _checks() {
+  Container dataTableDetails() {
     return Container(
-      width: 500,
-      child: Wrap(
-        children: [
-          Container(
-            width: 300,
-            child: Row(
-              children: [
-                Checkbox(
-                    value: entregado,
-                    onChanged: (v) {
-                      setState(() {
-                        if (v!) {
-                          entregado = true;
-                          checks.add("ENTREGADO");
-                        } else {
-                          entregado = false;
-
-                          checks.remove("ENTREGADO");
-                        }
-                      });
-                    }),
-                SizedBox(
-                  width: 5,
-                ),
-                Flexible(
-                    child: Text(
-                  "Entregado",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                ))
-              ],
-            ),
+      height: MediaQuery.of(context).size.height * 0.48,
+      width: 690,
+      padding: EdgeInsets.only(left: 15, right: 15),
+      child: InputDecorator(
+        decoration: InputDecoration(
+          labelText: 'Datos',
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
           ),
-          Container(
-            width: 300,
-            child: Row(
-              children: [
-                Checkbox(
-                    value: noEntregado,
-                    onChanged: (v) {
-                      setState(() {
-                        if (v!) {
-                          noEntregado = true;
-                          checks.add("NO ENTREGADO");
-                        } else {
-                          noEntregado = false;
-
-                          checks.remove("NO ENTREGADO");
-                        }
-                      });
-                    }),
-                SizedBox(
-                  width: 5,
-                ),
-                Flexible(
-                    child: Text(
-                  "No Entregado",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                ))
-              ],
+        ),
+        child: DataTable2(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: const BorderRadius.all(Radius.circular(4)),
+              border: Border.all(color: Colors.blueGrey),
             ),
-          ),
-          Container(
-            width: 300,
-            child: Row(
-              children: [
-                Checkbox(
-                    value: novedad,
-                    onChanged: (v) {
-                      setState(() {
-                        if (v!) {
-                          novedad = true;
-                          checks.add("NOVEDAD");
-                        } else {
-                          novedad = false;
+            headingRowHeight: 63,
+            headingTextStyle: const TextStyle(
+                fontWeight: FontWeight.bold, color: Colors.black),
+            dataTextStyle: const TextStyle(
+                fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black),
+            columnSpacing: 12,
+            horizontalMargin: 12,
+            minWidth: 200,
+            columns: [
+              DataColumn2(
+                label: Text('Fecha Entrega'),
+                size: ColumnSize.S,
+              ),
+              DataColumn2(
+                label: Text('Código'),
+                size: ColumnSize.S,
+              ),
+              DataColumn2(
+                label: Text('Precio'),
+                size: ColumnSize.S,
+              ),
+              DataColumn2(
+                label: Text('Status'),
+                size: ColumnSize.S,
+              ),
+              DataColumn2(
+                label: Text('Comentario'),
+                size: ColumnSize.S,
+              ),
+            ],
+            rows: List<DataRow>.generate(tableData.length, (index) {
+              Color rowColor = Colors.black;
 
-                          checks.remove("NOVEDAD");
-                        }
-                      });
-                    }),
-                SizedBox(
-                  width: 5,
-                ),
-                Flexible(
-                    child: Text(
-                  "Novedad",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                ))
-              ],
-            ),
-          ),
-          Container(
-            width: 300,
-            child: Row(
-              children: [
-                Checkbox(
-                    value: reagendado,
-                    onChanged: (v) {
-                      setState(() {
-                        if (v!) {
-                          reagendado = true;
-                          checks.add("REAGENDADO");
-                        } else {
-                          reagendado = false;
-
-                          checks.remove("REAGENDADO");
-                        }
-                      });
-                    }),
-                SizedBox(
-                  width: 5,
-                ),
-                Flexible(
-                    child: Text(
-                  "Reagendado",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                ))
-              ],
-            ),
-          ),
-          Container(
-            width: 300,
-            child: Row(
-              children: [
-                Checkbox(
-                    value: enRuta,
-                    onChanged: (v) {
-                      setState(() {
-                        if (v!) {
-                          enRuta = true;
-                          checks.add("EN RUTA");
-                        } else {
-                          enRuta = false;
-
-                          checks.remove("EN RUTA");
-                        }
-                      });
-                    }),
-                SizedBox(
-                  width: 5,
-                ),
-                Flexible(
-                    child: Text(
-                  "En Ruta",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                ))
-              ],
-            ),
-          ),
-          Container(
-            width: 300,
-            child: Row(
-              children: [
-                Checkbox(
-                    value: enOficina,
-                    onChanged: (v) {
-                      setState(() {
-                        if (v!) {
-                          enOficina = true;
-                          checks.add("EN OFICINA");
-                        } else {
-                          enOficina = false;
-
-                          checks.remove("EN OFICINA");
-                        }
-                      });
-                    }),
-                SizedBox(
-                  width: 5,
-                ),
-                Flexible(
-                    child: Text(
-                  "En Oficina",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                ))
-              ],
-            ),
-          ),
-          Container(
-            width: 300,
-            child: Row(
-              children: [
-                Checkbox(
-                    value: programado,
-                    onChanged: (v) {
-                      setState(() {
-                        if (v!) {
-                          programado = true;
-                          checks.add("PEDIDO PROGRAMADO");
-                        } else {
-                          programado = false;
-
-                          checks.remove("PEDIDO PROGRAMADO");
-                        }
-                      });
-                    }),
-                SizedBox(
-                  width: 5,
-                ),
-                Flexible(
-                    child: Text(
-                  "P. Programado",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                ))
-              ],
-            ),
-          )
-        ],
+              return DataRow(cells: [
+                DataCell(
+                    Text(
+                      tableData[index]['Fecha_Entrega'],
+                      style: TextStyle(
+                        color: rowColor,
+                      ),
+                    ),
+                    onTap: () {}),
+                DataCell(
+                    Text(
+                      '${tableData[index]['Name_Comercial'].toString()}-${tableData[index]['NumeroOrden'].toString()}',
+                      style: TextStyle(
+                        color: rowColor,
+                      ),
+                    ),
+                    onTap: () {}),
+                DataCell(
+                    Text(
+                      tableData[index]['PrecioTotal'],
+                      style: TextStyle(
+                        color: rowColor,
+                      ),
+                    ),
+                    onTap: () {}),
+                DataCell(
+                    Text(
+                      tableData[index]['Status'].toString(),
+                      style: TextStyle(
+                        color: rowColor,
+                      ),
+                    ),
+                    onTap: () {}),
+                DataCell(
+                    Text(
+                      tableData[index]['Comentario'],
+                      style: TextStyle(
+                        color: rowColor,
+                      ),
+                    ),
+                    onTap: () {}),
+              ]);
+            })),
       ),
     );
   }
 
-  generatePorcent(measure) {
-    double suma = 0.0;
-    for (var i = 0; i < dataChart.length; i++) {
-      suma += dataChart[i]['measure'];
-    }
-
-    double temp = ((measure * 100) / suma);
-    return temp.toStringAsFixed(2);
-  }
-
-  // fechaFinFechaIni() {
-  //   return [
-  //     Row(
-  //       children: [
-  //         Text(startDate),
-  //         IconButton(
-  //           icon: const Icon(Icons.calendar_month),
-  //           onPressed: () async {
-  //             startDate = await OpenCalendar();
-  //           },
-  //         ),
-  //         const Text(' - '),
-  //         Text(
-  //           endDate,
-  //         ),
-  //         IconButton(
-  //           icon: Icon(Icons.calendar_month),
-  //           onPressed: () async {
-  //             endDate = await OpenCalendar();
-  //           },
-  //         ),
-  //         ElevatedButton(
-  //             style: const ButtonStyle(
-  //                 backgroundColor: MaterialStatePropertyAll(
-  //                     Color.fromARGB(255, 67, 67, 67))),
-  //             onPressed: () async {
-  //               await applyDateFilter();
-  //             },
-  //             child: Text('Filtrar'))
-  //       ],
-  //     ),
-  //   ];
-  // }
-
-  // Future<String> OpenCalendar() async {
-  //   String nuevaFecha = "";
-
-  //   var results = await showCalendarDatePicker2Dialog(
-  //     context: context,
-  //     config: CalendarDatePicker2WithActionButtonsConfig(
-  //       dayTextStyle: TextStyle(fontWeight: FontWeight.bold),
-  //       yearTextStyle: TextStyle(fontWeight: FontWeight.bold),
-  //       selectedYearTextStyle: TextStyle(fontWeight: FontWeight.bold),
-  //       weekdayLabelTextStyle: TextStyle(fontWeight: FontWeight.bold),
-  //     ),
-  //     dialogSize: const Size(325, 400),
-  //     value: _dates,
-  //     borderRadius: BorderRadius.circular(15),
-  //   );
-
-  //   setState(() {
-  //     if (results != null) {
-  //       String fechaOriginal = results![0]
-  //           .toString()
-  //           .split(" ")[0]
-  //           .split('-')
-  //           .reversed
-  //           .join('-')
-  //           .replaceAll("-", "/");
-  //       List<String> componentes = fechaOriginal.split('/');
-
-  //       String dia = int.parse(componentes[0]).toString();
-  //       String mes = int.parse(componentes[1]).toString();
-  //       String anio = componentes[2];
-
-  //       nuevaFecha = "$dia/$mes/$anio";
-  //     }
-  //   });
-  //   return nuevaFecha;
-  // }
-
   Future<void> applyDateFilter() async {
-    // isFirst = true;
-    // arrayDateRanges = [];
-    // arrayFiltersAndEq = [];
     if (startDate != '' && endDate != '') {
       if (compareDates(startDate, endDate)) {
         var aux = endDate;
@@ -1046,12 +610,10 @@ class _DashBoardSellersState extends State<DashBoardSellers> {
                 });
               },
               child: Text(
-                "DESDE: ${sharedPrefs!.getString("dateDesdeTransportHistorial")}",
+                "${sharedPrefs!.getString("dateDesdeTransportHistorial")}",
                 style: TextStyle(fontWeight: FontWeight.bold),
               )),
-          SizedBox(
-            width: 10,
-          ),
+          Text("-"),
           TextButton(
               onPressed: () async {
                 var results = await showCalendarDatePicker2Dialog(
@@ -1091,7 +653,7 @@ class _DashBoardSellersState extends State<DashBoardSellers> {
                 });
               },
               child: Text(
-                "HASTA: ${sharedPrefs!.getString("dateHastaTransportHistorial")}",
+                "${sharedPrefs!.getString("dateHastaTransportHistorial")}",
                 style: TextStyle(fontWeight: FontWeight.bold),
               )),
           SizedBox(
@@ -1155,33 +717,7 @@ class _DashBoardSellersState extends State<DashBoardSellers> {
     double costoEntregas = 0;
     double devol = 0;
 
-    // costoDeEntregas = 0;
-    // devoluciones = 0;
-
     for (var element in data) {
-      // element['attributes']['PrecioTotal'] =
-      //     element['attributes']['PrecioTotal'].replaceAll(',', '.');
-      // if (element['attributes']['users'][0]['vendedores'][0]['CostoEnvio'] !=
-      //     null) {
-      //   element['attributes']['users'][0]['vendedores'][0]['CostoEnvio'] =
-      //       element['attributes']['users'][0]['vendedores'][0]['CostoEnvio']
-      //           .replaceAll(',', '.');
-      // } else {
-      //   element['attributes']['users'][0]['vendedores'][0]['CostoEnvio'] = 0;
-      // }
-
-      // if (element['attributes']['users'][0]['vendedores'][0]
-      //         ['CostoDevolucion'] !=
-      //     null) {
-      //   element['attributes']['users'][0]['vendedores'][0]['CostoDevolucion'] =
-      //       element['attributes']['users'][0]['vendedores'][0]
-      //               ['CostoDevolucion']
-      //           .replaceAll(',', '.');
-      // } else {
-      //   element['attributes']['users'][0]['vendedores'][0]['CostoDevolucion'] =
-      //       0;
-      // }
-
       if (element['Status'] == 'ENTREGADO') {
         print("precioTotal" + element['PrecioTotal']);
         element['PrecioTotal'] =
@@ -1198,7 +734,6 @@ class _DashBoardSellersState extends State<DashBoardSellers> {
                 ['vendedores'][0]['CostoEnvio']
             .toString()
             .replaceAll(',', '.');
-
         costoEntregas +=
             double.parse(element['users'][0]['vendedores'][0]['CostoEnvio']);
       }
@@ -1236,7 +771,6 @@ class _DashBoardSellersState extends State<DashBoardSellers> {
     if (value['value']) {
       for (var subFilter in subFilters) {
         if (value['filter'] == subFilter['title']) {
-          //  var m = subFilter["Total"];
           setState(() {
             sections.add({
               'color': subFilter['color'],

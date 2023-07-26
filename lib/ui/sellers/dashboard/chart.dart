@@ -16,14 +16,13 @@ class _ChartState extends State<Chart> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 200,
+    return Expanded(
       child: Stack(
         children: [
           PieChart(
             PieChartData(
-                sectionsSpace: 0,
-                centerSpaceRadius: 70,
+                sectionsSpace: 10,
+                centerSpaceRadius: 60,
                 startDegreeOffset: -90,
                 sections: generateChartData(),
                 pieTouchData: PieTouchData(
@@ -79,6 +78,7 @@ class _ChartState extends State<Chart> {
           color: Colors.amber,
           showTitle: false,
           value: 1.0,
+          radius: 30,
         ),
       );
     } else {
@@ -91,7 +91,7 @@ class _ChartState extends State<Chart> {
           color: sec['color'],
           value: sec['value'],
           title: '${(percentage * 100).toStringAsFixed(1)}%',
-          radius: 40,
+          radius: 30,
           showTitle: true,
           titleStyle: percentage * 100 < 5
               ? TextStyle(

@@ -32,8 +32,8 @@ class _FilterInfoCardState extends State<FilterInfoCard> {
     return GestureDetector(
       onTap: () => widget.details(widget.filter),
       child: Container(
-        margin: EdgeInsets.only(top: 10.0),
-        padding: EdgeInsets.all(10.0),
+        margin: EdgeInsets.only(top: 6.0),
+        padding: EdgeInsets.all(6.0),
         decoration: BoxDecoration(
           color: widget.color.withOpacity(0.45),
           border: Border.all(width: 2, color: widget.color.withOpacity(0.65)),
