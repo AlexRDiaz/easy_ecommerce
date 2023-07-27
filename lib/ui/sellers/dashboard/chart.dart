@@ -21,7 +21,7 @@ class _ChartState extends State<Chart> {
         children: [
           PieChart(
             PieChartData(
-                sectionsSpace: 10,
+                sectionsSpace: 2,
                 centerSpaceRadius: 60,
                 startDegreeOffset: -90,
                 sections: generateChartData(),

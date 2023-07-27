@@ -28,19 +28,15 @@ class FileInfoCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Container(
-                    padding: EdgeInsets.all(16.0 * 0.75),
-                    height: 40,
-                    width: 40,
-                    decoration: BoxDecoration(
-                      color: info.color!.withOpacity(0.1),
-                      borderRadius: const BorderRadius.all(Radius.circular(10)),
-                    ),
-                    child: SvgPicture.asset(
-                      info.svgSrc!,
-                      colorFilter:
-                          ColorFilter.mode(Colors.black, BlendMode.srcIn),
-                    ),
-                  ),
+                      padding: EdgeInsets.all(16.0 * 0.75),
+                      height: 40,
+                      width: 40,
+                      decoration: BoxDecoration(
+                        color: info.color!.withOpacity(0.1),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(10)),
+                      ),
+                      child: Icon(Icons.calculate)),
                   Icon(Icons.more_vert, color: Colors.white54)
                 ],
               ),

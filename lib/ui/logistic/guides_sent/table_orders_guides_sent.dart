@@ -233,6 +233,13 @@ class _TableOrdersGuidesSentState extends State<TableOrdersGuidesSent> {
                       },
                     ),
                     DataColumn2(
+                      label: Text('Fecha entrega'),
+                      size: ColumnSize.S,
+                      onSort: (columnIndex, ascending) {
+                        sortFuncFecha();
+                      },
+                    ),
+                    DataColumn2(
                       label: Text('Código'),
                       size: ColumnSize.M,
                       onSort: (columnIndex, ascending) {
@@ -412,6 +419,12 @@ class _TableOrdersGuidesSentState extends State<TableOrdersGuidesSent> {
                                 Text(data[index]['attributes']['pedido_fecha']
                                         ['data']['attributes']['Fecha']
                                     .toString()), onTap: () {
+                              getInfoModal(index);
+                            }),
+                            DataCell(
+                                Text(data[index]['attributes']
+                                        ['Fecha_Entrega'] ??
+                                    "".toString()), onTap: () {
                               getInfoModal(index);
                             }),
                             DataCell(

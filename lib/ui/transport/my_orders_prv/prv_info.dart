@@ -84,8 +84,7 @@ class _MyOrdersPRVInfoState extends State<MyOrdersPRVInfo> {
                                       context: context,
                                       builder: (context) {
                                         return SubRoutesModal(
-                                          idOrder:
-                                              widget.id,
+                                          idOrder: widget.id,
                                           someOrders: false,
                                         );
                                       });

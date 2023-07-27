@@ -60,7 +60,7 @@ class _FilterInfoCardState extends State<FilterInfoCard> {
                       overflow: TextOverflow.ellipsis,
                     ),
                     Text(
-                      "${widget.numOfFiles} Files",
+                      "${widget.numOfFiles} Registros",
                       style: Theme.of(context)
                           .textTheme
                           .bodySmall!

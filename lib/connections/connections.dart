@@ -34,6 +34,14 @@ class Connections {
             "role", decodeDataUser['roles_front']['Titulo'].toString());
 
         if (decodeDataUser['roles_front']['Titulo'].toString() == "VENDEDOR") {
+          sharedPrefs!.setString(
+            "dateDesdeVendedor",
+            "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}",
+          );
+          sharedPrefs!.setString(
+            "dateHastaVendedor",
+            "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}",
+          );
           sharedPrefs!.setString("idComercialMasterSeller",
               decodeDataUser['vendedores'][0]['Id_Master'].toString());
           sharedPrefs!.setString("idComercialMasterSellerPrincipal",
@@ -819,15 +827,15 @@ class Connections {
   }
 
   getOrdersForHistorialTransportByDates(List populate, List and) async {
-    print('start: ${sharedPrefs!.getString("dateDesdeTransportHistorial")}');
-    print('end: ${sharedPrefs!.getString("dateHastaTransportHistorial")}');
+    print('start: ${sharedPrefs!.getString("dateDesdeVendedor")}');
+    print('end: ${sharedPrefs!.getString("dateHastaVendedor")}');
 
     var request = await http.post(
         Uri.parse("$server/api/history/transport?pagination[limit]=-1"),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
-          "start": sharedPrefs!.getString("dateDesdeTransportHistorial"),
-          "end": sharedPrefs!.getString("dateHastaTransportHistorial"),
+          "start": sharedPrefs!.getString("dateDesdeVendedor"),
+          "end": sharedPrefs!.getString("dateHastaVendedor"),
           "populate": jsonEncode(populate),
           "and": jsonEncode(and)
         }));
@@ -1089,6 +1097,8 @@ class Connections {
                 "data": {
                   "Estado_Logistico": text,
                   "Estado_Interno": "CONFIRMADO",
+                  "Fecha_Entrega":
+                      "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}",
                   "Marca_Tiempo_Envio":
                       "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}"
                 }

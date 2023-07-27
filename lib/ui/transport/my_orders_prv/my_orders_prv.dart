@@ -184,6 +184,13 @@ class _MyOrdersPRVTransportState extends State<MyOrdersPRVTransport> {
                       },
                     ),
                     DataColumn2(
+                      label: Text('Fecha Entrega'),
+                      size: ColumnSize.S,
+                      onSort: (columnIndex, ascending) {
+                        sortFuncDate("Marca_Tiempo_Envio");
+                      },
+                    ),
+                    DataColumn2(
                       label: Text('Código'),
                       size: ColumnSize.S,
                       onSort: (columnIndex, ascending) {
@@ -310,6 +317,11 @@ class _MyOrdersPRVTransportState extends State<MyOrdersPRVTransport> {
                                     .toString()), onTap: () {
                               info(context, index);
                             }),
+                            DataCell(
+                                Text(data[index]['attributes']
+                                        ['Fecha_Entrega'] ??
+                                    "".toString()),
+                                onTap: () {}),
                             DataCell(
                                 Text(
                                     style: TextStyle(

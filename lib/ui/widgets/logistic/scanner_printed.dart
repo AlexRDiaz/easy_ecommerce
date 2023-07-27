@@ -32,6 +32,8 @@ class _ScannerPrintedState extends State<ScannerPrinted> {
               child: BarcodeKeyboardListener(
                 bufferDuration: Duration(milliseconds: 200),
                 onBarcodeScanned: (barcode) async {
+                  // barcode = "28659";
+
                   if (!visible) return;
                   getLoadingModal(context, false);
                   var response = await Connections()

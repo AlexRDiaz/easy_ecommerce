@@ -32,7 +32,6 @@ class _ScannerOrdersPrvState extends State<ScannerOrdersPrv> {
               child: BarcodeKeyboardListener(
                 bufferDuration: Duration(milliseconds: 200),
                 onBarcodeScanned: (barcode) async {
-                  barcode = "20381";
                   if (!visible) return;
                   getLoadingModal(context, false);
 

@@ -28,7 +28,7 @@ class _FilterDetailsState extends State<FilterDetails> {
   Widget build(BuildContext context) {
     List demoMyFiles = [
       CloudStorageInfo(
-        title: "Total ingresos",
+        title: "Total valores recibidos",
         numOfFiles: widget.total,
         svgSrc: "assets/icons/Documents.svg",
         // totalStorage: "\$ 923,23",

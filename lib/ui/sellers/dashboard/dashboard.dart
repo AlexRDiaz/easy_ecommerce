@@ -466,7 +466,9 @@ class _DashBoardSellersState extends State<DashBoardSellers> {
               return DataRow(cells: [
                 DataCell(
                     Text(
-                      tableData[index]['Fecha_Entrega'],
+                      tableData[index]['Fecha_Entrega'] != null
+                          ? tableData[index]['Fecha_Entrega']
+                          : "",
                       style: TextStyle(
                         color: rowColor,
                       ),
@@ -498,7 +500,9 @@ class _DashBoardSellersState extends State<DashBoardSellers> {
                     onTap: () {}),
                 DataCell(
                     Text(
-                      tableData[index]['Comentario'],
+                      tableData[index]['Comentario'] != null
+                          ? tableData[index]['Comentario']
+                          : "",
                       style: TextStyle(
                         color: rowColor,
                       ),
@@ -604,13 +608,12 @@ class _DashBoardSellersState extends State<DashBoardSellers> {
 
                     String nuevaFecha = "$dia/$mes/$anio";
 
-                    sharedPrefs!
-                        .setString("dateDesdeTransportHistorial", nuevaFecha);
+                    sharedPrefs!.setString("dateDesdeVendedor", nuevaFecha);
                   }
                 });
               },
               child: Text(
-                "${sharedPrefs!.getString("dateDesdeTransportHistorial")}",
+                "${sharedPrefs!.getString("dateDesdeVendedor")}",
                 style: TextStyle(fontWeight: FontWeight.bold),
               )),
           Text("-"),
@@ -647,13 +650,12 @@ class _DashBoardSellersState extends State<DashBoardSellers> {
 
                     String nuevaFecha = "$dia/$mes/$anio";
 
-                    sharedPrefs!
-                        .setString("dateHastaTransportHistorial", nuevaFecha);
+                    sharedPrefs!.setString("dateHastaVendedor", nuevaFecha);
                   }
                 });
               },
               child: Text(
-                "${sharedPrefs!.getString("dateHastaTransportHistorial")}",
+                "${sharedPrefs!.getString("dateHastaVendedor")}",
                 style: TextStyle(fontWeight: FontWeight.bold),
               )),
           SizedBox(
@@ -699,13 +701,16 @@ class _DashBoardSellersState extends State<DashBoardSellers> {
 
   addTableRows(value) {
     tableData = [];
+    List arrTable = [];
     for (var element in data) {
       if (element['Status'] == value) {
-        setState(() {
-          tableData.add(element);
-        });
+        arrTable.add(element);
       }
     }
+
+    setState(() {
+      tableData = arrTable;
+    });
   }
 
   calculateValues() {

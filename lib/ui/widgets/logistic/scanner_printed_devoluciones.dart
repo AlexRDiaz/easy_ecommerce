@@ -36,7 +36,7 @@ class _ScannerPrintedDevolucionesState
                 onBarcodeScanned: (barcode) async {
                   if (!visible) return;
                   getLoadingModal(context, false);
-                  print(barcode);
+                  //print(barcode);
 
                   await Connections()
                       .updateOrderReturnLogistic(barcode.toString());
