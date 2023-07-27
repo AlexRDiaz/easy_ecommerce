@@ -39,8 +39,6 @@ class _ChartState extends State<Chart> {
                     });
                   },
                 )),
-            swapAnimationCurve: accelerateEasing,
-            swapAnimationDuration: Duration(seconds: 1),
           ),
           Positioned.fill(
             child: Column(

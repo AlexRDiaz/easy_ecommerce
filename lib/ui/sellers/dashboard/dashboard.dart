@@ -130,6 +130,7 @@ class _DashBoardSellersState extends State<DashBoardSellers> {
         filter: "PEDIDO PROGRAMADO",
         check: false),
   ];
+
   List arrayFiltersAnd = [
     {
       'IdComercial':
@@ -180,20 +181,88 @@ class _DashBoardSellersState extends State<DashBoardSellers> {
 
   loadData() async {
     isLoading = true;
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getLoadingModal(context, false);
     });
+
     setState(() {
       data = [];
+      subFilters = [];
+      sections = [];
+      filters = [];
     });
+    for (FilterCheckModel filter in filters) {
+      setState(() {
+        filter.check = false;
+      });
+    }
 
-    var response = await Connections()
-        .getOrdersForHistorialTransportByDates(populate, arrayFiltersAnd);
+    var response =
+        await Connections().getOrdersDashboard(populate, arrayFiltersAnd);
     setState(() {
       data = response;
 
       total = data.length;
     });
+    filters = [
+      FilterCheckModel(
+          color: Colors.red,
+          numOfFiles: 0,
+          percentage: 14,
+          svgSrc: "assets/icons/Documents.svg",
+          title: "Entregados",
+          filter: "ENTREGADO",
+          check: false),
+      FilterCheckModel(
+          color: Color.fromARGB(255, 2, 51, 22),
+          numOfFiles: 0,
+          percentage: 14,
+          svgSrc: "assets/icons/Documents.svg",
+          title: "NO ENTREGADO",
+          filter: "NO ENTREGADO",
+          check: false),
+      FilterCheckModel(
+          color: const Color.fromARGB(255, 76, 54, 244),
+          numOfFiles: 0,
+          percentage: 14,
+          svgSrc: "assets/icons/Documents.svg",
+          title: "NOVEDAD",
+          filter: "NOVEDAD",
+          check: false),
+      FilterCheckModel(
+          color: Color.fromARGB(255, 42, 163, 67),
+          numOfFiles: 0,
+          percentage: 14,
+          svgSrc: "assets/icons/Documents.svg",
+          title: "REAGENDADO",
+          filter: "REAGENDADO",
+          check: false),
+      FilterCheckModel(
+          color: Color.fromARGB(255, 146, 76, 29),
+          numOfFiles: 0,
+          percentage: 14,
+          svgSrc: "assets/icons/Documents.svg",
+          title: "EN RUTA",
+          filter: "EN RUTA",
+          check: false),
+      FilterCheckModel(
+          color: Color.fromARGB(255, 11, 6, 123),
+          numOfFiles: 0,
+          percentage: 14,
+          svgSrc: "assets/icons/Documents.svg",
+          title: "EN OFICINA",
+          filter: "EN OFICINA",
+          check: false),
+      FilterCheckModel(
+          color: Color.fromARGB(255, 146, 18, 73),
+          numOfFiles: 0,
+          percentage: 14,
+          svgSrc: "assets/icons/Documents.svg",
+          title: "PEDIDO PROGRAMADO",
+          filter: "PEDIDO PROGRAMADO",
+          check: false),
+    ];
 
     Future.delayed(const Duration(milliseconds: 500), () {
       Navigator.pop(context);
@@ -776,15 +845,26 @@ class _DashBoardSellersState extends State<DashBoardSellers> {
     if (value['value']) {
       for (var subFilter in subFilters) {
         if (value['filter'] == subFilter['title']) {
-          setState(() {
-            sections.add({
-              'color': subFilter['color'],
-              'value': subFilter["total"],
-              'showTitle': true,
-              'title': subFilter["title"],
-              'radius': 20,
+          var sec = {
+            'color': subFilter['color'],
+            'value': subFilter["total"],
+            'showTitle': true,
+            'title': subFilter["title"],
+            'radius': 20,
+          };
+
+          if (!sections.contains(sec)) {
+            var color = subFilter['color'] as Color;
+            setState(() {
+              sections.add({
+                'color': color.withOpacity(0.7),
+                'value': subFilter["total"],
+                'showTitle': true,
+                'title': subFilter["title"],
+                'radius': 20,
+              });
             });
-          });
+          }
         }
       }
     } else {

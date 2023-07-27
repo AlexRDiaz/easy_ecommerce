@@ -45,7 +45,7 @@ class _FilterDetailsState extends State<FilterDetails> {
       ),
       CloudStorageInfo(
         title: "Devoluciones",
-        numOfFiles: 1328,
+        numOfFiles: widget.costoDevoluciones,
         svgSrc: "assets/icons/one_drive.svg",
         // totalStorage: "\$20,23",
         color: Color(0xFFA4CDFF),
@@ -53,7 +53,7 @@ class _FilterDetailsState extends State<FilterDetails> {
       ),
       CloudStorageInfo(
         title: "Utilidades",
-        numOfFiles: 5328,
+        numOfFiles: widget.utilidades,
         svgSrc: "assets/icons/drop_box.svg",
         // totalStorage: "\$320,16",
         color: Color(0xFF007EE5),
@@ -110,7 +110,7 @@ class FilterCheckModel {
   int? numOfFiles;
   final double? percentage;
   final Color? color;
-  late final bool? check;
+  late bool? check;
 
   FilterCheckModel(
       {this.svgSrc,

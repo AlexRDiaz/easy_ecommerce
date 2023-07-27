@@ -827,11 +827,30 @@ class Connections {
   }
 
   getOrdersForHistorialTransportByDates(List populate, List and) async {
+    print('start: ${sharedPrefs!.getString("dateDesdeTransportHistorial")}');
+    print('end: ${sharedPrefs!.getString("dateHastaTransportHistorial")}');
+
+    var request = await http.post(
+        Uri.parse("$server/api/history/transport?pagination[limit]=-1"),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          "start": sharedPrefs!.getString("dateDesdeTransportHistorial"),
+          "end": sharedPrefs!.getString("dateHastaTransportHistorial"),
+          "populate": jsonEncode(populate),
+          "and": jsonEncode(and)
+        }));
+
+    var response = await request.body;
+    var decodeData = json.decode(response);
+    return decodeData['data'];
+  }
+
+  getOrdersDashboard(List populate, List and) async {
     print('start: ${sharedPrefs!.getString("dateDesdeVendedor")}');
     print('end: ${sharedPrefs!.getString("dateHastaVendedor")}');
 
     var request = await http.post(
-        Uri.parse("$server/api/history/transport?pagination[limit]=-1"),
+        Uri.parse("$server/api/products/dashboard?pagination[limit]=-1"),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
           "start": sharedPrefs!.getString("dateDesdeVendedor"),
