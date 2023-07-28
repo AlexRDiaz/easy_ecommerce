@@ -13,18 +13,23 @@ class UpdateStatusOperatorHistorial extends StatefulWidget {
   final String codigo;
   final String numberCliente;
   final String id;
+  final List novedades;
 
   const UpdateStatusOperatorHistorial(
       {super.key,
       required this.numberTienda,
       required this.codigo,
-      required this.numberCliente, required this.id});
+      required this.numberCliente,
+      required this.id,
+      required this.novedades});
 
   @override
-  State<UpdateStatusOperatorHistorial> createState() => _UpdateStatusOperatorHistorialState();
+  State<UpdateStatusOperatorHistorial> createState() =>
+      _UpdateStatusOperatorHistorialState();
 }
 
-class _UpdateStatusOperatorHistorialState extends State<UpdateStatusOperatorHistorial> {
+class _UpdateStatusOperatorHistorialState
+    extends State<UpdateStatusOperatorHistorial> {
   List<String> status = [
     "ENTREGADO",
     "NO ENTREGADO",
@@ -36,6 +41,7 @@ class _UpdateStatusOperatorHistorialState extends State<UpdateStatusOperatorHist
   ];
   String? selectedValueStatus;
   List<DateTime?> _dates = [];
+  List novedades = [];
   String dateSelect = "";
   bool efectivo = false;
   bool transferencia = false;
@@ -91,7 +97,21 @@ class _UpdateStatusOperatorHistorialState extends State<UpdateStatusOperatorHist
                   children: [generateContent()],
                 )
               ],
-            ))
+            )),
+            Container(
+              height: 200,
+              width: 200,
+              child: ListView.builder(
+                itemCount: widget.novedades.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(widget.novedades[index]['attributes']['comment']
+                        .toString()),
+                    // Otros widgets adicionales para cada elemento
+                  );
+                },
+              ),
+            )
           ],
         ),
       ),
@@ -214,11 +234,13 @@ class _UpdateStatusOperatorHistorialState extends State<UpdateStatusOperatorHist
                       setState(() {});
                       var response = await Connections().postDoc(imageSelect!);
 
-                      await Connections().updateOrderStatusOperatorEntregadoHistorial(
-                          "ENTREGADO",
-                          tipo,
-                          _controllerModalText.text,
-                          response[1], widget.id);
+                      await Connections()
+                          .updateOrderStatusOperatorEntregadoHistorial(
+                              "ENTREGADO",
+                              tipo,
+                              _controllerModalText.text,
+                              response[1],
+                              widget.id);
                       setState(() {
                         _controllerModalText.clear();
                         tipo = "";
@@ -247,8 +269,12 @@ class _UpdateStatusOperatorHistorialState extends State<UpdateStatusOperatorHist
                           setState(() {});
 
                           await Connections()
-                              .updateOrderStatusOperatorEntregadoHistorial("ENTREGADO",
-                                  tipo, _controllerModalText.text, "", widget.id);
+                              .updateOrderStatusOperatorEntregadoHistorial(
+                                  "ENTREGADO",
+                                  tipo,
+                                  _controllerModalText.text,
+                                  "",
+                                  widget.id);
                           setState(() {
                             _controllerModalText.clear();
                             tipo = "";
@@ -339,10 +365,12 @@ class _UpdateStatusOperatorHistorialState extends State<UpdateStatusOperatorHist
 
                       var response = await Connections().postDoc(imageSelect!);
 
-                      await Connections().updateOrderStatusOperatorNoEntregadoHistorial(
-                          "NO ENTREGADO",
-                          _controllerModalText.text,
-                          response[1], widget.id);
+                      await Connections()
+                          .updateOrderStatusOperatorNoEntregadoHistorial(
+                              "NO ENTREGADO",
+                              _controllerModalText.text,
+                              response[1],
+                              widget.id);
                       setState(() {
                         _controllerModalText.clear();
 
@@ -412,6 +440,13 @@ class _UpdateStatusOperatorHistorialState extends State<UpdateStatusOperatorHist
                 setState(() {
                   _controllerModalText.clear();
                 });
+                if (widget.novedades.length < 3) {
+                  saveNovedad(
+                      widget.id,
+                      widget.novedades.length + 1,
+                      'urltestreal',
+                      'e ha enviado este comentario desde la app');
+                }
 
                 Navigator.pop(context);
                 Navigator.pop(context);
@@ -503,7 +538,8 @@ class _UpdateStatusOperatorHistorialState extends State<UpdateStatusOperatorHist
                           .updateOrderStatusOperatorPedidoProgramadoHistorial(
                               "REAGENDADO",
                               _controllerModalText.text,
-                              dateSelect.split('-').reversed.join('-'), widget.id);
+                              dateSelect.split('-').reversed.join('-'),
+                              widget.id);
                       setState(() {
                         _controllerModalText.clear();
                         dateSelect = "";
@@ -772,5 +808,10 @@ class _UpdateStatusOperatorHistorialState extends State<UpdateStatusOperatorHist
         ))
       ],
     );
+  }
+
+  Future<void> saveNovedad(id_pedido, intento, url_imagen, comment) async {
+    var response = await Connections()
+        .createNovedad(id_pedido, intento, url_imagen, comment);
   }
 }

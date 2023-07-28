@@ -31,8 +31,10 @@ class _InfoOrdersOperatorState extends State<InfoOrdersOperator> {
       getLoadingModal(context, false);
     });
     var response = await Connections().getOrdersByIDOperator(widget.id);
-    // data = response;
     data = response;
+
+    var m = data['attributes']['novedades'];
+    print(m);
     _controllers.editControllers(response);
     setState(() {
       _numerController.text = data['attributes']['TelefonoShipping'].toString();
@@ -83,19 +85,21 @@ class _InfoOrdersOperatorState extends State<InfoOrdersOperator> {
                                   var response = await Connections()
                                       .getSellersByIdMasterOnly(
                                           "${data['attributes']['IdComercial'].toString()}");
+                                  // ignore: use_build_context_synchronously
                                   await showDialog(
                                       context: context,
                                       builder: (context) {
                                         return UpdateStatusOperatorHistorial(
-                                          numberTienda: response['vendedores']
-                                                  [0]['Telefono2']
-                                              .toString(),
-                                          codigo:
-                                              "${data['attributes']['Name_Comercial']}-${data['attributes']['NumeroOrden']}",
-                                          numberCliente:
-                                              "${data['attributes']['TelefonoShipping']}",
-                                              id: widget.id,
-                                        );
+                                            numberTienda: response['vendedores']
+                                                    [0]['Telefono2']
+                                                .toString(),
+                                            codigo:
+                                                "${data['attributes']['Name_Comercial']}-${data['attributes']['NumeroOrden']}",
+                                            numberCliente:
+                                                "${data['attributes']['TelefonoShipping']}",
+                                            id: widget.id,
+                                            novedades: data['attributes']
+                                                ['novedades']['data']);
                                       });
                                   await loadData();
                                 },
@@ -164,7 +168,8 @@ class _InfoOrdersOperatorState extends State<InfoOrdersOperator> {
                             onPressed: () async {
                               getLoadingModal(context, false);
                               var reponse = await Connections()
-                                  .updateOrderInfoNumberOperator(_numerController.text, widget.id);
+                                  .updateOrderInfoNumberOperator(
+                                      _numerController.text, widget.id);
                               Navigator.pop(context);
                               await loadData();
                             },

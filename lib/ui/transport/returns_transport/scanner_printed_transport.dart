@@ -6,8 +6,8 @@ import 'package:frontend/ui/widgets/loading.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 class ScannerPrintedTransport extends StatefulWidget {
-  final Function(dynamic) function;
-  const ScannerPrintedTransport({super.key, required this.function});
+  final String status;
+  const ScannerPrintedTransport({super.key, required this.status});
 
   @override
   State<ScannerPrintedTransport> createState() =>
@@ -39,19 +39,30 @@ class _ScannerPrintedTransportState extends State<ScannerPrintedTransport> {
                   var responseOrder = await Connections().getOrderByID(barcode);
                   if (responseOrder['attributes']['Status'] == 'NO ENTREGADO' ||
                       responseOrder['attributes']['Status'] == 'NOVEDAD') {
-                    var response = await Connections()
-                        .updateOrderReturnTransport(
-                            barcode.toString(), "DEVOLUCION EN RUTA");
+                    if (responseOrder['attributes']['Status'] ==
+                            "DEVOLUCION EN RUTA" &&
+                        widget.status == "ENTREGADO EN OFICINA") {
+                      _barcode =
+                          "El producto ${responseOrder['attributes']['Name_Comercial']}-${responseOrder['attributes']['NumeroOrden']} no se puede cambiar a entregado en oficina porque tiene estado "
+                          "DEVOLUCION EN RUTA";
+                    } else {
+                      if (widget.status != "PENDIENTE") {
+                        await Connections()
+                            .updateOrderReturnTransport(barcode, widget.status);
+                      } else {
+                        await Connections()
+                            .updateOrderReturnTransportRestart(barcode);
+                      }
+                    }
+
+                    Navigator.pop(context);
+
                     setState(() {
                       _barcode =
                           "${responseOrder['attributes']['Name_Comercial']}-${responseOrder['attributes']['NumeroOrden']}";
                     });
 
                     Navigator.pop(context);
-                    widget.function({
-                      'id': barcode,
-                      'estado': responseOrder['attributes']['Estado_Devolucion']
-                    });
                   } else {
                     setState(() {
                       _barcode =
@@ -64,7 +75,7 @@ class _ScannerPrintedTransportState extends State<ScannerPrintedTransport> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    Text("MARCAR DEVOLUCIÓN COMO EN RUTA",
+                    Text("MARCAR DEVOLUCIÓN CON ESTADO ${widget.status}",
                         style: TextStyle(fontWeight: FontWeight.bold)),
                     SizedBox(
                       height: 30,

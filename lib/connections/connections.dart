@@ -1782,7 +1782,7 @@ class Connections {
   Future getOrdersByIDOperator(id) async {
     var request = await http.get(
       Uri.parse(
-          "$server/api/pedidos-shopifies/$id?populate=users&populate=users.vendedores&populate=producto_shopifies&populate=pedido_fecha&populate=ruta&populate=transportadora&populate=operadore&populate=operadore.user&populate=sub_ruta"),
+          "$server/api/pedidos-shopifies/$id?populate=users&populate=users.vendedores&populate=producto_shopifies&populate=pedido_fecha&populate=ruta&populate=transportadora&populate=operadore&populate=operadore.user&populate=sub_ruta&populate=novedades"),
       headers: {'Content-Type': 'application/json'},
     );
     var response = await request.body;
@@ -3051,6 +3051,29 @@ class Connections {
         }));
     var response = await request.body;
     var decodeData = json.decode(response);
+    if (request.statusCode != 200) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  Future<bool> createNovedad(id_pedido, intento, url_imagen, comment) async {
+    var request = await http.post(Uri.parse("$server/api/novedades"),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          "data": {
+            "m_t_novedad":
+                "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year} ${DateTime.now().hour}:${DateTime.now().minute}",
+            "try": 1,
+            "url_image": url_imagen,
+            "comment": comment,
+            "pedidos_shopify": id_pedido
+          }
+        }));
+    var response = await request.body;
+    var decodeData = json.decode(response);
+
     if (request.statusCode != 200) {
       return false;
     } else {

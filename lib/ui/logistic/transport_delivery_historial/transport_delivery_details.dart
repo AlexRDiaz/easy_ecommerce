@@ -322,6 +322,7 @@ class _TransportDeliveryHistoryDetailsState
                                                       numberCliente:
                                                           "${data['attributes']['TelefonoShipping']}",
                                                       id: widget.id,
+                                                      novedades: [],
                                                     );
                                                   });
                                               await loadData();

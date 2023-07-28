@@ -86,6 +86,7 @@ class _InfoStateOrdersOperatorState extends State<InfoStateOrdersOperator> {
                                           .getSellersByIdMasterOnly(
                                               "${data['attributes']['IdComercial'].toString()}");
 
+                                      // ignore: use_build_context_synchronously
                                       await showDialog(
                                           context: context,
                                           builder: (context) {
@@ -98,7 +99,8 @@ class _InfoStateOrdersOperatorState extends State<InfoStateOrdersOperator> {
                                                   "${data['attributes']['Name_Comercial']}-${data['attributes']['NumeroOrden']}",
                                               numberCliente:
                                                   "${data['attributes']['TelefonoShipping']}",
-                                                  id: widget.id,
+                                              id: widget.id,
+                                              novedades: [],
                                             );
                                           });
                                       await loadData();

@@ -6,6 +6,7 @@ import 'package:frontend/main.dart';
 import 'package:frontend/ui/logistic/returns/controllers/controllers.dart';
 import 'package:frontend/ui/transport/returns_transport/scanner_printed_transport.dart';
 import 'package:frontend/ui/widgets/loading.dart';
+import 'package:frontend/ui/widgets/transport/select_status_return.dart';
 import 'package:frontend/ui/widgets/transport/transport_returns.dart';
 import 'package:intl/intl.dart';
 import 'package:number_paginator/number_paginator.dart';
@@ -240,21 +241,10 @@ class _ReturnsTransportState extends State<ReturnsTransport> {
                               await showDialog(
                                   context: context,
                                   builder: (context) {
-                                    return ScannerPrintedTransport(
-                                      function: (value) async {
-                                        await showDialog(
-                                            context: context,
-                                            builder: (context) {
-                                              return TransportReturn(
-                                                id: value['id'],
-                                                status: value['estado'],
-                                              );
-                                            });
-                                        await loadData();
-                                      },
-                                    );
+                                    return SelectStatusReturn(
+                                        function: setSelectedStatus);
                                   });
-                              await loadData();
+                              //   await loadData();
                             },
                             child: Text(
                               "SCANNER",
@@ -277,21 +267,10 @@ class _ReturnsTransportState extends State<ReturnsTransport> {
                               await showDialog(
                                   context: context,
                                   builder: (context) {
-                                    return ScannerPrintedTransport(
-                                      function: (value) async {
-                                        await showDialog(
-                                            context: context,
-                                            builder: (context) {
-                                              return TransportReturn(
-                                                id: value['id'].toString(),
-                                                status:
-                                                    value['estado'].toString(),
-                                              );
-                                            });
-                                        await loadData();
-                                      },
-                                    );
+                                    return SelectStatusReturn(
+                                        function: setSelectedStatus);
                                   });
+
                               await loadData();
                             },
                             child: Text(
@@ -905,5 +884,18 @@ class _ReturnsTransportState extends State<ReturnsTransport> {
     }
 
     return color;
+  }
+
+  setSelectedStatus(value) async {
+    print(value);
+    await showDialog(
+        context: context,
+        builder: (context) {
+          return ScannerPrintedTransport(
+            status: value,
+          );
+        });
+    await loadData();
+    Navigator.pop(context);
   }
 }
