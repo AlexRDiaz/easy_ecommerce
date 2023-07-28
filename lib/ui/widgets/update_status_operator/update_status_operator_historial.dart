@@ -441,11 +441,8 @@ class _UpdateStatusOperatorHistorialState
                   _controllerModalText.clear();
                 });
                 if (widget.novedades.length < 3) {
-                  saveNovedad(
-                      widget.id,
-                      widget.novedades.length + 1,
-                      'urltestreal',
-                      'e ha enviado este comentario desde la app');
+                  saveNovedad(widget.id, widget.novedades.length + 1,
+                      'urltestreal', _controllerModalText.text);
                 }
 
                 Navigator.pop(context);
