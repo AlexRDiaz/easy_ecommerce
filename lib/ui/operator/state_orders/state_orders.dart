@@ -79,8 +79,7 @@ class _StateOrdersOperatorState extends State<StateOrdersOperator> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getLoadingModal(context, false);
     });
-        var response = [];
-
+    var response = [];
 
     if (_controllers.searchController.text.isEmpty) {
       response = await Connections()
@@ -106,29 +105,45 @@ class _StateOrdersOperatorState extends State<StateOrdersOperator> {
         width: double.infinity,
         child: Column(
           children: [
-                        SizedBox(height: 10,),
-             Align(
+            SizedBox(
+              height: 10,
+            ),
+            Align(
               alignment: Alignment.centerRight,
-               child: GestureDetector(
-                      onTap: ()async{
-                       await loadData();
-                      },
-                      child: Container(
-                        color: Colors.transparent,
-                        
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                          Icon(Icons.replay_outlined, color: Colors.green,),
-                          SizedBox(width: 10,),
-                          Text("Recargar Información", style: TextStyle(decoration: TextDecoration.underline, color: Colors.green),),                          SizedBox(width: 10,),
-
-                        ],),
+              child: GestureDetector(
+                onTap: () async {
+                  await loadData();
+                },
+                child: Container(
+                  color: Colors.transparent,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Icon(
+                        Icons.replay_outlined,
+                        color: Colors.green,
                       ),
-                    ),
-             ),
-                  SizedBox(height: 10,),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Text(
+                        "Recargar Información",
+                        style: TextStyle(
+                            decoration: TextDecoration.underline,
+                            color: Colors.green),
+                      ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 10,
+            ),
             Container(
                 width: double.infinity,
                 child: Row(
@@ -196,9 +211,12 @@ class _StateOrdersOperatorState extends State<StateOrdersOperator> {
             // _filters(context),
             Expanded(
               child: DataTable2(
-                  headingTextStyle: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-                  dataTextStyle:
-                      TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black),
+                  headingTextStyle: TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.black),
+                  dataTextStyle: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black),
                   columnSpacing: 12,
                   horizontalMargin: 12,
                   minWidth: 2500,
@@ -355,21 +373,21 @@ class _StateOrdersOperatorState extends State<StateOrdersOperator> {
                                         ['Marca_Tiempo_Envio']
                                     .toString()
                                     .split(" ")[0]), onTap: () {
-                                                                info(context, index);
-
+                              info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['Fecha_Entrega']
                                     .toString()), onTap: () {
-                                                            info(context, index);
-
+                              info(context, index);
                             }),
                             DataCell(
                                 Text(
+                                    style: TextStyle(
+                                        color: GetColor(data[index]
+                                            ['attributes']['Status'])),
                                     '${data[index]['attributes']['Name_Comercial'].toString()}-${data[index]['attributes']['NumeroOrden'].toString()}'),
                                 onTap: () {
-                                                          info(context, index);
-
+                              info(context, index);
                             }),
                             DataCell(Row(
                               children: [
@@ -407,101 +425,89 @@ class _StateOrdersOperatorState extends State<StateOrdersOperator> {
                             DataCell(
                                 Text(data[index]['attributes']['NombreShipping']
                                     .toString()), onTap: () {
-                                                            info(context, index);
-
+                              info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['CiudadShipping']
                                     .toString()), onTap: () {
-                                                            info(context, index);
-
+                              info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']
                                         ['DireccionShipping']
                                     .toString()), onTap: () {
-                                                                info(context, index);
-
+                              info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']
                                         ['TelefonoShipping']
                                     .toString()), onTap: () {
-                                                               info(context, index);
-
+                              info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['Cantidad_Total']
                                     .toString()), onTap: () {
-                                                                  info(context, index);
-
+                              info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['ProductoP']
                                     .toString()), onTap: () {
-                                                          info(context, index);
-
+                              info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['ProductoExtra']
                                     .toString()), onTap: () {
-                                                               info(context, index);
-
+                              info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['PrecioTotal']
                                     .toString()), onTap: () {
-                                                             info(context, index);
-
+                              info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['Observacion']
                                     .toString()), onTap: () {
-                                                               info(context, index);
-
+                              info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['Comentario']
                                     .toString()), onTap: () {
-                                                            info(context, index);
-
+                              info(context, index);
                             }),
                             DataCell(
-                                Text(data[index]['attributes']['Status']
-                                    .toString()), onTap: () {
-                                                                  info(context, index);
-
+                                Text(
+                                    style: TextStyle(
+                                        color: GetColor(data[index]
+                                            ['attributes']['Status'])),
+                                    data[index]['attributes']['Status']
+                                        .toString()), onTap: () {
+                              info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['TipoPago']
                                     .toString()), onTap: () {
-                                                              info(context, index);
-
+                              info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']
                                         ['Estado_Devolucion']
                                     .toString()), onTap: () {
-                                                                 info(context, index);
-
+                              info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['Marca_T_D']
                                     .toString()), onTap: () {
-                                                              info(context, index);
-
+                              info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['Marca_T_I']
                                     .toString()), onTap: () {
-                                                       info(context, index);
-
+                              info(context, index);
                             }),
                             DataCell(
                                 Text(data[index]['attributes']['Estado_Pagado']
                                     .toString()), onTap: () {
-                                                              info(context, index);
-
+                              info(context, index);
                             }),
                           ]))),
             ),
@@ -509,6 +515,36 @@ class _StateOrdersOperatorState extends State<StateOrdersOperator> {
         ),
       ),
     );
+  }
+
+  Color? GetColor(state) {
+    int color = 0xFF000000;
+
+    switch (state) {
+      case "ENTREGADO":
+        color = 0xFF33FF6D;
+        break;
+      case "NOVEDAD":
+        color = 0xFFD6DC27;
+        break;
+      case "NO ENTREGADO":
+        color = 0xFFFF3333;
+        break;
+      case "REAGENDADO":
+        color = 0xFFFA37BF;
+        break;
+      case "EN RUTA":
+        color = 0xFF3341FF;
+        break;
+      case "EN OFICINA":
+        color = 0xFF4B4C4B;
+        break;
+
+      default:
+        color = 0xFF000000;
+    }
+
+    return Color(color);
   }
 
   _modelTextField({text, controller}) {
@@ -1294,7 +1330,8 @@ class _StateOrdersOperatorState extends State<StateOrdersOperator> {
       });
     }
   }
-   Future<dynamic> info(BuildContext context, int index) {
+
+  Future<dynamic> info(BuildContext context, int index) {
     return showDialog(
         context: context,
         builder: (context) {

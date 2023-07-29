@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:frontend/connections/connections.dart';
+import 'package:frontend/helpers/server.dart';
 import 'package:frontend/ui/widgets/loading.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -98,20 +99,6 @@ class _UpdateStatusOperatorHistorialState
                 )
               ],
             )),
-            Container(
-              height: 200,
-              width: 200,
-              child: ListView.builder(
-                itemCount: widget.novedades.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(widget.novedades[index]['attributes']['comment']
-                        .toString()),
-                    // Otros widgets adicionales para cada elemento
-                  );
-                },
-              ),
-            )
           ],
         ),
       ),
@@ -199,12 +186,12 @@ class _UpdateStatusOperatorHistorialState
                   "${imageSelect != null ? imageSelect!.name.toString() : ''}",
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))
               : Container(),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
-          Text("Comentario",
+          const Text("Comentario",
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           Container(
@@ -362,7 +349,7 @@ class _UpdateStatusOperatorHistorialState
               onPressed: imageSelect != null
                   ? () async {
                       getLoadingModal(context, false);
-
+                      setState(() {});
                       var response = await Connections().postDoc(imageSelect!);
 
                       await Connections()
@@ -425,29 +412,58 @@ class _UpdateStatusOperatorHistorialState
           SizedBox(
             height: 20,
           ),
-          ElevatedButton(
+          Text("Foto Novedad",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+          const SizedBox(
+            height: 10,
+          ),
+          TextButton(
               onPressed: () async {
-                getLoadingModal(context, false);
-
-                await Connections().updateOrderStatusOperatorGeneralHistorial(
-                    "NOVEDAD", _controllerModalText.text, widget.id);
-                var _url = Uri.parse(
-                    """https://api.whatsapp.com/send?phone=${widget.numberTienda}&text= 
-                                        El pedido con código ${widget.codigo} cambio su estado a novedad, motivo: ${_controllerModalText.text}. Teléfono del cliente: ${widget.numberCliente}""");
-                if (!await launchUrl(_url)) {
-                  throw Exception('Could not launch $_url');
-                }
+                final ImagePicker picker = ImagePicker();
+                final XFile? image =
+                    await picker.pickImage(source: ImageSource.gallery);
                 setState(() {
-                  _controllerModalText.clear();
+                  imageSelect = image;
                 });
-                if (widget.novedades.length < 3) {
-                  saveNovedad(widget.id, widget.novedades.length + 1,
-                      'urltestreal', _controllerModalText.text);
-                }
-
-                Navigator.pop(context);
-                Navigator.pop(context);
               },
+              child: const Text(
+                "Seleccionar:",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              )),
+          const SizedBox(
+            height: 10,
+          ),
+          Text("${imageSelect != null ? imageSelect!.name.toString() : ''}",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+          SizedBox(
+            height: 10,
+          ),
+          ElevatedButton(
+              onPressed: imageSelect != null
+                  ? () async {
+                      // getLoadingModal(context, false);
+                      if (widget.novedades.isEmpty) {
+                        await Connections()
+                            .updateOrderStatusOperatorGeneralHistorial(
+                                "NOVEDAD",
+                                _controllerModalText.text,
+                                widget.id);
+                        var _url = Uri.parse(
+                            """https://api.whatsapp.com/send?phone=${widget.numberTienda}&text= 
+                                        El pedido con código ${widget.codigo} cambio su estado a novedad, motivo: ${_controllerModalText.text}. Teléfono del cliente: ${widget.numberCliente}""");
+                        if (!await launchUrl(_url)) {
+                          throw Exception('Could not launch $_url');
+                        }
+
+                        setState(() {
+                          _controllerModalText.clear();
+                          imageSelect = null;
+                        });
+                        // Navigator.pop(context);
+                        // Navigator.pop(context);
+                      }
+                    }
+                  : null,
               child: Text(
                 "Guardar",
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),

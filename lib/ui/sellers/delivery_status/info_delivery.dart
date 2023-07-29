@@ -4,12 +4,15 @@ import 'package:frontend/connections/connections.dart';
 import 'package:frontend/helpers/navigators.dart';
 import 'package:frontend/helpers/server.dart';
 import 'package:frontend/ui/operator/orders_operator/controllers/controllers.dart';
+import 'package:frontend/ui/operator/orders_operator/info_novedades.dart';
 import 'package:frontend/ui/widgets/loading.dart';
 import 'package:frontend/ui/widgets/update_status_operator/update_status_operator.dart';
 
 class DeliveryStatusSellerInfo extends StatefulWidget {
   final String id;
-  const DeliveryStatusSellerInfo({super.key, required this.id});
+  final Function(dynamic) function;
+  const DeliveryStatusSellerInfo(
+      {super.key, required this.id, required this.function});
 
   @override
   State<DeliveryStatusSellerInfo> createState() => _DeliveryStatusSellerInfo();
@@ -70,6 +73,38 @@ class _DeliveryStatusSellerInfo extends State<DeliveryStatusSellerInfo> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            ElevatedButton(
+                                onPressed: () async {
+                                  infoNovedades(context, widget.id);
+                                },
+                                child: Text(
+                                  "Estado Entrega",
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                )),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            data['attributes']['Status'] == 'NOVEDAD' &&
+                                    data['attributes']['Estado_Devolucion'] ==
+                                        'PENDIENTE'
+                                ? ElevatedButton(
+                                    onPressed: () async {
+                                      widget.function({
+                                        'id': data['id'],
+                                        'status': 'REAGENDADO'
+                                      });
+                                    },
+                                    child: Text(
+                                      "Reagendar",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ))
+                                : Container(),
+                          ],
+                        ),
                         SizedBox(
                           height: 20,
                         ),
@@ -113,12 +148,17 @@ class _DeliveryStatusSellerInfo extends State<DeliveryStatusSellerInfo> {
                                 : ""),
                         _modelText(
                             "Costo Devolución",
-                       data['attributes']['Estado_Devolucion'].toString()!="PENDIENTE"?     data['attributes']['users'] != null
-                                ? data['attributes']['users']['data'][0]
-                                            ['attributes']['vendedores']['data']
-                                        [0]['attributes']['CostoDevolucion']
-                                    .toString()
-                                : "":""),
+                            data['attributes']['Estado_Devolucion']
+                                        .toString() !=
+                                    "PENDIENTE"
+                                ? data['attributes']['users'] != null
+                                    ? data['attributes']['users']['data'][0]
+                                                    ['attributes']['vendedores']
+                                                ['data'][0]['attributes']
+                                            ['CostoDevolucion']
+                                        .toString()
+                                    : ""
+                                : ""),
                         _modelText("Fecha Ingreso",
                             data['attributes']['Marca_T_I'].toString()),
                         data['attributes']['Archivo'].toString().isEmpty ||
@@ -210,5 +250,35 @@ class _DeliveryStatusSellerInfo extends State<DeliveryStatusSellerInfo> {
         ],
       ),
     );
+  }
+
+  Future<dynamic> infoNovedades(BuildContext context, id) {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            content: Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              child: Column(
+                children: [
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: Icon(Icons.close),
+                    ),
+                  ),
+                  Expanded(
+                      child: InfoNovedades(
+                    id: id,
+                  ))
+                ],
+              ),
+            ),
+          );
+        });
   }
 }

@@ -582,7 +582,7 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
                     ),
                     DataColumn2(
                       label: SelectFilter(
-                          'Operador',
+                          'Operadorm',
                           'operadore',
                           {
                             'user': {'username': 'valor'}

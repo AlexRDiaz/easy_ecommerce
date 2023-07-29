@@ -5,6 +5,7 @@ import 'package:data_table_2/data_table_2.dart';
 import 'package:frontend/connections/connections.dart';
 import 'package:frontend/helpers/responsive.dart';
 import 'package:frontend/main.dart';
+import 'package:frontend/ui/operator/orders_operator/info_novedades.dart';
 import 'package:frontend/ui/sellers/delivery_status/info_delivery.dart';
 import 'package:frontend/ui/transport/my_orders_prv/controllers/controllers.dart';
 import 'package:frontend/ui/widgets/box_values.dart';
@@ -689,6 +690,7 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                   Expanded(
                       child: DeliveryStatusSellerInfo(
                     id: data[index]['id'].toString(),
+                    function: exeReSchedule,
                   ))
                 ],
               ),
@@ -1050,6 +1052,10 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
           },
           child: Text('Filtrar'))
     ];
+  }
+
+  exeReSchedule(value) {
+    reSchedule(value['id'], value['status']);
   }
 
   Future<void> reSchedule(id, estado) async {

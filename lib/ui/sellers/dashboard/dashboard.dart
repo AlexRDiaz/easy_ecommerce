@@ -151,33 +151,33 @@ class _DashBoardSellersState extends State<DashBoardSellers> {
 
   @override
   void didChangeDependencies() {
-    loadConfigs();
+    // loadConfigs();
     super.didChangeDependencies();
   }
 
-  loadConfigs() async {
-    var responseOperator = [];
-    setState(() {
-      transports = [];
-      operators = [];
-    });
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      getLoadingModal(context, false);
-    });
+  // loadConfigs() async {
+  //   var responseOperator = [];
+  //   setState(() {
+  //     transports = [];
+  //     operators = [];
+  //   });
+  //   WidgetsBinding.instance.addPostFrameCallback((_) {
+  //     getLoadingModal(context, false);
+  //   });
 
-    var responseTransports = await Connections().getAllTransportators();
-    if (selectValueTransport != null) {
-      responseOperator =
-          await Connections().getAllOperatorsAndByTransport(idTransport);
-    } else {
-      responseOperator = await Connections().getAllOperators();
-    }
+  //   var responseTransports = await Connections().getAllTransportators();
+  //   if (selectValueTransport != null) {
+  //     responseOperator =
+  //         await Connections().getAllOperatorsAndByTransport(idTransport);
+  //   } else {
+  //     responseOperator = await Connections().getAllOperators();
+  //   }
 
-    Future.delayed(Duration(milliseconds: 500), () {
-      Navigator.pop(context);
-    });
-    setState(() {});
-  }
+  //   Future.delayed(Duration(milliseconds: 500), () {
+  //     Navigator.pop(context);
+  //   });
+  //   setState(() {});
+  // }
 
   loadData() async {
     isLoading = true;

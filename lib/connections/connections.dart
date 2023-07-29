@@ -1842,7 +1842,7 @@ class Connections {
   Future getOrdersByIDHistorial(id) async {
     var request = await http.get(
       Uri.parse(
-          "$server/api/pedidos-shopifies/$id?populate=users&populate=users.vendedores&populate=producto_shopifies&populate=pedido_fecha&populate=ruta&populate=transportadora&populate=operadore&populate=operadore.user&populate=sub_ruta"),
+          "$server/api/pedidos-shopifies/$id?populate=users&populate=users.vendedores&populate=producto_shopifies&populate=pedido_fecha&populate=ruta&populate=transportadora&populate=operadore&populate=operadore.user&populate=sub_ruta&populate=novedades"),
       headers: {'Content-Type': 'application/json'},
     );
     var response = await request.body;
@@ -2066,7 +2066,7 @@ class Connections {
   getOrdersForOperatorState(code) async {
     var request = await http.get(
       Uri.parse(
-          "$server/api/pedidos-shopifies?populate=transportadora&populate=pedido_fecha&populate=sub_ruta&populate=operadore&populate=operadore.user&filters[\$and][0][operadore][user][id][\$eq]=${sharedPrefs!.getString("id").toString()}&filters[\$and][1][NumeroOrden][\$contains]=$code&filters[\$or][2][Status][\$ne]=PEDIDO PROGRAMADO&filters[\$and][3][Fecha_Entrega][\$eq]=${sharedPrefs!.getString("dateOperatorState")}&pagination[limit]=-1"),
+          "$server/api/pedidos-shopifies?populate=transportadora&populate=pedido_fecha&populate=sub_ruta&populate=operadore&populate=operadore.user&populate=novedades&filters[\$and][0][operadore][user][id][\$eq]=${sharedPrefs!.getString("id").toString()}&filters[\$and][1][NumeroOrden][\$contains]=$code&filters[\$or][2][Status][\$ne]=PEDIDO PROGRAMADO&filters[\$and][3][Fecha_Entrega][\$eq]=${sharedPrefs!.getString("dateOperatorState")}&pagination[limit]=-1"),
       headers: {'Content-Type': 'application/json'},
     );
     var response = await request.body;
@@ -3065,7 +3065,7 @@ class Connections {
           "data": {
             "m_t_novedad":
                 "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year} ${DateTime.now().hour}:${DateTime.now().minute}",
-            "try": 1,
+            "try": intento,
             "url_image": url_imagen,
             "comment": comment,
             "pedidos_shopify": id_pedido

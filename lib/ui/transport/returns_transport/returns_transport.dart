@@ -32,6 +32,13 @@ class _ReturnsTransportState extends State<ReturnsTransport> {
   bool isLoading = false;
   List filtersAnd = [];
   int total = 0;
+  TextEditingController statusController = TextEditingController(text: "TODO");
+  List<String> listStatus = [
+    'TODO',
+    'PEDIDO PROGRAMADO',
+    'NOVEDAD',
+    'ENTREGADO',
+  ];
   List populate = [
     'transportadora.operadores.user',
     'pedido_fecha',
@@ -396,8 +403,15 @@ class _ReturnsTransportState extends State<ReturnsTransport> {
                     },
                   ),
                   DataColumn2(
-                    label: Text('Status'),
-                    size: ColumnSize.S,
+                    label: SelectFilter(
+                        'Status',
+                        'Status',
+                        {
+                          'Status': {'username': 'valor'}
+                        },
+                        statusController,
+                        listStatus),
+                    size: ColumnSize.L,
                     onSort: (columnIndex, ascending) {
                       sortFunc("Status");
                     },
@@ -897,5 +911,61 @@ class _ReturnsTransportState extends State<ReturnsTransport> {
         });
     await loadData();
     Navigator.pop(context);
+  }
+
+  Column SelectFilter(String title, filter, value,
+      TextEditingController controller, List<String> listOptions) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title),
+        Expanded(
+          child: Container(
+            margin: EdgeInsets.only(bottom: 4.5, top: 4.5),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(5.0),
+              border: Border.all(color: Color.fromRGBO(6, 6, 6, 1)),
+            ),
+            height: 50,
+            child: DropdownButtonFormField<String>(
+              isExpanded: true,
+              value: controller.text,
+              onChanged: (String? newValue) {
+                setState(() {
+                  // controller.text = newValue ?? "";
+
+                  // arrayFiltersAndEq = arrayFiltersAndEq
+                  //     .where((element) => element['filter'] != filter)
+                  //     .toList();
+
+                  // // for (Map element in arrayFiltersAndEq) {
+                  // //   if (element['filter'] == filter) {
+                  // //     arrayFiltersAndEq.remove(element);
+                  // //   }
+                  // // }
+                  // if (newValue != 'TODO') {
+                  //   reemplazarValor(value, newValue!);
+                  //   //  print(value);
+
+                  //   arrayFiltersAndEq.add({'filter': filter, 'value': value});
+                  // }
+
+                  // loadData();
+                });
+              },
+              decoration: InputDecoration(
+                  border: UnderlineInputBorder(
+                      borderRadius: BorderRadius.circular(10))),
+              items: listOptions.map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value, style: TextStyle(fontSize: 15)),
+                );
+              }).toList(),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }
