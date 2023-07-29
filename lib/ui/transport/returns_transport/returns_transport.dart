@@ -31,6 +31,8 @@ class _ReturnsTransportState extends State<ReturnsTransport> {
   int pageCount = 100;
   bool isLoading = false;
   List filtersAnd = [];
+  List<String> listOperators = [];
+  List arrayFiltersAnd = [];
   int total = 0;
   TextEditingController statusController = TextEditingController(text: "TODO");
   List<String> listStatus = [
@@ -38,6 +40,7 @@ class _ReturnsTransportState extends State<ReturnsTransport> {
     'PEDIDO PROGRAMADO',
     'NOVEDAD',
     'ENTREGADO',
+    'NO ENTREGADO'
   ];
   List populate = [
     'transportadora.operadores.user',
@@ -95,7 +98,8 @@ class _ReturnsTransportState extends State<ReturnsTransport> {
   ];
 
   NumberPaginatorController paginatorController = NumberPaginatorController();
-
+  TextEditingController operadorController =
+      TextEditingController(text: "TODO");
   List bools = [
     false,
     false,
@@ -134,6 +138,8 @@ class _ReturnsTransportState extends State<ReturnsTransport> {
   @override
   void didChangeDependencies() {
     loadData();
+    getOperatorsList();
+
     super.didChangeDependencies();
   }
 
@@ -153,7 +159,7 @@ class _ReturnsTransportState extends State<ReturnsTransport> {
         pageSize,
         populate,
         filtersOrCont,
-        [],
+        arrayFiltersAnd,
         filtersDefaultOr,
         filtersDefaultAnd,
         arrayUniqueFilters);
@@ -206,6 +212,18 @@ class _ReturnsTransportState extends State<ReturnsTransport> {
       Navigator.pop(context);
     });
     setState(() {});
+  }
+
+  getOperatorsList() async {
+    var opertators = await Connections().getOperatorsByTransport(
+        sharedPrefs!.getString("idTransportadora").toString());
+    listOperators.add('TODO');
+    for (var operator in opertators) {
+      if (operator['user'] != null) {
+        listOperators.add(operator['user']['username']);
+      }
+    }
+    //print(listOperators);
   }
 
   int calcularTotalPaginas(int totalRegistros, int registrosPorPagina) {
@@ -405,7 +423,7 @@ class _ReturnsTransportState extends State<ReturnsTransport> {
                   DataColumn2(
                     label: SelectFilter(
                         'Status',
-                        'Status',
+                        'filters[Status][\$eq]',
                         {
                           'Status': {'username': 'valor'}
                         },
@@ -443,6 +461,19 @@ class _ReturnsTransportState extends State<ReturnsTransport> {
                     size: ColumnSize.M,
                     onSort: (columnIndex, ascending) {
                       sortFunc("TelefonoShipping");
+                    },
+                  ),
+                  DataColumn2(
+                    label: SelectFilter(
+                        'Operador',
+                        'filters[operadore][user][username][\$eq]',
+                        "",
+                        operadorController,
+                        listOperators),
+                    size: ColumnSize.M,
+                    numeric: true,
+                    onSort: (columnIndex, ascending) {
+                      sortFunc("Estado_Devolucion");
                     },
                   ),
                   DataColumn2(
@@ -586,6 +617,15 @@ class _ReturnsTransportState extends State<ReturnsTransport> {
                             color: rowColor,
                           ),
                         )),
+                        DataCell(
+                            Text(data[index]['attributes']['operadore']
+                                        ['data'] !=
+                                    null
+                                ? data[index]['attributes']['operadore']['data']
+                                        ['attributes']['user']['data']
+                                    ['attributes']['username']
+                                : "".toString()),
+                            onTap: () {}),
                         DataCell(Text(
                           data[index]['attributes']['Estado_Devolucion']
                               .toString(),
@@ -932,25 +972,18 @@ class _ReturnsTransportState extends State<ReturnsTransport> {
               value: controller.text,
               onChanged: (String? newValue) {
                 setState(() {
-                  // controller.text = newValue ?? "";
+                  controller.text = newValue ?? "";
 
-                  // arrayFiltersAndEq = arrayFiltersAndEq
-                  //     .where((element) => element['filter'] != filter)
-                  //     .toList();
+                  for (String element in arrayUniqueFilters) {
+                    if (element.contains(filter)) {
+                      arrayUniqueFilters.remove(element);
+                    }
+                  }
+                  if (newValue != 'TODO') {
+                    arrayUniqueFilters.add(filter + "=" + newValue + "&");
+                  }
 
-                  // // for (Map element in arrayFiltersAndEq) {
-                  // //   if (element['filter'] == filter) {
-                  // //     arrayFiltersAndEq.remove(element);
-                  // //   }
-                  // // }
-                  // if (newValue != 'TODO') {
-                  //   reemplazarValor(value, newValue!);
-                  //   //  print(value);
-
-                  //   arrayFiltersAndEq.add({'filter': filter, 'value': value});
-                  // }
-
-                  // loadData();
+                  loadData();
                 });
               },
               decoration: InputDecoration(

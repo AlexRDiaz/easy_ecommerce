@@ -24,6 +24,8 @@ import 'package:frontend/ui/logistic/printed_guides/printedguides.dart';
 import 'package:frontend/ui/logistic/profit_date/profit_date.dart';
 import 'package:frontend/ui/logistic/proof_payment/proof_payment.dart';
 import 'package:frontend/ui/logistic/remote_support/remote_support.dart';
+import 'package:frontend/ui/logistic/return_in_warehouse/controllers/controllers.dart';
+import 'package:frontend/ui/logistic/return_in_warehouse/returns_in_warehouse.dart';
 import 'package:frontend/ui/logistic/returns/returns.dart';
 import 'package:frontend/ui/logistic/shopping/shopping.dart';
 import 'package:frontend/ui/logistic/shopping_status/shopping_status.dart';
@@ -136,6 +138,10 @@ class _LayoutPageState extends State<LayoutPage> {
       getOption(
         "Devoluciones",
         Returns(),
+      ),
+      getOption(
+        "Devolución en bodega",
+        ReturnsInWarehouse(),
       ),
       getOption(
         "Cambiar Contraseña",

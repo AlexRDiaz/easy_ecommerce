@@ -14,21 +14,23 @@ class TransportDeliveryHistoryByTransport extends StatefulWidget {
   const TransportDeliveryHistoryByTransport({super.key});
 
   @override
-  State<TransportDeliveryHistoryByTransport> createState() => _TransportDeliveryHistoryByTransportState();
+  State<TransportDeliveryHistoryByTransport> createState() =>
+      _TransportDeliveryHistoryByTransportState();
 }
 
-class _TransportDeliveryHistoryByTransportState extends State<TransportDeliveryHistoryByTransport> {
+class _TransportDeliveryHistoryByTransportState
+    extends State<TransportDeliveryHistoryByTransport> {
   final TransportDeliveryHistorialControllers _controllers =
-  TransportDeliveryHistorialControllers();
+      TransportDeliveryHistorialControllers();
   List optionsCheckBox = [];
   int counterChecks = 0;
   List data = [];
-  String id="";
+  String id = "";
 
   @override
   void initState() {
     super.initState();
-    if (Get.parameters['id']!=null) {
+    if (Get.parameters['id'] != null) {
       id = Get.parameters['id'] as String;
     }
   }
@@ -67,8 +69,7 @@ class _TransportDeliveryHistoryByTransportState extends State<TransportDeliveryH
         title: Text("Historial Pedidos Transportadora"),
         leading: InkWell(
           onTap: () {
-            Navigators().pushNamedAndRemoveUntil(
-                context, "/layout/logistic");
+            Navigators().pushNamedAndRemoveUntil(context, "/layout/logistic");
           },
           child: const Icon(
             Icons.arrow_back_ios,
@@ -86,9 +87,12 @@ class _TransportDeliveryHistoryByTransportState extends State<TransportDeliveryH
             ),
             Expanded(
               child: DataTable2(
-                headingTextStyle: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-                dataTextStyle:
-                const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black),
+                headingTextStyle: const TextStyle(
+                    fontWeight: FontWeight.bold, color: Colors.black),
+                dataTextStyle: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black),
                 columnSpacing: 12,
                 horizontalMargin: 6,
                 minWidth: 2000,
@@ -200,7 +204,7 @@ class _TransportDeliveryHistoryByTransportState extends State<TransportDeliveryH
                 ],
                 rows: List<DataRow>.generate(
                   10,
-                      (index) {
+                  (index) {
                     Color rowColor = UIUtils.getColor('NO ENTREGADO');
                     return DataRow(
                       onSelectChanged: (bool? selected) {
@@ -326,9 +330,6 @@ class _TransportDeliveryHistoryByTransportState extends State<TransportDeliveryH
                             'Dato',
                           ),
                         ),
-
-
-
                         DataCell(
                           const Icon(
                             Icons.arrow_forward_ios_sharp,
@@ -364,13 +365,13 @@ class _TransportDeliveryHistoryByTransportState extends State<TransportDeliveryH
           prefixIcon: const Icon(Icons.search),
           suffixIcon: _controllers.searchController.text.isNotEmpty
               ? GestureDetector(
-            onTap: () {
-              setState(() {
-                _controllers.searchController.clear();
-              });
-            },
-            child: const Icon(Icons.close),
-          )
+                  onTap: () {
+                    setState(() {
+                      _controllers.searchController.clear();
+                    });
+                  },
+                  child: const Icon(Icons.close),
+                )
               : null,
           hintText: text,
           enabledBorder: OutlineInputBorder(

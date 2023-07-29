@@ -32,6 +32,8 @@ class _AddLogisticUserState extends State<AddLogisticUser> {
   bool impresas = false;
   bool enviadas = false;
   bool devolucion = false;
+  bool devolucionEnBodega = false;
+
   List vistas = [];
 
   @override
@@ -568,6 +570,35 @@ class _AddLogisticUserState extends State<AddLogisticUser> {
                     Flexible(
                         child: Text(
                       "Devoluciones",
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                    ))
+                  ],
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Row(
+                  children: [
+                    Checkbox(
+                        value: devolucionEnBodega,
+                        onChanged: (v) {
+                          setState(() {
+                            if (v!) {
+                              devolucionEnBodega = true;
+                              vistas.add("Devolución en bodega");
+                            } else {
+                              devolucionEnBodega = false;
+                              vistas.remove("Devolución en bodega");
+                            }
+                          });
+                        }),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Flexible(
+                        child: Text(
+                      "Devolución en bodega",
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                     ))

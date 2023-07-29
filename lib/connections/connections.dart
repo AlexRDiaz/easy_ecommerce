@@ -654,7 +654,7 @@ class Connections {
     url +=
         "pagination[page]=$currentPage&pagination[pageSize]=$pageSize&sort=id%3Adesc";
 
-    //print(url);
+    print(url);
     var request = await http.get(
       Uri.parse(url),
       headers: {'Content-Type': 'application/json'},
@@ -2406,6 +2406,9 @@ class Connections {
 
 //
   getWalletValue() async {
+    var id =
+        "$server/api/balance/${sharedPrefs!.getString("idComercialMasterSeller").toString()}";
+    print("id:" + id);
     var request = await http.get(
       Uri.parse(
           "$server/api/balance/${sharedPrefs!.getString("idComercialMasterSeller").toString()}"),
