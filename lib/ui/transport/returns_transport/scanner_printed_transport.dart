@@ -17,6 +17,8 @@ class ScannerPrintedTransport extends StatefulWidget {
 class _ScannerPrintedTransportState extends State<ScannerPrintedTransport> {
   String? _barcode;
   late bool visible;
+  List codes = ['43759', '43636', '43624', '43579', '43556', '43491'];
+  int count = 0;
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -33,6 +35,8 @@ class _ScannerPrintedTransportState extends State<ScannerPrintedTransport> {
               child: BarcodeKeyboardListener(
                 bufferDuration: Duration(milliseconds: 200),
                 onBarcodeScanned: (barcode) async {
+                  barcode = codes[count];
+                  count++;
                   if (!visible) return;
                   getLoadingModal(context, false);
 
@@ -47,15 +51,15 @@ class _ScannerPrintedTransportState extends State<ScannerPrintedTransport> {
                           "DEVOLUCION EN RUTA";
                     } else {
                       if (widget.status != "PENDIENTE") {
-                        await Connections()
-                            .updateOrderReturnTransport(barcode, widget.status);
+                        String value = "";
+                        value = getKeyMDT(value);
+                        await Connections().updateOrderReturnTransport(
+                            barcode, widget.status, value);
                       } else {
                         await Connections()
                             .updateOrderReturnTransportRestart(barcode);
                       }
                     }
-
-                    Navigator.pop(context);
 
                     setState(() {
                       _barcode =
@@ -109,5 +113,16 @@ class _ScannerPrintedTransportState extends State<ScannerPrintedTransport> {
         ),
       ),
     );
+  }
+
+  String getKeyMDT(String value) {
+    if (widget.status == "ENTREGADO EN OFICINA") {
+      value = "Marca_T_D";
+    }
+    if (widget.status == "DEVOLUCION EN RUTA") {
+      value = "Marca_T_D_T";
+    }
+
+    return value;
   }
 }

@@ -50,7 +50,8 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
     'pedido_fecha',
     'sub_ruta',
     'operadore',
-    'operadore.user'
+    'operadore.user',
+    'novedades'
   ];
 
   @override
@@ -506,6 +507,11 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                         sortFuncDate("Marca_T_I");
                       },
                     ),
+                    DataColumn2(
+                      label: Text('N. intentos'),
+                      size: ColumnSize.M,
+                      onSort: (columnIndex, ascending) {},
+                    ),
                   ],
                   rows: List<DataRow>.generate(
                       data.isNotEmpty ? data.length : [].length,
@@ -660,11 +666,25 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
                                     .toString()), onTap: () {
                               openDialog(context, index);
                             }),
+                            DataCell(
+                                getLengthArrayMap(
+                                    data[index]['attributes']['novedades']),
+                                onTap: () {
+                              openDialog(context, index);
+                            }),
                           ]))),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  getLengthArrayMap(List data) {
+    var arraylength = data.length;
+    return Text(
+      arraylength.toString(),
+      style: TextStyle(color: arraylength > 3 ? Colors.red : Colors.black),
     );
   }
 

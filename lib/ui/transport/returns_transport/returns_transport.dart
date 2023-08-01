@@ -34,12 +34,13 @@ class _ReturnsTransportState extends State<ReturnsTransport> {
   List<String> listOperators = [];
   List arrayFiltersAnd = [];
   int total = 0;
-  TextEditingController statusController = TextEditingController(text: "TODO");
-  List<String> listStatus = [
+  TextEditingController estadoDevolucionController =
+      TextEditingController(text: "TODO");
+  List<String> listEstadoDevolucion = [
     'TODO',
-    'PEDIDO PROGRAMADO',
-    'NOVEDAD',
-    'ENTREGADO',
+    'PENDIENTE',
+    'DEVOLUCION EN RUTA',
+    'ENTREGADO EN OFICINA',
     'NO ENTREGADO'
   ];
   List populate = [
@@ -421,14 +422,7 @@ class _ReturnsTransportState extends State<ReturnsTransport> {
                     },
                   ),
                   DataColumn2(
-                    label: SelectFilter(
-                        'Status',
-                        'filters[Status][\$eq]',
-                        {
-                          'Status': {'username': 'valor'}
-                        },
-                        statusController,
-                        listStatus),
+                    label: Text("Status"),
                     size: ColumnSize.L,
                     onSort: (columnIndex, ascending) {
                       sortFunc("Status");
@@ -477,7 +471,12 @@ class _ReturnsTransportState extends State<ReturnsTransport> {
                     },
                   ),
                   DataColumn2(
-                    label: Text('Devolución'),
+                    label: SelectFilter(
+                        'Devolucion',
+                        'filters[Estado_Devolucion][\$eq]',
+                        '',
+                        estadoDevolucionController,
+                        listEstadoDevolucion),
                     size: ColumnSize.M,
                     numeric: true,
                     onSort: (columnIndex, ascending) {

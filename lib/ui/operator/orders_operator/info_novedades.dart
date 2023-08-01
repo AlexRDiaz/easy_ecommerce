@@ -80,74 +80,68 @@ class _InfoNovedadesState extends State<InfoNovedades> {
                               fontWeight: FontWeight.bold, fontSize: 18),
                         ),
                         Container(
-                          height: 600,
-                          width: 600,
-                          child: Expanded(
-                            child: ListView.builder(
-                              itemCount: data['attributes']['novedades']['data']
-                                  .length,
-                              itemBuilder: (context, index) {
-                                return ListTile(
-                                  title: Container(
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10),
-                                        color:
-                                            Color.fromARGB(255, 117, 115, 115),
-                                        border:
-                                            Border.all(color: Colors.black)),
-                                    child: Container(
-                                      margin: EdgeInsets.all(10),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                              style: const TextStyle(
-                                                color: Colors.white,
-                                              ),
-                                              "Intento: ${data['attributes']['novedades']['data'][index]['attributes']['m_t_novedad']}"),
-                                          Text(
-                                              style: const TextStyle(
-                                                color: Colors.white,
-                                              ),
-                                              "Intento: ${data['attributes']['novedades']['data'][index]['attributes']['try']}"),
-                                          Text(
-                                              style: const TextStyle(
-                                                color: Colors.white,
-                                              ),
-                                              "Comentario: ${data['attributes']['novedades']['data'][index]['attributes']['comment']}"),
-                                          data['attributes']['novedades'][
-                                                                  'data'][index]
-                                                              ['attributes']
-                                                          ['url_image']
-                                                      .toString()
-                                                      .isEmpty ||
-                                                  data['attributes']['novedades']
-                                                                          ['data']
-                                                                      [index]
-                                                                  ['attributes']
-                                                              ['url_image']
-                                                          .toString() ==
-                                                      "null"
-                                              ? Container()
-                                              : Container(
-                                                  margin: EdgeInsets.all(30),
-                                                  child: Expanded(
-                                                    child: Image.network(
-                                                      "$generalServer${data['attributes']['novedades']['data'][index]['attributes']['url_image'].toString()}",
-                                                      fit: BoxFit.fill,
-                                                    ),
-                                                  )),
-                                        ],
-                                      ),
+                          height: 500,
+                          width: 500,
+                          child: ListView.builder(
+                            itemCount:
+                                data['attributes']['novedades']['data'].length,
+                            itemBuilder: (context, index) {
+                              return ListTile(
+                                title: Container(
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      color: Color.fromARGB(255, 117, 115, 115),
+                                      border: Border.all(color: Colors.black)),
+                                  child: Container(
+                                    margin: EdgeInsets.all(10),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                            ),
+                                            "Intento: ${data['attributes']['novedades']['data'][index]['attributes']['m_t_novedad']}"),
+                                        Text(
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                            ),
+                                            "Intento: ${data['attributes']['novedades']['data'][index]['attributes']['try']}"),
+                                        Text(
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                            ),
+                                            "Comentario: ${data['attributes']['novedades']['data'][index]['attributes']['comment']}"),
+                                        data['attributes']['novedades']['data']
+                                                                [index]
+                                                            ['attributes']
+                                                        ['url_image']
+                                                    .toString()
+                                                    .isEmpty ||
+                                                data['attributes']['novedades']
+                                                                        ['data']
+                                                                    [index]
+                                                                ['attributes']
+                                                            ['url_image']
+                                                        .toString() ==
+                                                    "null"
+                                            ? Container()
+                                            : Container(
+                                                margin: EdgeInsets.all(30),
+                                                child: Image.network(
+                                                  "$generalServer${data['attributes']['novedades']['data'][index]['attributes']['url_image'].toString()}",
+                                                  fit: BoxFit.fill,
+                                                )),
+                                      ],
                                     ),
                                   ),
-                                  // Otros widgets adicionales para cada elemento
-                                );
-                              },
-                            ),
+                                ),
+                                // Otros widgets adicionales para cada elemento
+                              );
+                            },
                           ),
                         )
                       ],

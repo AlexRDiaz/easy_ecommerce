@@ -68,7 +68,8 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
     'operadore',
     'operadore.user',
     'users',
-    'users.vendedores'
+    'users.vendedores',
+    'novedades'
   ];
   List filtersDefaultAnd = [
     {
@@ -636,6 +637,11 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
                         sortFunc("Estado_Pagado");
                       },
                     ),
+                    DataColumn2(
+                      label: Text('N. intentos'),
+                      size: ColumnSize.M,
+                      onSort: (columnIndex, ascending) {},
+                    ),
                   ],
                   rows: List<DataRow>.generate(
                       data.isNotEmpty ? data.length : [].length,
@@ -804,11 +810,28 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
                                     .toString()), onTap: () {
                               OpenShowDialog(context, index);
                             }),
+                            DataCell(
+                                getLengthArrayMap(
+                                    data[index]['attributes']['novedades']),
+                                onTap: () {
+                              OpenShowDialog(context, index);
+                            }),
                           ]))),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  getLengthArrayMap(List data) {
+    var arraylength = data.length;
+    return Text(
+      arraylength.toString(),
+      style: TextStyle(
+          color: arraylength > 3
+              ? const Color.fromARGB(255, 54, 244, 73)
+              : Colors.black),
     );
   }
 

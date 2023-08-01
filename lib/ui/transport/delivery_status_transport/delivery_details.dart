@@ -39,6 +39,7 @@ class _TransportProDeliveryHistoryDetails
         await Connections().getOrdersByIDHistorialTransport(widget.id);
     // data = response;
     data = response;
+
     _controllers.editControllers(response);
 
     Future.delayed(Duration(milliseconds: 500), () {
@@ -129,13 +130,16 @@ class _TransportProDeliveryHistoryDetails
                                                     numberCliente:
                                                         "${data['attributes']['TelefonoShipping']}",
                                                     id: widget.id,
-                                                    novedades: [],
+                                                    novedades:
+                                                        data['attributes']
+                                                                ['novedades']
+                                                            ['data'],
                                                   );
                                                 });
                                             await loadData();
                                           },
                                           child: Text(
-                                            "Estado Entrega",
+                                            "Gestionar Novedades",
                                             style: TextStyle(
                                                 fontWeight: FontWeight.bold),
                                           )),
@@ -360,6 +364,76 @@ class _TransportProDeliveryHistoryDetails
                         SizedBox(
                           height: 20,
                         ),
+                        Text(
+                          "  Novedades:",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 18),
+                        ),
+                        Container(
+                          height: 500,
+                          width: 500,
+                          child: ListView.builder(
+                            itemCount:
+                                data['attributes']['novedades']['data'].length,
+                            itemBuilder: (context, index) {
+                              return ListTile(
+                                title: Container(
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      color: Color.fromARGB(255, 117, 115, 115),
+                                      border: Border.all(color: Colors.black)),
+                                  child: Container(
+                                    margin: EdgeInsets.all(10),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                            ),
+                                            "Intento: ${data['attributes']['novedades']['data'][index]['attributes']['m_t_novedad']}"),
+                                        Text(
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                            ),
+                                            "Intento: ${data['attributes']['novedades']['data'][index]['attributes']['try']}"),
+                                        Text(
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                            ),
+                                            "Comentario: ${data['attributes']['novedades']['data'][index]['attributes']['comment']}"),
+                                        data['attributes']['novedades']['data']
+                                                                [index]
+                                                            ['attributes']
+                                                        ['url_image']
+                                                    .toString()
+                                                    .isEmpty ||
+                                                data['attributes']['novedades']
+                                                                        ['data']
+                                                                    [index]
+                                                                ['attributes']
+                                                            ['url_image']
+                                                        .toString() ==
+                                                    "null"
+                                            ? Container()
+                                            : Container(
+                                                margin: EdgeInsets.all(30),
+                                                child: Image.network(
+                                                  "$generalServer${data['attributes']['novedades']['data'][index]['attributes']['url_image'].toString()}",
+                                                  fit: BoxFit.fill,
+                                                )),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                // Otros widgets adicionales para cada elemento
+                              );
+                            },
+                          ),
+                        )
                       ],
                     ),
             ),

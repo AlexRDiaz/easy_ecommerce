@@ -128,13 +128,17 @@ class _TransportReturnState extends State<TransportReturn> {
                               getLoadingModal(context, false);
                               if (entregado) {
                                 await Connections().updateOrderReturnTransport(
-                                    widget.id, "ENTREGADO EN OFICINA");
+                                    widget.id,
+                                    "ENTREGADO EN OFICINA",
+                                    "Marca_T_D");
                                 Navigator.pop(context);
                                 Navigator.pop(context);
                               }
                               if (ruta) {
                                 await Connections().updateOrderReturnTransport(
-                                    widget.id, "DEVOLUCION EN RUTA");
+                                    widget.id,
+                                    "DEVOLUCION EN RUTA",
+                                    "Marca_T_D_T");
                                 Navigator.pop(context);
                                 Navigator.pop(context);
                               }

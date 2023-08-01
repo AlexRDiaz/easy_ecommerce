@@ -1830,7 +1830,7 @@ class Connections {
   Future getOrdersByIDHistorialTransport(id) async {
     var request = await http.get(
       Uri.parse(
-          "$server/api/pedidos-shopifies/$id?populate=users&populate=users.vendedores&populate=producto_shopifies&populate=pedido_fecha&populate=ruta&populate=transportadora&populate=operadore&populate=operadore.user&populate=sub_ruta"),
+          "$server/api/pedidos-shopifies/$id?populate=users&populate=users.vendedores&populate=producto_shopifies&populate=pedido_fecha&populate=ruta&populate=transportadora&populate=operadore&populate=operadore.user&populate=sub_ruta&populate=novedades"),
       headers: {'Content-Type': 'application/json'},
     );
     var response = await request.body;
@@ -2078,7 +2078,7 @@ class Connections {
   getOrdersForOperatorStateByCode(params) async {
     var request = await http.get(
       Uri.parse(
-          "$server/api/pedidos-shopifies?populate=transportadora&populate=pedido_fecha&populate=sub_ruta&populate=operadore&populate=operadore.user&filters[operadore][user][id][\$eq]=${sharedPrefs!.getString("id").toString()}&filters[Status][\$ne]=PEDIDO PROGRAMADO$params&pagination[limit]=-1"),
+          "$server/api/pedidos-shopifies?populate=transportadora&populate=pedido_fecha&populate=sub_ruta&populate=operadore&populate=operadore.user&populate=novedades&filters[operadore][user][id][\$eq]=${sharedPrefs!.getString("id").toString()}&filters[Status][\$ne]=PEDIDO PROGRAMADO$params&pagination[limit]=-1"),
       headers: {'Content-Type': 'application/json'},
     );
     var response = await request.body;
@@ -2998,17 +2998,15 @@ class Connections {
     }
   }
 
-  Future updateOrderReturnTransport(id, status) async {
+  Future updateOrderReturnTransport(id, status, mtType) async {
     var request = await http.put(Uri.parse("$server/api/pedidos-shopifies/$id"),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
           "data": {
             "Estado_Devolucion": status,
             "DT": status,
-            "Marca_T_D_T":
+            mtType:
                 "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year} ${DateTime.now().hour}:${DateTime.now().minute} ",
-            // "Marca_T_D_T":
-            //     "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year} ${DateTime.now().hour}:${DateTime.now().minute}"
           }
         }));
     var response = await request.body;

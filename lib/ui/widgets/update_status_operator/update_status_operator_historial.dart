@@ -441,7 +441,21 @@ class _UpdateStatusOperatorHistorialState
           ElevatedButton(
               onPressed: imageSelect != null
                   ? () async {
-                      // getLoadingModal(context, false);
+                      getLoadingModal(context, false);
+                      if (widget.novedades.length < 4) {
+                        var response =
+                            await Connections().postDoc(imageSelect!);
+                        await saveNovedad(
+                            widget.id,
+                            widget.novedades.length + 1,
+                            response[1],
+                            _controllerModalText.text);
+                        //  confirmedDialog("Se ha guardado la novedad");
+                      }
+                      //  else {
+                      //  // confirmedDialog("Numero maximo de novedades alcanzado");
+                      // }
+
                       if (widget.novedades.isEmpty) {
                         await Connections()
                             .updateOrderStatusOperatorGeneralHistorial(
@@ -449,19 +463,20 @@ class _UpdateStatusOperatorHistorialState
                                 _controllerModalText.text,
                                 widget.id);
                         var _url = Uri.parse(
-                            """https://api.whatsapp.com/send?phone=${widget.numberTienda}&text= 
+                            """https://api.whatsapp.com/send?phone=${widget.numberTienda}&text=
                                         El pedido con código ${widget.codigo} cambio su estado a novedad, motivo: ${_controllerModalText.text}. Teléfono del cliente: ${widget.numberCliente}""");
                         if (!await launchUrl(_url)) {
                           throw Exception('Could not launch $_url');
                         }
-
-                        setState(() {
-                          _controllerModalText.clear();
-                          imageSelect = null;
-                        });
-                        // Navigator.pop(context);
-                        // Navigator.pop(context);
                       }
+
+                      setState(() {
+                        _controllerModalText.clear();
+                        imageSelect = null;
+                      });
+                      Navigator.pop(context);
+                      Navigator.pop(context);
+                      // Navigator.pop(context);
                     }
                   : null,
               child: Text(
@@ -483,6 +498,27 @@ class _UpdateStatusOperatorHistorialState
           )
         ],
       ),
+    );
+  }
+
+  confirmedDialog(String message) {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Confirmación'),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Aceptar'),
+              onPressed: () {
+                Navigator.of(context)
+                    .pop(); // Cerrar el diálogo al presionar "Aceptar"
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
