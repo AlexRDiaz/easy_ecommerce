@@ -51,7 +51,14 @@ class _ReturnsState extends State<Returns> {
     },
   ];
 
-  List filtersDefaultAnd = [];
+  List filtersDefaultAnd = [
+    {
+      'operator': '\$and',
+      'filter': 'Estado_Devolucion',
+      'operator_attr': '\$ne',
+      'value': 'EN BODEGA'
+    },
+  ];
   List populate = [
     'users',
     'pedido_fecha',
@@ -98,23 +105,7 @@ class _ReturnsState extends State<Returns> {
     super.didChangeDependencies();
   }
 
-  loadData2() async {
-    var response = [];
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      getLoadingModal(context, false);
-    });
-
-    response = await Connections()
-        .getOrdersForReturnsLogistic(_controllers.searchController.text);
-    data = [];
-    dataTemporal = [];
-
-    Future.delayed(const Duration(milliseconds: 500), () {
-      Navigator.pop(context);
-    });
-    setState(() {});
-  }
-
+ 
   loadData() async {
     isLoading = true;
     var response = [];

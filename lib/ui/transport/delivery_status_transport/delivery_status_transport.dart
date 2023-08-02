@@ -8,7 +8,7 @@ import 'package:frontend/connections/connections.dart';
 import 'package:frontend/helpers/responsive.dart';
 import 'package:frontend/main.dart';
 import 'package:frontend/ui/transport/delivery_status_transport/Opcion.dart';
-import 'package:frontend/ui/transport/delivery_status_transport/OpcionesWidget.dart';
+import 'package:frontend/ui/widgets/OpcionesWidget.dart';
 import 'package:frontend/ui/transport/delivery_status_transport/delivery_details.dart';
 import 'package:frontend/ui/transport/delivery_status_transport/scanner_delivery_status_transport.dart';
 import 'package:frontend/ui/transport/my_orders_prv/controllers/controllers.dart';

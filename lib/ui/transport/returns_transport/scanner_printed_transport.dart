@@ -17,8 +17,6 @@ class ScannerPrintedTransport extends StatefulWidget {
 class _ScannerPrintedTransportState extends State<ScannerPrintedTransport> {
   String? _barcode;
   late bool visible;
-  List codes = ['43759', '43636', '43624', '43579', '43556', '43491'];
-  int count = 0;
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -35,8 +33,6 @@ class _ScannerPrintedTransportState extends State<ScannerPrintedTransport> {
               child: BarcodeKeyboardListener(
                 bufferDuration: Duration(milliseconds: 200),
                 onBarcodeScanned: (barcode) async {
-                  barcode = codes[count];
-                  count++;
                   if (!visible) return;
                   getLoadingModal(context, false);
 
