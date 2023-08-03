@@ -1,0 +1,10 @@
+{
+    "configurations": [
+        {
+            "name": "Flutter (lib\\ui\\logistic\\dashboard\\dashboard.dart)",
+            "type": "dart",
+            "request": "launch",
+            "program": "lib\\ui\\logistic\\dashboard\\dashboard.dart"
+        }
+    ]
+}
