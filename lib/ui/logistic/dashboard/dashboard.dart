@@ -32,6 +32,7 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
   List checks = [];
   TextEditingController _search = TextEditingController();
   List sections = [];
+  List routes = [];
   List<String> sellers = [];
   List data = [];
   List subData = [];
@@ -90,7 +91,7 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
         numOfFiles: 0,
         percentage: 14,
         svgSrc: "assets/icons/Documents.svg",
-        title: "NO ENTREGADO",
+        title: "No entregado",
         filter: "NO ENTREGADO",
         check: false),
     FilterCheckModel(
@@ -98,7 +99,7 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
         numOfFiles: 0,
         percentage: 14,
         svgSrc: "assets/icons/Documents.svg",
-        title: "NOVEDAD",
+        title: "Novedad",
         filter: "NOVEDAD",
         check: false),
     FilterCheckModel(
@@ -106,7 +107,7 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
         numOfFiles: 0,
         percentage: 14,
         svgSrc: "assets/icons/Documents.svg",
-        title: "REAGENDADO",
+        title: "Reagendado",
         filter: "REAGENDADO",
         check: false),
     FilterCheckModel(
@@ -114,7 +115,7 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
         numOfFiles: 0,
         percentage: 14,
         svgSrc: "assets/icons/Documents.svg",
-        title: "EN RUTA",
+        title: "En ruta",
         filter: "EN RUTA",
         check: false),
     FilterCheckModel(
@@ -122,7 +123,7 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
         numOfFiles: 0,
         percentage: 14,
         svgSrc: "assets/icons/Documents.svg",
-        title: "EN OFICINA",
+        title: "En oficina",
         filter: "EN OFICINA",
         check: false),
     FilterCheckModel(
@@ -130,7 +131,7 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
         numOfFiles: 0,
         percentage: 14,
         svgSrc: "assets/icons/Documents.svg",
-        title: "PEDIDO PROGRAMADO",
+        title: "Pedido programado",
         filter: "PEDIDO PROGRAMADO",
         check: false),
   ];
@@ -155,8 +156,23 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
 
   @override
   void didChangeDependencies() {
+    loadRoutes();
     loadConfigs();
     super.didChangeDependencies();
+  }
+
+  loadRoutes() async {
+    routes = await Connections().getRoutes();
+    for (var route in routes) {
+      route['check'] = false;
+    }
+  }
+
+  String capitalize(String input) {
+    if (input == null || input.isEmpty) {
+      return '';
+    }
+    return input[0].toUpperCase() + input.substring(1).toLowerCase();
   }
 
   loadConfigs() async {
@@ -311,7 +327,7 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
   }
 
   bool _isMenuOpen = false;
-  final double _menuWidth = 200.0; // Ancho del menú lateral
+  final double _menuWidth = 300.0; // Ancho del menú lateral
 
   void _toggleMenu() {
     setState(() {
@@ -332,40 +348,127 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
           ),
         ),
         IconButton(
-          icon: Icon(Icons.menu),
+          icon: Icon(_isMenuOpen
+              ? Icons.arrow_right_outlined
+              : Icons.arrow_left_outlined),
           onPressed: _toggleMenu,
         ),
 
         // Menú lateral desplegable
-        AnimatedContainer(
-          decoration: BoxDecoration(
-              border: Border(left: BorderSide(color: Colors.black))),
-          duration: Duration(milliseconds: 200),
-          width: _isMenuOpen ? _menuWidth : 0,
-          child: _isMenuOpen
-              ? Container(
-                  child: ListView(
-                    padding: EdgeInsets.all(10),
-                    physics: BouncingScrollPhysics(),
-                    children: [
-                      ExpansionTile(
-                        title: Text('Estados', textAlign: TextAlign.left),
-                        children: <Widget>[
-                          _sellersTransport(context),
-                          _operators(context),
-                        ],
-                      ),
-                      ExpansionTile(
-                        title: Text('Filtros', textAlign: TextAlign.left),
-                        children: <Widget>[
-                          _sellersTransport(context),
-                          _operators(context),
-                        ],
-                      ),
-                    ],
-                  ),
-                )
-              : Container(),
+        Visibility(
+          visible: _isMenuOpen,
+          child: Container(
+            decoration: BoxDecoration(
+              border: Border(left: BorderSide(color: Colors.black)),
+              color: Colors
+                  .white, // Agregamos un color de fondo blanco para que el menú se vea más limpio
+            ),
+            width: _isMenuOpen ? _menuWidth : 0,
+            child: _isMenuOpen
+                ? SingleChildScrollView(
+                    // Usamos SingleChildScrollView para que el contenido pueda desplazarse si se desborda
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        //  const ListTile(
+                        //   title: Text(
+                        //     'Entidades',
+                        //     style: TextStyle(
+                        //       fontWeight: FontWeight.bold,
+                        //       fontSize: 18,
+                        //     ),
+                        //   ),
+                        // ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: ExpansionTile(
+                            title: Text("Entidades"),
+                            children: [
+                              _sellers(context),
+                              _sellersTransport(context),
+                              _operators(context),
+                            ],
+                          ),
+                        ),
+                        // Divider(
+                        //   color: Colors.grey,
+                        // ),
+                        // const ListTile(
+                        //   title: Text(
+                        //     'Filtros',
+                        //     style: TextStyle(
+                        //       fontWeight: FontWeight.bold,
+                        //       fontSize: 18,
+                        //     ),
+                        //   ),
+                        // ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: ExpansionTile(
+                            title: Text("Entidades"),
+                            children: filters
+                                .map((filter) => Row(
+                                      children: [
+                                        Container(
+                                          width: 200,
+                                          child: Text(
+                                            filter.title.toString(),
+                                            style: TextStyle(fontSize: 16),
+                                          ),
+                                        ),
+                                        Checkbox(
+                                          checkColor: filter.color,
+                                          activeColor:
+                                              filter.color!.withOpacity(0.5),
+                                          focusColor:
+                                              filter.color!.withOpacity(0.8),
+                                          value: filter.check,
+                                          onChanged: (value) => sendFilter(
+                                              filter.filter.toString(), value!),
+                                        )
+                                      ],
+                                    ))
+                                .toList(),
+                          ),
+                        ),
+                        // const ListTile(
+                        //   title: Text(
+                        //     'Ciudades',
+                        //     style: TextStyle(
+                        //       fontWeight: FontWeight.bold,
+                        //       fontSize: 18,
+                        //     ),
+                        //   ),
+                        // ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Column(
+                            children: routes
+                                .map((route) => Row(
+                                      children: [
+                                        Container(
+                                          width: 200,
+                                          child: Text(
+                                            capitalize(route['attributes']
+                                                    ['Titulo']
+                                                .toString()),
+                                            style: TextStyle(fontSize: 16),
+                                          ),
+                                        ),
+                                        Checkbox(
+                                          value: route['check'],
+                                          onChanged: (value) {},
+                                        )
+                                      ],
+                                    ))
+                                .toList(),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                : Container(),
+          ),
         ),
 
         // Container(
@@ -1010,5 +1113,15 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
         },
       ),
     );
+  }
+
+  sendFilter(String selectedFilter, bool currentValue) {
+    for (var filter in filters) {
+      if (filter.filter == selectedFilter) {
+        setState(() {
+          filter.check = currentValue;
+        });
+      }
+    }
   }
 }
