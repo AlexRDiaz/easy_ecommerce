@@ -343,8 +343,193 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
       children: [
         // Contenido principal de la página
         Expanded(
-          child: Center(
-            child: Text('Contenido principal'),
+          child: Column(
+            children: [
+              Container(
+                child: Text('Contenido principal'),
+              ),
+              _dates(context),
+              responsive(
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Container(
+                          height: MediaQuery.of(context).size.height * 0.73,
+                          padding: EdgeInsets.only(left: 20),
+                          child: InputDecorator(
+                            decoration: InputDecoration(
+                              labelText: 'Estados de entrega',
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                            ),
+                            child: Container(
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      children: filters
+                                          .map((elemento) => FilterInfoCard(
+                                                svgSrc: elemento.svgSrc!,
+                                                title: elemento.title!,
+                                                filter: elemento.filter!,
+                                                color: elemento.color!,
+                                                details: addTableRows,
+                                                percentage:
+                                                    elemento.percentage!,
+                                                numOfFiles:
+                                                    elemento.numOfFiles!,
+                                                function: changeValue,
+                                              ))
+                                          .toList(),
+                                    ),
+                                  ),
+                                  Chart(
+                                    sections: sections,
+                                    total: calculatetotal(),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                          child: Column(
+                        children: [
+                          FilterDetails(
+                              total: totalValoresRecibidos,
+                              costoEntregas: costoTransportadora,
+                              costoDevoluciones: costoDevoluciones,
+                              utilidades: utilidades),
+                          dataTableDetails()
+                        ],
+                      )),
+                    ],
+                  ),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.start,
+                  //   crossAxisAlignment: CrossAxisAlignment.start,
+                  //   children: [
+                  //     Expanded(
+                  //       child: Container(
+                  //         height: MediaQuery.of(context).size.height * 0.73,
+                  //         padding: EdgeInsets.only(left: 20),
+                  //         child: InputDecorator(
+                  //           decoration: InputDecoration(
+                  //             labelText: 'Estados de entrega',
+                  //             border: OutlineInputBorder(
+                  //               borderRadius: BorderRadius.circular(10.0),
+                  //             ),
+                  //           ),
+                  //           child: Container(
+                  //             child: Row(
+                  //               crossAxisAlignment: CrossAxisAlignment.center,
+                  //               children: [
+                  //                 Chart(
+                  //                   sections: sections,
+                  //                   total: calculatetotal(),
+                  //                 ),
+                  //               ],
+                  //             ),
+                  //           ),
+                  //         ),
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
+
+                  //  Text("hola mundo"),
+
+                  Expanded(
+                    child: ListView(
+                      padding: const EdgeInsets.all(8),
+                      children: <Widget>[
+                        Container(
+                          padding:
+                              EdgeInsets.only(left: 20, right: 14, bottom: 20),
+                          child: InputDecorator(
+                            decoration: InputDecoration(
+                              labelText: 'Estados de entrega',
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                            ),
+                            child: Container(
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      children: filters
+                                          .map((elemento) => FilterInfoCard(
+                                                svgSrc: elemento.svgSrc!,
+                                                title: elemento.title!,
+                                                filter: elemento.filter!,
+                                                color: elemento.color!,
+                                                details: addTableRows,
+                                                percentage:
+                                                    elemento.percentage!,
+                                                numOfFiles:
+                                                    elemento.numOfFiles!,
+                                                function: changeValue,
+                                              ))
+                                          .toList(),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                height:
+                                    MediaQuery.of(context).size.height * 0.53,
+                                padding: EdgeInsets.only(
+                                    left: 18, right: 13, bottom: 20),
+                                child: InputDecorator(
+                                  decoration: InputDecoration(
+                                    labelText: 'Porcentajes por estado',
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                    ),
+                                  ),
+                                  child: StreamBuilder<Object>(
+                                      stream: null,
+                                      builder: (context, snapshot) {
+                                        return Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Chart(
+                                              sections: sections,
+                                              total: calculatetotal(),
+                                            ),
+                                          ],
+                                        );
+                                      }),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        FilterDetails(
+                            total: totalValoresRecibidos,
+                            costoEntregas: costoTransportadora,
+                            costoDevoluciones: costoDevoluciones,
+                            utilidades: utilidades),
+                        dataTableDetails()
+                      ],
+                    ),
+                  ),
+                  context)
+            ],
           ),
         ),
         IconButton(
@@ -358,6 +543,7 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
         Visibility(
           visible: _isMenuOpen,
           child: Container(
+            height: MediaQuery.of(context).size.height,
             decoration: BoxDecoration(
               border: Border(left: BorderSide(color: Colors.black)),
               color: Colors
@@ -442,7 +628,8 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
                         // ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Column(
+                          child: ExpansionTile(
+                            title: Text("Entidades"),
                             children: routes
                                 .map((route) => Row(
                                       children: [

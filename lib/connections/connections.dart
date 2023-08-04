@@ -1866,7 +1866,7 @@ class Connections {
   Future getOrderByIDHistory(id) async {
     var request = await http.get(
       Uri.parse(
-          "$server/api/pedidos-shopifies/$id?populate=users&populate=pedido_fecha&populate=ruta&populate=transportadora&populate=users.vendedores&populate=operadore&populate=operadore.user&populate=pedido_fecha&populate=sub_ruta"),
+          "$server/api/pedidos-shopifies/$id?populate=users&populate=pedido_fecha&populate=ruta&populate=transportadora&populate=users.vendedores&populate=operadore&populate=operadore.user&populate=pedido_fecha&populate=sub_ruta&populate=novedades"),
       headers: {'Content-Type': 'application/json'},
     );
     var response = await request.body;

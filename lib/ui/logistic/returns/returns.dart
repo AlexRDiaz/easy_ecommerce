@@ -6,6 +6,7 @@ import 'package:frontend/connections/connections.dart';
 import 'package:frontend/helpers/responsive.dart';
 import 'package:frontend/providers/filters_orders/filters_orders.dart';
 import 'package:frontend/ui/widgets/loading.dart';
+import 'package:frontend/ui/widgets/logistic/scanner_printed_devoluciones.dart';
 import 'package:frontend/ui/widgets/routes/routes.dart';
 import 'package:number_paginator/number_paginator.dart';
 import 'package:provider/provider.dart';
@@ -105,7 +106,6 @@ class _ReturnsState extends State<Returns> {
     super.didChangeDependencies();
   }
 
- 
   loadData() async {
     isLoading = true;
     var response = [];
@@ -295,74 +295,23 @@ class _ReturnsState extends State<Returns> {
                         height: 50.0,
                         child: Row(
                           children: [
-                            ElevatedButton(
-                                onPressed: counterChecks > 0
-                                    ? () async {
-                                        showDialog(
-                                          context: context,
-                                          builder: (BuildContext context) {
-                                            return AlertDialog(
-                                              title: Text('Ateneción'),
-                                              content: Column(
-                                                children: [
-                                                  const Text(
-                                                      '¿Estás seguro de eliminar los siguientes pedidos?'),
-                                                  Text('' + listToDelete()),
-                                                ],
-                                              ),
-                                              actions: [
-                                                TextButton(
-                                                  child: const Text('Cancelar'),
-                                                  onPressed: () {
-                                                    // Acción al presionar el botón de cancelar
-                                                    Navigator.of(context).pop();
-                                                  },
-                                                ),
-                                                TextButton(
-                                                  child: Text('Aceptar'),
-                                                  onPressed: () async {
-                                                    for (var i = 0;
-                                                        i <
-                                                            optionsCheckBox
-                                                                .length;
-                                                        i++) {
-                                                      if (optionsCheckBox[i]
-                                                                  ['id']
-                                                              .toString()
-                                                              .isNotEmpty &&
-                                                          optionsCheckBox[i]
-                                                                      ['id']
-                                                                  .toString() !=
-                                                              '' &&
-                                                          optionsCheckBox[i]
-                                                                  ['check'] ==
-                                                              true) {
-                                                        var response = await Connections()
-                                                            .updateOrderInteralStatus(
-                                                                "NO DESEA",
-                                                                optionsCheckBox[
-                                                                        i]['id']
-                                                                    .toString());
-                                                        counterChecks = 0;
-                                                      }
-                                                    }
-
-                                                    loadData();
-                                                    setState(() {});
-                                                    enabledBusqueda = true;
-                                                    Navigator.of(context).pop();
-                                                  },
-                                                ),
-                                              ],
-                                            );
-                                          },
-                                        );
-                                      }
-                                    : null,
-                                child: const Text(
-                                  "No Desea",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                )),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: ElevatedButton(
+                                  onPressed: () async {
+                                    await showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return ScannerPrintedDevoluciones();
+                                        });
+                                    await loadData();
+                                  },
+                                  child: Text(
+                                    "SCANNER",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  )),
+                            ),
                           ],
                         ),
                       ),
@@ -420,92 +369,21 @@ class _ReturnsState extends State<Returns> {
                           ],
                         ),
                       ),
-                      Container(
-                        padding: EdgeInsets.only(left: 10, right: 10),
-                        height: 50.0,
-                        child: Row(
-                          children: [
-                            ElevatedButton(
-                                onPressed: counterChecks > 0
-                                    ? () async {
-                                        showDialog(
-                                          context: context,
-                                          builder: (BuildContext context) {
-                                            return AlertDialog(
-                                              title: Text('Atenecion'),
-                                              content: Column(
-                                                children: [
-                                                  const Text(
-                                                      '¿Estás seguro de eliminar los siguientes pedidos?'),
-                                                  Text('' + listToDelete()),
-                                                ],
-                                              ),
-                                              actions: [
-                                                TextButton(
-                                                  child: const Text('Cancelar'),
-                                                  onPressed: () {
-                                                    // Acción al presionar el botón de cancelar
-                                                    Navigator.of(context).pop();
-                                                  },
-                                                ),
-                                                TextButton(
-                                                  child: Text('Aceptar'),
-                                                  onPressed: () async {
-                                                    for (var i = 0;
-                                                        i <
-                                                            optionsCheckBox
-                                                                .length;
-                                                        i++) {
-                                                      if (optionsCheckBox[i]
-                                                                  ['id']
-                                                              .toString()
-                                                              .isNotEmpty &&
-                                                          optionsCheckBox[i]
-                                                                      ['id']
-                                                                  .toString() !=
-                                                              '' &&
-                                                          optionsCheckBox[i]
-                                                                  ['check'] ==
-                                                              true) {
-                                                        var response = await Connections()
-                                                            .updateOrderInteralStatus(
-                                                                "NO DESEA",
-                                                                optionsCheckBox[
-                                                                        i]['id']
-                                                                    .toString());
-                                                        counterChecks = 0;
-                                                      }
-                                                    }
-                                                    setState(() {});
-                                                    loadData();
-                                                    Navigator.of(context).pop();
-                                                  },
-                                                ),
-                                              ],
-                                            );
-                                          },
-                                        );
-                                      }
-                                    : null,
-                                child: const Text(
-                                  "No Desea",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                )),
-                            ElevatedButton(
-                                onPressed: () async {
-                                  await showDialog(
-                                      context: (context),
-                                      builder: (context) {
-                                        return AddOrderSellers();
-                                      });
-                                  await loadData();
-                                },
-                                child: const Text(
-                                  "Nuevo",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                )),
-                          ],
-                        ),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: ElevatedButton(
+                            onPressed: () async {
+                              await showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return ScannerPrintedDevoluciones();
+                                  });
+                              await loadData();
+                            },
+                            child: Text(
+                              "SCANNER",
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            )),
                       ),
                       Container(
                           child: NumberPaginator(

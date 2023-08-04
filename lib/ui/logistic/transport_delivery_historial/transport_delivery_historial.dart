@@ -55,6 +55,10 @@ class _TransportDeliveryHistorialState
     'PEDIDO PROGRAMADO',
     'NOVEDAD',
     'ENTREGADO',
+    'NO ENTREGADO',
+    'REAGENDADO',
+    'EN OFICINA',
+    'EN RUTA'
   ];
   List<String> listEstadoConfirmacion = [
     'TODO',
