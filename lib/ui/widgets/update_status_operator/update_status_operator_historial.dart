@@ -458,6 +458,12 @@ class _UpdateStatusOperatorHistorialState
 
                       if (widget.novedades.isEmpty) {
                         await Connections()
+                            .updateOrderStatusOperatorGeneralHistorialAndDate(
+                                "NOVEDAD",
+                                _controllerModalText.text,
+                                widget.id);
+                      } else {
+                        await Connections()
                             .updateOrderStatusOperatorGeneralHistorial(
                                 "NOVEDAD",
                                 _controllerModalText.text,
