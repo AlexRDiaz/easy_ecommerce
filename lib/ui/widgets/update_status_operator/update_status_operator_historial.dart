@@ -592,7 +592,7 @@ class _UpdateStatusOperatorHistorialState
                           .updateOrderStatusOperatorPedidoProgramadoHistorial(
                               "REAGENDADO",
                               _controllerModalText.text,
-                              dateSelect.split('-').reversed.join('-'),
+                              dateSelect.split('-').reversed.join('/'),
                               widget.id);
                       setState(() {
                         _controllerModalText.clear();

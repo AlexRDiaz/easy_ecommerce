@@ -1496,7 +1496,7 @@ class Connections {
             "Comentario": comentario,
             "Archivo": "",
             "Fecha_Entrega":
-                "${DateTime.now().day}-${DateTime.now().month}-${DateTime.now().year}"
+                "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}"
           }
         }));
     var response = await request.body;
