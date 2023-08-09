@@ -1,55 +1,87 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
-class CartesianChartDashboard extends StatefulWidget {
-  const CartesianChartDashboard({super.key});
+class DynamicStackedColumnChart extends StatefulWidget {
+  final List<Map<String, dynamic>> dataList;
+
+  DynamicStackedColumnChart({required this.dataList});
 
   @override
-  State<CartesianChartDashboard> createState() =>
-      _CartesianChartDashboardState();
+  State<DynamicStackedColumnChart> createState() =>
+      _DynamicStackedColumnChartState();
 }
 
-class _CartesianChartDashboardState extends State<CartesianChartDashboard> {
+class _DynamicStackedColumnChartState extends State<DynamicStackedColumnChart> {
+  double tama = 0.1;
+
+  reduceTam() {
+    tama = tama - 0.01;
+    return tama;
+  }
+
   @override
   Widget build(BuildContext context) {
-    final List<ChartData> chartData = [
-      ChartData('China', 12, 10, 14, 20),
-      ChartData('USA', 14, 11, 18, 23),
-      ChartData('UK', 16, 10, 15, 20),
-      ChartData('Brazil', 18, 16, 18, 24)
-    ];
+    double tam = widget.dataList.length > 6 ? reduceTam() : tama;
 
-    return Scaffold(
-        body: Center(
-            child: Container(
-                child: SfCartesianChart(
-                    primaryXAxis: CategoryAxis(),
-                    series: <ChartSeries>[
-          StackedColumnSeries<ChartData, String>(
-              dataSource: chartData,
-              xValueMapper: (ChartData data, _) => data.x,
-              yValueMapper: (ChartData data, _) => data.y1),
-          StackedColumnSeries<ChartData, String>(
-              dataSource: chartData,
-              xValueMapper: (ChartData data, _) => data.x,
-              yValueMapper: (ChartData data, _) => data.y2),
-          StackedColumnSeries<ChartData, String>(
-              dataSource: chartData,
-              xValueMapper: (ChartData data, _) => data.x,
-              yValueMapper: (ChartData data, _) => data.y3),
-          StackedColumnSeries<ChartData, String>(
-              dataSource: chartData,
-              xValueMapper: (ChartData data, _) => data.x,
-              yValueMapper: (ChartData data, _) => data.y4)
-        ]))));
+    return Column(
+      children: [
+        Expanded(
+          child: SfCartesianChart(
+            primaryXAxis: CategoryAxis(),
+            series: <ChartSeries>[
+              StackedColumnSeries<Map<String, dynamic>, String>(
+                width: tam,
+                dataSource: widget.dataList,
+                xValueMapper: (Map<String, dynamic> data, _) => data['x'],
+                yValueMapper: (Map<String, dynamic> data, _) => data['y1'],
+                name: 'Y1',
+              ),
+              StackedColumnSeries<Map<String, dynamic>, String>(
+                width: tam,
+                dataSource: widget.dataList,
+                xValueMapper: (Map<String, dynamic> data, _) => data['x'],
+                yValueMapper: (Map<String, dynamic> data, _) => data['y2'],
+                name: 'Y2',
+              ),
+              StackedColumnSeries<Map<String, dynamic>, String>(
+                width: tam,
+                dataSource: widget.dataList,
+                xValueMapper: (Map<String, dynamic> data, _) => data['x'],
+                yValueMapper: (Map<String, dynamic> data, _) => data['y3'],
+                name: 'Y3',
+              ),
+              StackedColumnSeries<Map<String, dynamic>, String>(
+                width: tam,
+                dataSource: widget.dataList,
+                xValueMapper: (Map<String, dynamic> data, _) => data['x'],
+                yValueMapper: (Map<String, dynamic> data, _) => data['y4'],
+                name: 'Y4',
+              ),
+              StackedColumnSeries<Map<String, dynamic>, String>(
+                width: tam,
+                dataSource: widget.dataList,
+                xValueMapper: (Map<String, dynamic> data, _) => data['x'],
+                yValueMapper: (Map<String, dynamic> data, _) => data['y5'],
+                name: 'Y5',
+              ),
+              StackedColumnSeries<Map<String, dynamic>, String>(
+                width: tam,
+                dataSource: widget.dataList,
+                xValueMapper: (Map<String, dynamic> data, _) => data['x'],
+                yValueMapper: (Map<String, dynamic> data, _) => data['y6'],
+                name: 'Y6',
+              ),
+              StackedColumnSeries<Map<String, dynamic>, String>(
+                width: tam,
+                dataSource: widget.dataList,
+                xValueMapper: (Map<String, dynamic> data, _) => data['x'],
+                yValueMapper: (Map<String, dynamic> data, _) => data['y7'],
+                name: 'Y7',
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
   }
-}
-
-class ChartData {
-  ChartData(this.x, this.y1, this.y2, this.y3, this.y4);
-  final String x;
-  final int y1;
-  final int y2;
-  final int y3;
-  final int y4;
 }

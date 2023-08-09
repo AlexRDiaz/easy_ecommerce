@@ -587,12 +587,16 @@ class _UpdateStatusOperatorHistorialState
               onPressed: dateSelect != ""
                   ? () async {
                       getLoadingModal(context, false);
-
+                      List date = dateSelect.split('-');
                       await Connections()
                           .updateOrderStatusOperatorPedidoProgramadoHistorial(
                               "REAGENDADO",
                               _controllerModalText.text,
-                              dateSelect.split('-').reversed.join('/'),
+                              date[2].toString().replaceAll('0', '') +
+                                  "/" +
+                                  date[1].toString().replaceAll('0', '') +
+                                  "/" +
+                                  date[0].toString(),
                               widget.id);
                       setState(() {
                         _controllerModalText.clear();

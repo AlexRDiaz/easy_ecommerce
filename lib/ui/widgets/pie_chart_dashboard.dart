@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/ui/sellers/dashboard/filter_details.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:frontend/ui/sellers/dashboard/filter_details.dart';
 
 class _ChartData {
   _ChartData(this.category, this.value);
@@ -19,45 +19,22 @@ class DynamicPieChart extends StatefulWidget {
 }
 
 class _DynamicPieChartState extends State<DynamicPieChart> {
-  late List<_ChartData> visibleData;
-  late double totalValue;
-  List<_ChartData> data = [
-    _ChartData('NoData', 10),
-  ];
+  double totalValue = 0;
+
   @override
   void initState() {
     super.initState();
-    loadData();
     updateVisibleData();
-  }
-
-  loadData() {
-    List<_ChartData> dataTemp = [
-      _ChartData('NoData', 10)
-    ]; // Limpiar la lista antes de agregar los nuevos datos
-    for (var filter in widget.filters) {
-      if (filter.numOfFiles != null) {
-        dataTemp.add(
-            _ChartData(filter.title.toString(), filter.percentage!.toDouble()));
-      }
-    }
-    data = dataTemp;
+    setState(() {});
   }
 
   void updateVisibleData() {
-    visibleData = data.where((data) => data.value > 0).toList();
-
     double totalTemp = 0;
-
-    for (var visible in visibleData) {
-      for (var filter in widget.filters) {
-        if (filter.title == visible.category) {
-          visible.value = filter.numOfFiles!.toDouble();
-          totalTemp += int.parse(filter.numOfFiles!.toString());
-        }
+    for (var filter in widget.filters) {
+      if (filter.numOfFiles != null) {
+        totalTemp += int.parse(filter.numOfFiles!.toString());
       }
     }
-
     totalValue = totalTemp;
   }
 
@@ -67,15 +44,27 @@ class _DynamicPieChartState extends State<DynamicPieChart> {
       children: [
         Expanded(
           child: SfCircularChart(
+            annotations: <CircularChartAnnotation>[
+              CircularChartAnnotation(
+                widget: Container(
+                  child: Text('Total : ' + _calculateTotal().toString(),
+                      style: TextStyle(
+                          color: Color.fromRGBO(216, 225, 227, 1),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20)),
+                ),
+              )
+            ],
             series: <CircularSeries>[
-              PieSeries<_ChartData, String>(
-                dataSource: visibleData,
-                dataLabelMapper: (_ChartData datum, _) {
-                  double percentage = (datum.value / totalValue) * 100;
+              PieSeries<FilterCheckModel, String>(
+                dataSource: widget.filters,
+                dataLabelMapper: (FilterCheckModel datum, _) {
+                  double percentage =
+                      (datum.numOfFiles!.toDouble() / _calculateTotal()) * 100;
                   return '${percentage.toStringAsFixed(2)}%';
                 },
-                xValueMapper: (_ChartData datum, _) => datum.category,
-                yValueMapper: (_ChartData datum, _) => datum.value,
+                xValueMapper: (FilterCheckModel datum, _) => datum.title,
+                yValueMapper: (FilterCheckModel datum, _) => datum.numOfFiles,
                 dataLabelSettings: DataLabelSettings(
                   isVisible: true,
                   labelPosition: ChartDataLabelPosition.outside,
@@ -89,13 +78,26 @@ class _DynamicPieChartState extends State<DynamicPieChart> {
     );
   }
 
+  _calculatePercentage(int numeroReg) {
+    double porcentaje = (numeroReg / _calculateTotal()) * 100;
+    return porcentaje;
+  }
+
+  _calculateTotal() {
+    int total = 0;
+    for (var filter in widget.filters) {
+      total += filter.numOfFiles!.toInt();
+    }
+    return total;
+  }
+
   Widget _buildLegend() {
     return Wrap(
-      children: data.map((data) {
+      children: widget.filters.map((filter) {
         return InkWell(
           onTap: () {
             setState(() {
-              data.value = data.value == 0 ? 10 : 0;
+              filter.numOfFiles = filter.numOfFiles == 0 ? 10 : 0;
               updateVisibleData();
             });
           },
@@ -107,10 +109,10 @@ class _DynamicPieChartState extends State<DynamicPieChart> {
                 Container(
                   width: 16,
                   height: 16,
-                  color: _getColor(data),
+                  color: _getColor(filter),
                 ),
                 SizedBox(width: 4),
-                Text(data.category),
+                Text(filter.title!),
               ],
             ),
           ),
@@ -119,12 +121,12 @@ class _DynamicPieChartState extends State<DynamicPieChart> {
     );
   }
 
-  Color _getColor(_ChartData data) {
-    if (data.value == 0) {
+  Color _getColor(FilterCheckModel filter) {
+    if (filter.numOfFiles == 0) {
       return Colors.grey;
     } else {
-      return Colors
-          .primaries[visibleData.indexOf(data) % Colors.primaries.length];
+      int index = widget.filters.indexOf(filter) % Colors.primaries.length;
+      return Colors.primaries[index];
     }
   }
 }

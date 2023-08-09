@@ -67,7 +67,7 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
   double costoTransportadora = 0;
   double costoDevoluciones = 0;
   double utilidades = 0;
-
+  List<Map<String, dynamic>> routeCounter = [];
   bool isFirst = true;
   int counterLoad = 0;
   String transporterOperator = 'TODO';
@@ -79,6 +79,64 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
   Color currentColor = Color.fromARGB(255, 108, 108, 109);
   List<Map<dynamic, dynamic>> arrayFiltersAndEq = [];
   var arrayDateRanges = [];
+  List<FilterCheckModel> filters = [
+    FilterCheckModel(
+        color: Colors.red,
+        numOfFiles: 0,
+        percentage: 0,
+        svgSrc: "assets/icons/Documents.svg",
+        title: "Entregados",
+        filter: "ENTREGADO",
+        check: false),
+    FilterCheckModel(
+        color: Color.fromARGB(255, 2, 51, 22),
+        numOfFiles: 0,
+        percentage: 0,
+        svgSrc: "assets/icons/Documents.svg",
+        title: "No entregado",
+        filter: "NO ENTREGADO",
+        check: false),
+    FilterCheckModel(
+        color: const Color.fromARGB(255, 76, 54, 244),
+        numOfFiles: 0,
+        percentage: 0,
+        svgSrc: "assets/icons/Documents.svg",
+        title: "Novedad",
+        filter: "NOVEDAD",
+        check: false),
+    FilterCheckModel(
+        color: Color.fromARGB(255, 42, 163, 67),
+        numOfFiles: 0,
+        percentage: 0,
+        svgSrc: "assets/icons/Documents.svg",
+        title: "Reagendado",
+        filter: "REAGENDADO",
+        check: false),
+    FilterCheckModel(
+        color: Color.fromARGB(255, 146, 76, 29),
+        numOfFiles: 0,
+        percentage: 0,
+        svgSrc: "assets/icons/Documents.svg",
+        title: "En ruta",
+        filter: "EN RUTA",
+        check: false),
+    FilterCheckModel(
+        color: Color.fromARGB(255, 11, 6, 123),
+        numOfFiles: 0,
+        percentage: 0,
+        svgSrc: "assets/icons/Documents.svg",
+        title: "En oficina",
+        filter: "EN OFICINA",
+        check: false),
+    FilterCheckModel(
+        color: Color.fromARGB(255, 146, 18, 73),
+        numOfFiles: 0,
+        percentage: 0,
+        svgSrc: "assets/icons/Documents.svg",
+        title: "Pedido programado",
+        filter: "PEDIDO PROGRAMADO",
+        check: false),
+  ];
 
   List arrayFiltersAnd = [];
 
@@ -94,12 +152,12 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
   ];
 
   @override
-  void didChangeDependencies() {
+  Future<void> didChangeDependencies() async {
     initializeDates();
     loadRoutes();
 
     loadConfigs();
-    loadData();
+    await loadData();
     super.didChangeDependencies();
   }
 
@@ -200,8 +258,8 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
         .getOrdersDashboardLogistic(populate, arrayFiltersAnd);
     setState(() {
       data = response;
-
       total = data.length;
+      loadCounterStates();
     });
 
     Future.delayed(const Duration(milliseconds: 500), () {
@@ -212,10 +270,6 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
 
     //  updateChartValues();
     // calculateValues();
-
-    setState(() {
-      loadCounterStates();
-    });
   }
 
   updateChartValues() {
@@ -234,10 +288,19 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
   }
 
   loadCounterStates() {
+    entregados = 0;
+    noEntregados = 0;
+    conNovedad = 0;
+    reagendados = 0;
+    regEnRuta = 0;
+    regEnOficina = 0;
+    regPedidoProgramado = 0;
+
     for (var d in data) {
       switch (d['Status']) {
         case "ENTREGADO":
           entregados++;
+
           break;
         case "NO ENTREGADO":
           noEntregados++;
@@ -261,69 +324,87 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
         default:
       }
     }
+    List arrayVals = [
+      entregados,
+      noEntregados,
+      conNovedad,
+      reagendados,
+      regEnRuta,
+      regEnOficina,
+      regPedidoProgramado
+    ];
+
+    List<FilterCheckModel> auxFilter = List.from(filters);
+
+    for (var i = 0; i < auxFilter.length; i++) {
+      auxFilter[i].numOfFiles = arrayVals[i];
+    }
+
+    setState(() {
+      filters = auxFilter;
+    });
+  }
+
+  loadCounterRoute(id, titulo) {
+    int rutaEntregado = 0;
+    int rutaNoEntregado = 0;
+    int rutaReagendado = 0;
+    int rutaNovedad = 0;
+    int rutaEnRuta = 0;
+    int rutaEnOficina = 0;
+    int rutaPedidoProgramado = 0;
+
+    for (var mapa in data) {
+      var estado = mapa['Status'];
+      var idMapa = mapa['ruta']['id'];
+      if (estado == 'ENTREGADO' && idMapa == id) {
+        rutaEntregado++;
+      }
+      if (estado == 'NO ENTREGADO' && idMapa == id) {
+        rutaNoEntregado++;
+      }
+
+      if (estado == 'NOVEDAD' && idMapa == id) {
+        rutaNovedad++;
+      }
+      if (estado == 'REAGENDADO' && idMapa == id) {
+        rutaReagendado++;
+      }
+      if (estado == 'EN RUTA' && idMapa == id) {
+        rutaEnRuta++;
+      }
+      if (estado == 'EN OFICINA' && idMapa == id) {
+        rutaEnOficina++;
+      }
+      if (estado == 'PEDIDO PROGRAMADO' && idMapa == id) {
+        rutaPedidoProgramado++;
+      }
+    }
+    Map<String, dynamic> newMap = {
+      'x': titulo,
+      'y1': rutaEntregado,
+      'y2': rutaNoEntregado,
+      'y3': rutaNovedad,
+      'y4': rutaReagendado,
+      'y5': rutaEnRuta,
+      'y6': rutaEnOficina,
+      'y7': rutaPedidoProgramado
+    };
+    print("entregados:" + rutaEntregado.toString());
+    print("no entregados: " + rutaNoEntregado.toString());
+    print("novedad: " + rutaNovedad.toString());
+    print("reagendado: " + rutaReagendado.toString());
+    print("enRuta: " + rutaEnRuta.toString());
+    print("en oficina: " + rutaEnOficina.toString());
+    print("pedido porgramado: " + rutaPedidoProgramado.toString());
+
+    setState(() {
+      routeCounter.add(newMap);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    List<FilterCheckModel> filters = [
-      FilterCheckModel(
-          color: Colors.red,
-          numOfFiles: entregados,
-          percentage: entregados.toDouble(),
-          svgSrc: "assets/icons/Documents.svg",
-          title: "Entregados",
-          filter: "ENTREGADO",
-          check: false),
-      FilterCheckModel(
-          color: Color.fromARGB(255, 2, 51, 22),
-          numOfFiles: noEntregados,
-          percentage: noEntregados.toDouble(),
-          svgSrc: "assets/icons/Documents.svg",
-          title: "No entregado",
-          filter: "NO ENTREGADO",
-          check: false),
-      FilterCheckModel(
-          color: const Color.fromARGB(255, 76, 54, 244),
-          numOfFiles: conNovedad,
-          percentage: conNovedad.toDouble(),
-          svgSrc: "assets/icons/Documents.svg",
-          title: "Novedad",
-          filter: "NOVEDAD",
-          check: false),
-      FilterCheckModel(
-          color: Color.fromARGB(255, 42, 163, 67),
-          numOfFiles: reagendados,
-          percentage: reagendados.toDouble(),
-          svgSrc: "assets/icons/Documents.svg",
-          title: "Reagendado",
-          filter: "REAGENDADO",
-          check: false),
-      FilterCheckModel(
-          color: Color.fromARGB(255, 146, 76, 29),
-          numOfFiles: regEnRuta,
-          percentage: regEnRuta.toDouble(),
-          svgSrc: "assets/icons/Documents.svg",
-          title: "En ruta",
-          filter: "EN RUTA",
-          check: false),
-      FilterCheckModel(
-          color: Color.fromARGB(255, 11, 6, 123),
-          numOfFiles: regEnOficina,
-          percentage: regEnOficina.toDouble(),
-          svgSrc: "assets/icons/Documents.svg",
-          title: "En oficina",
-          filter: "EN OFICINA",
-          check: false),
-      FilterCheckModel(
-          color: Color.fromARGB(255, 146, 18, 73),
-          numOfFiles: regPedidoProgramado,
-          percentage: regPedidoProgramado.toDouble(),
-          svgSrc: "assets/icons/Documents.svg",
-          title: "Pedido programado",
-          filter: "PEDIDO PROGRAMADO",
-          check: false),
-    ];
-
     return Scaffold(
         body: Center(
             child: Row(
@@ -335,154 +416,26 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
             child: Column(
               children: [
                 _dates(context),
-                responsive(
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Container(
-                              decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.grey),
-                                  borderRadius: BorderRadius.circular(3)),
-                              height: MediaQuery.of(context).size.height * 0.8,
-                              width: 200,
-                              child: DynamicPieChart(
-                                filters: filters,
-                              )),
-                        ),
-                        Expanded(
-                          child: Container(
-                              decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.grey),
-                                  borderRadius: BorderRadius.circular(3)),
-                              height: MediaQuery.of(context).size.height * 0.8,
-                              width: 200,
-                              child: CartesianChartDashboard()),
-                        ),
-                      ],
-                    ),
-
-                    // Row(
-                    //   mainAxisAlignment: MainAxisAlignment.start,
-                    //   crossAxisAlignment: CrossAxisAlignment.start,
-                    //   children: [
-                    //     Expanded(
-                    //       child: Container(
-                    //         height: MediaQuery.of(context).size.height * 0.73,
-                    //         padding: EdgeInsets.only(left: 20),
-                    //         child: InputDecorator(
-                    //           decoration: InputDecoration(
-                    //             labelText: 'Estados de entrega',
-                    //             border: OutlineInputBorder(
-                    //               borderRadius: BorderRadius.circular(10.0),
-                    //             ),
-                    //           ),
-                    //           child: Container(
-                    //             child: Row(
-                    //               crossAxisAlignment: CrossAxisAlignment.center,
-                    //               children: [
-                    //                 Chart(
-                    //                   sections: sections,
-                    //                   total: calculatetotal(),
-                    //                 ),
-                    //               ],
-                    //             ),
-                    //           ),
-                    //         ),
-                    //       ),
-                    //     ),
-                    //   ],
-                    // ),
-
-                    //  Text("hola mundo"),
-
-                    Expanded(
-                      child: ListView(
-                        padding: const EdgeInsets.all(8),
-                        children: <Widget>[
-                          Container(
-                            padding: EdgeInsets.only(
-                                left: 20, right: 14, bottom: 20),
-                            child: InputDecorator(
-                              decoration: InputDecoration(
-                                labelText: 'Estados de entrega',
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                ),
-                              ),
-                              child: Container(
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Expanded(
-                                      child: Column(
-                                        children: filters
-                                            .map((elemento) => FilterInfoCard(
-                                                  svgSrc: elemento.svgSrc!,
-                                                  title: elemento.title!,
-                                                  filter: elemento.filter!,
-                                                  color: elemento.color!,
-                                                  details: addTableRows,
-                                                  percentage:
-                                                      elemento.percentage!,
-                                                  numOfFiles:
-                                                      elemento.numOfFiles!,
-                                                  function: changeValue,
-                                                ))
-                                            .toList(),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                          // Row(
-                          //   children: [
-                          //     Expanded(
-                          //       child: Container(
-                          //         height:
-                          //             MediaQuery.of(context).size.height * 0.53,
-                          //         padding: EdgeInsets.only(
-                          //             left: 18, right: 13, bottom: 20),
-                          //         child: InputDecorator(
-                          //           decoration: InputDecoration(
-                          //             labelText: 'Porcentajes por estado',
-                          //             border: OutlineInputBorder(
-                          //               borderRadius: BorderRadius.circular(10.0),
-                          //             ),
-                          //           ),
-                          //           child: StreamBuilder<Object>(
-                          //               stream: null,
-                          //               builder: (context, snapshot) {
-                          //                 return Row(
-                          //                   crossAxisAlignment:
-                          //                       CrossAxisAlignment.center,
-                          //                   children: [
-                          //                     Chart(
-                          //                       sections: sections,
-                          //                       total: calculatetotal(),
-                          //                     ),
-                          //                   ],
-                          //                 );
-                          //               }),
-                          //         ),
-                          //       ),
-                          //     ),
-                          //   ],
-                          // ),
-
-                          FilterDetails(
-                              total: totalValoresRecibidos,
-                              costoEntregas: costoTransportadora,
-                              costoDevoluciones: costoDevoluciones,
-                              utilidades: utilidades),
-                          dataTableDetails()
-                        ],
-                      ),
-                    ),
-                    context)
+                Expanded(
+                  child: Container(
+                      decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey),
+                          borderRadius: BorderRadius.circular(3)),
+                      width: MediaQuery.of(context).size.width * 0.8,
+                      height: 200,
+                      child: DynamicPieChart(
+                        filters: filters,
+                      )),
+                ),
+                Expanded(
+                  child: Container(
+                      decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey),
+                          borderRadius: BorderRadius.circular(3)),
+                      width: MediaQuery.of(context).size.width * 0.8,
+                      height: 200,
+                      child: DynamicStackedColumnChart(dataList: routeCounter)),
+                ),
               ],
             ),
           ),
@@ -622,7 +575,12 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
                                           ),
                                           Checkbox(
                                             value: route['check'],
-                                            onChanged: (value) {},
+                                            onChanged: (value) {
+                                              loadCounterRoute(
+                                                  route['id'],
+                                                  route['attributes']
+                                                      ['Titulo']);
+                                            },
                                           )
                                         ],
                                       ),
@@ -1180,11 +1138,13 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
         value: selectValueSeller,
         onChanged: (value) async {
           arrayFiltersAnd
-              .removeWhere((element) => element.containsKey("Tienda_Temporal"));
+              .removeWhere((element) => element.containsKey("IdComercial"));
           setState(() {
-            arrayFiltersAnd.add({"Tienda_Temporal": value!.split("-")[0]});
+            print("id comercial:" + value!.split("-")[1]);
+            arrayFiltersAnd.add({"IdComercial": value.split("-")[1]});
             selectValueSeller = value as String;
           });
+          loadData();
         },
 
         //This to clear the search value when you close the menu
@@ -1194,6 +1154,8 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
       ),
     );
   }
+
+  void setRouteCounter(int id) {}
 
   // sendFilter(String selectedFilter, bool currentValue) {
   //   for (var filter in filters) {
