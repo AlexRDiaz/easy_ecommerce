@@ -2,6 +2,7 @@ import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:frontend/config/exports.dart';
 import 'package:frontend/connections/connections.dart';
 import 'package:frontend/helpers/responsive.dart';
 import 'package:frontend/main.dart';
@@ -33,7 +34,7 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
   List sections = [];
   List routes = [];
   List<String> sellers = [];
-  List data = [];
+  Map data = {};
   List subData = [];
   List tableData = [];
   List subFilters = [];
@@ -187,9 +188,8 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
   }
 
   loadConfigs() async {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      getLoadingModal(context, false);
-    });
+    isLoading = true;
+
     var responseOperator = [];
     setState(() {
       sellers = [];
@@ -229,22 +229,19 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
       });
     }
 
-    Future.delayed(Duration(milliseconds: 500), () {
-      Navigator.pop(context);
-    });
-    // setState(() {});
+    isLoading = false;
+    setState(() {});
   }
 
   loadData() async {
     isLoading = true;
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      getLoadingModal(context, false);
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   getLoadingModal(context, false);
+    // });
 
     // loadConfigs();
     setState(() {
-      data = [];
       subFilters = [];
       sections = [];
     });
@@ -258,25 +255,26 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
         .getOrdersDashboardLogistic(populate, arrayFiltersAnd);
     setState(() {
       data = response;
-      total = data.length;
+      // total = data.length;
       loadCounterStates();
     });
 
-    Future.delayed(const Duration(milliseconds: 500), () {
-      Navigator.pop(context);
-    });
+    // Future.delayed(const Duration(milliseconds: 500), () {
+    //   Navigator.pop(context);
+    // });
 
     //addCounts();
 
     //  updateChartValues();
     // calculateValues();
+    isLoading = false;
   }
 
-  updateChartValues() {
-    subData =
-        data.where((elemento) => elemento['Status'] == 'ENTREGADO').toList();
-    var m = subData;
-  }
+  // updateChartValues() {
+  //   subData =
+  //       data.where((elemento) => elemento['Status'] == 'ENTREGADO').toList();
+  //   var m = subData;
+  // }
 
   bool _isMenuOpen = false;
   final double _menuWidth = 300.0; // Ancho del menú lateral
@@ -288,42 +286,16 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
   }
 
   loadCounterStates() {
-    entregados = 0;
-    noEntregados = 0;
-    conNovedad = 0;
-    reagendados = 0;
-    regEnRuta = 0;
-    regEnOficina = 0;
-    regPedidoProgramado = 0;
+    entregados = int.parse(data['stateTotals']['ENTREGADO'].toString()) ?? 0;
+    noEntregados =
+        int.parse(data['stateTotals']['NO ENTREGADO'].toString()) ?? 0;
+    conNovedad = int.parse(data['stateTotals']['NOVEDAD'].toString()) ?? 0;
+    reagendados = int.parse(data['stateTotals']['REAGENDADO'].toString()) ?? 0;
+    regEnRuta = int.parse(data['stateTotals']['EN RUTA'].toString()) ?? 0;
+    regEnOficina = int.parse(data['stateTotals']['EN OFICINA'].toString()) ?? 0;
+    regPedidoProgramado =
+        int.parse(data['stateTotals']['PEDIDO PROGRAMADO'].toString()) ?? 0;
 
-    for (var d in data) {
-      switch (d['Status']) {
-        case "ENTREGADO":
-          entregados++;
-
-          break;
-        case "NO ENTREGADO":
-          noEntregados++;
-          break;
-        case "NOVEDAD":
-          conNovedad++;
-          break;
-        case "REAGENDADO":
-          reagendados++;
-          break;
-        case "EN RUTA":
-          regEnRuta++;
-          break;
-        case "EN OFICINA":
-          regEnOficina++;
-          break;
-
-        case "PEDIDO PROGRAMADO":
-          regPedidoProgramado++;
-          break;
-        default:
-      }
-    }
     List arrayVals = [
       entregados,
       noEntregados,
@@ -342,66 +314,94 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
 
     setState(() {
       filters = auxFilter;
+      routeCounter = routeCounter;
     });
   }
 
-  loadCounterRoute(id, titulo) {
-    int rutaEntregado = 0;
-    int rutaNoEntregado = 0;
-    int rutaReagendado = 0;
-    int rutaNovedad = 0;
-    int rutaEnRuta = 0;
-    int rutaEnOficina = 0;
-    int rutaPedidoProgramado = 0;
+  // loadCounterRoute(id, titulo) {
+  //   int rutaEntregado = 0;
+  //   int rutaNoEntregado = 0;
+  //   int rutaReagendado = 0;
+  //   int rutaNovedad = 0;
+  //   int rutaEnRuta = 0;
+  //   int rutaEnOficina = 0;
+  //   int rutaPedidoProgramado = 0;
+  //   Color colors = Colors.black;
+  //   for (var mapa in data) {
+  //     var estado = mapa['Status'];
+  //     var idMapa = mapa['ruta']['id'];
+  //     if (estado == 'ENTREGADO' && idMapa == id) {
+  //       rutaEntregado++;
+  //       colors = Colors.red;
+  //     }
+  //     if (estado == 'NO ENTREGADO' && idMapa == id) {
+  //       rutaNoEntregado++;
+  //     }
 
-    for (var mapa in data) {
-      var estado = mapa['Status'];
-      var idMapa = mapa['ruta']['id'];
-      if (estado == 'ENTREGADO' && idMapa == id) {
-        rutaEntregado++;
-      }
-      if (estado == 'NO ENTREGADO' && idMapa == id) {
-        rutaNoEntregado++;
-      }
+  //     if (estado == 'NOVEDAD' && idMapa == id) {
+  //       rutaNovedad++;
+  //     }
+  //     if (estado == 'REAGENDADO' && idMapa == id) {
+  //       rutaReagendado++;
+  //     }
+  //     if (estado == 'EN RUTA' && idMapa == id) {
+  //       rutaEnRuta++;
+  //     }
+  //     if (estado == 'EN OFICINA' && idMapa == id) {
+  //       rutaEnOficina++;
+  //     }
+  //     if (estado == 'PEDIDO PROGRAMADO' && idMapa == id) {
+  //       rutaPedidoProgramado++;
+  //       colors = Color.fromARGB(255, 146, 18, 73);
+  //     }
+  //   }
+  //   Map<String, dynamic> newMap = {
+  //     'x': titulo,
+  //     'y1': {"title": "entregado", "value": rutaEntregado, "color": Colors.red},
+  //     'y2': {
+  //       "title": "No Entregado",
+  //       "value": rutaNoEntregado,
+  //       "color": Color.fromARGB(255, 2, 51, 22)
+  //     },
+  //     'y3': {
+  //       "title": "Novedad",
+  //       "value": rutaNovedad,
+  //       "color": Color.fromARGB(255, 76, 54, 244)
+  //     },
+  //     'y4': {
+  //       "title": "Reagendado",
+  //       "value": rutaReagendado,
+  //       "color": Color.fromARGB(255, 42, 163, 67)
+  //     },
+  //     'y5': {
+  //       "title": "En Ruta",
+  //       "value": rutaEnRuta,
+  //       "color": Color.fromARGB(255, 146, 76, 29)
+  //     },
+  //     'y6': {
+  //       "title": "En Oficina",
+  //       "value": rutaEnOficina,
+  //       "color": Color.fromARGB(255, 11, 6, 123)
+  //     },
+  //     'y7': {
+  //       "title": "Programado",
+  //       "value": rutaEntregado,
+  //       "color": Color.fromARGB(255, 146, 18, 73)
+  //     },
+  //     // 'color': colors
+  //   };
+  //   print("entregados:" + rutaEntregado.toString());
+  //   print("no entregados: " + rutaNoEntregado.toString());
+  //   print("novedad: " + rutaNovedad.toString());
+  //   print("reagendado: " + rutaReagendado.toString());
+  //   print("enRuta: " + rutaEnRuta.toString());
+  //   print("en oficina: " + rutaEnOficina.toString());
+  //   print("pedido porgramado: " + rutaPedidoProgramado.toString());
 
-      if (estado == 'NOVEDAD' && idMapa == id) {
-        rutaNovedad++;
-      }
-      if (estado == 'REAGENDADO' && idMapa == id) {
-        rutaReagendado++;
-      }
-      if (estado == 'EN RUTA' && idMapa == id) {
-        rutaEnRuta++;
-      }
-      if (estado == 'EN OFICINA' && idMapa == id) {
-        rutaEnOficina++;
-      }
-      if (estado == 'PEDIDO PROGRAMADO' && idMapa == id) {
-        rutaPedidoProgramado++;
-      }
-    }
-    Map<String, dynamic> newMap = {
-      'x': titulo,
-      'y1': rutaEntregado,
-      'y2': rutaNoEntregado,
-      'y3': rutaNovedad,
-      'y4': rutaReagendado,
-      'y5': rutaEnRuta,
-      'y6': rutaEnOficina,
-      'y7': rutaPedidoProgramado
-    };
-    print("entregados:" + rutaEntregado.toString());
-    print("no entregados: " + rutaNoEntregado.toString());
-    print("novedad: " + rutaNovedad.toString());
-    print("reagendado: " + rutaReagendado.toString());
-    print("enRuta: " + rutaEnRuta.toString());
-    print("en oficina: " + rutaEnOficina.toString());
-    print("pedido porgramado: " + rutaPedidoProgramado.toString());
-
-    setState(() {
-      routeCounter.add(newMap);
-    });
-  }
+  //   setState(() {
+  //     routeCounter.add(newMap);
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -423,9 +423,11 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
                           borderRadius: BorderRadius.circular(3)),
                       width: MediaQuery.of(context).size.width * 0.8,
                       height: 200,
-                      child: DynamicPieChart(
-                        filters: filters,
-                      )),
+                      child: isLoading
+                          ? CustomCircularProgressIndicator()
+                          : DynamicPieChart(
+                              filters: filters,
+                            )),
                 ),
                 Expanded(
                   child: Container(
@@ -576,10 +578,10 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
                                           Checkbox(
                                             value: route['check'],
                                             onChanged: (value) {
-                                              loadCounterRoute(
-                                                  route['id'],
-                                                  route['attributes']
-                                                      ['Titulo']);
+                                              // loadCounterRoute(
+                                              //     route['id'],
+                                              //     route['attributes']
+                                              //         ['Titulo']);
                                             },
                                           )
                                         ],
@@ -874,71 +876,6 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
   //   }
   // }
 
-  addTableRows(value) {
-    tableData = [];
-    List arrTable = [];
-    for (var element in data) {
-      if (element['Status'] == value) {
-        arrTable.add(element);
-      }
-    }
-
-    setState(() {
-      tableData = arrTable;
-    });
-  }
-
-  calculateValues() {
-    totalValoresRecibidos = 0;
-    costoTransportadora = 0;
-    costoDevoluciones = 0;
-    utilidades = 0;
-    double total = 0;
-    double costoEntregas = 0;
-    double devol = 0;
-
-    for (var element in data) {
-      if (element['Status'] == 'ENTREGADO') {
-        print("precioTotal" + element['PrecioTotal']);
-        element['PrecioTotal'] =
-            element['PrecioTotal'].toString().replaceAll(',', '.');
-        total += double.parse(element['PrecioTotal']);
-      }
-
-      if (element['Status'] == 'ENTREGADO' ||
-          element['Status'] == 'NO ENTREGADO') {
-        element['users'][0]['vendedores'][0]['CostoEnvio'] =
-            element['users'][0]['vendedores'][0]['CostoEnvio'] ?? 0;
-
-        element['users'][0]['vendedores'][0]['CostoEnvio'] = element['users'][0]
-                ['vendedores'][0]['CostoEnvio']
-            .toString()
-            .replaceAll(',', '.');
-        costoEntregas +=
-            double.parse(element['users'][0]['vendedores'][0]['CostoEnvio']);
-      }
-
-      if (element['Status'] == 'NOVEDAD' &&
-          element['Estado_Devolucion'] != 'PENDIENTE') {
-        element['users'][0]['vendedores'][0]['CostoDevolucion'] =
-            element['users'][0]['vendedores'][0]['CostoDevolucion'] ?? 0;
-        element['users'][0]['vendedores'][0]['CostoDevolucion'] =
-            element['users'][0]['vendedores'][0]['CostoDevolucion']
-                .toString()
-                .replaceAll(',', '.');
-        devol += double.parse(
-            element['users'][0]['vendedores'][0]['CostoDevolucion']);
-      }
-    }
-    setState(() {
-      totalValoresRecibidos = total;
-      costoTransportadora = costoEntregas;
-      costoDevoluciones = devol;
-      utilidades =
-          totalValoresRecibidos - costoTransportadora - costoDevoluciones;
-    });
-  }
-
   calculatetotal() {
     int total = 0;
     for (var section in sections) {
@@ -1011,11 +948,12 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
                       GestureDetector(
                           onTap: () async {
                             setState(() {
-                              idTransport = "";
-                              selectValueTransport = null;
-                              selectValueOperator = null;
+                              selectValueSeller = null;
                             });
-                            // await loadData();
+                            arrayFiltersAnd.removeWhere((element) =>
+                                element.containsKey("transportadora"));
+                            await loadConfigs();
+                            loadData();
                           },
                           child: Icon(Icons.close))
                     ],
@@ -1024,12 +962,18 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
             .toList(),
         value: selectValueTransport,
         onChanged: (value) async {
+          arrayFiltersAnd
+              .removeWhere((element) => element.containsKey("transportadora"));
           setState(() {
             selectValueTransport = value as String;
             idTransport = value.split('-')[1];
             selectValueOperator = null;
+            arrayFiltersAnd.add({
+              "transportadora": {"id": idTransport}
+            });
           });
-          //  await loadData();
+          await loadConfigs();
+          loadData();
         },
 
         //This to clear the search value when you close the menu
@@ -1073,7 +1017,9 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
                             setState(() {
                               selectValueOperator = null;
                             });
-                            //  await loadData();
+                            arrayFiltersAnd.removeWhere(
+                                (element) => element.containsKey("operadore"));
+                            await loadData();
                           },
                           child: Icon(Icons.close))
                     ],
@@ -1085,6 +1031,12 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
           setState(() {
             selectValueOperator = value as String;
           });
+          arrayFiltersAnd
+              .removeWhere((element) => element.containsKey("operadore"));
+          arrayFiltersAnd.add({
+            "operadore": {"id": selectValueOperator!.split("-")[1]}
+          });
+          loadData();
         },
 
         //This to clear the search value when you close the menu
@@ -1128,7 +1080,10 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
                             setState(() {
                               selectValueSeller = null;
                             });
-                            //       await loadData();
+                            arrayFiltersAnd.removeWhere((element) =>
+                                element.containsKey("IdComercial"));
+
+                            await loadData();
                           },
                           child: Icon(Icons.close))
                     ],
@@ -1137,11 +1092,11 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
             .toList(),
         value: selectValueSeller,
         onChanged: (value) async {
-          arrayFiltersAnd
-              .removeWhere((element) => element.containsKey("IdComercial"));
           setState(() {
-            print("id comercial:" + value!.split("-")[1]);
-            arrayFiltersAnd.add({"IdComercial": value.split("-")[1]});
+            //   print("id comercial:" + value!.split("-")[1]);//
+            arrayFiltersAnd
+                .removeWhere((element) => element.containsKey("IdComercial"));
+            arrayFiltersAnd.add({"IdComercial": value!.split("-")[1]});
             selectValueSeller = value as String;
           });
           loadData();
@@ -1166,4 +1121,23 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
   //     }
   //   }
   // }
+}
+
+class CustomCircularProgressIndicator extends StatelessWidget {
+  const CustomCircularProgressIndicator({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: CircularProgressIndicator(
+        strokeWidth: 6, // Grosor de la línea
+        valueColor: AlwaysStoppedAnimation<Color>(
+          Colors.blue, // Color de la animación
+        ),
+        // Puedes agregar más propiedades de estilo aquí
+      ),
+    );
+  }
 }

@@ -20,7 +20,7 @@ class DynamicPieChart extends StatefulWidget {
 
 class _DynamicPieChartState extends State<DynamicPieChart> {
   double totalValue = 0;
-
+  List valuesDeleted = [];
   @override
   void initState() {
     super.initState();
@@ -49,9 +49,9 @@ class _DynamicPieChartState extends State<DynamicPieChart> {
                 widget: Container(
                   child: Text('Total : ' + _calculateTotal().toString(),
                       style: TextStyle(
-                          color: Color.fromRGBO(216, 225, 227, 1),
+                          color: Colors.black,
                           fontWeight: FontWeight.bold,
-                          fontSize: 20)),
+                          fontSize: 10)),
                 ),
               )
             ],
@@ -61,13 +61,18 @@ class _DynamicPieChartState extends State<DynamicPieChart> {
                 dataLabelMapper: (FilterCheckModel datum, _) {
                   double percentage =
                       (datum.numOfFiles!.toDouble() / _calculateTotal()) * 100;
-                  return '${percentage.toStringAsFixed(2)}%';
+                  String res = percentage > 0
+                      ? percentage.toStringAsFixed(1) + "%"
+                      : ' ';
+
+                  return res;
                 },
                 xValueMapper: (FilterCheckModel datum, _) => datum.title,
                 yValueMapper: (FilterCheckModel datum, _) => datum.numOfFiles,
+                pointColorMapper: (FilterCheckModel data, _) => data.color,
                 dataLabelSettings: DataLabelSettings(
                   isVisible: true,
-                  labelPosition: ChartDataLabelPosition.outside,
+                  labelPosition: ChartDataLabelPosition.inside,
                 ),
               ),
             ],
@@ -78,7 +83,7 @@ class _DynamicPieChartState extends State<DynamicPieChart> {
     );
   }
 
-  _calculatePercentage(int numeroReg) {
+  _calculatePercentage(double numeroReg) {
     double porcentaje = (numeroReg / _calculateTotal()) * 100;
     return porcentaje;
   }
@@ -93,11 +98,21 @@ class _DynamicPieChartState extends State<DynamicPieChart> {
 
   Widget _buildLegend() {
     return Wrap(
-      children: widget.filters.map((filter) {
+      children: widget.filters.map((
+        filter,
+      ) {
         return InkWell(
           onTap: () {
+            int index = widget.filters.indexOf(filter);
+            Map valormap = valuesDeleted.firstWhere(
+              (map) => map["index"] == index,
+              orElse: () => {},
+            );
+            int valor = valormap.isNotEmpty ? valormap['valor'] : 0;
             setState(() {
-              filter.numOfFiles = filter.numOfFiles == 0 ? 10 : 0;
+              filter.numOfFiles = filter.numOfFiles == 0
+                  ? valor
+                  : saveValue(index, filter.numOfFiles);
               updateVisibleData();
             });
           },
@@ -112,7 +127,7 @@ class _DynamicPieChartState extends State<DynamicPieChart> {
                   color: _getColor(filter),
                 ),
                 SizedBox(width: 4),
-                Text(filter.title!),
+                Text(filter.title! + ":" + filter.numOfFiles.toString()),
               ],
             ),
           ),
@@ -125,8 +140,13 @@ class _DynamicPieChartState extends State<DynamicPieChart> {
     if (filter.numOfFiles == 0) {
       return Colors.grey;
     } else {
-      int index = widget.filters.indexOf(filter) % Colors.primaries.length;
-      return Colors.primaries[index];
+      // int index = widget.filters.indexOf(filter) % Colors.primaries.length;
+      return filter.color!;
     }
+  }
+
+  int saveValue(index, value) {
+    valuesDeleted.add({"index": index, "valor": value});
+    return 0;
   }
 }

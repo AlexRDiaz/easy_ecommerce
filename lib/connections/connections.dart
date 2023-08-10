@@ -868,17 +868,17 @@ class Connections {
     print('start: ${sharedPrefs!.getString("dateDesdeLogistica")}');
     print('end: ${sharedPrefs!.getString("dateHastaLogistica")}');
 
-    var request = await http.post(
-        Uri.parse("$server/api/products/dashboard?pagination[limit]=-1"),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: json.encode({
-          "start": sharedPrefs!.getString("dateDesdeLogistica"),
-          "end": sharedPrefs!.getString("dateHastaLogistica"),
-          "populate": jsonEncode(populate),
-          "and": jsonEncode(and)
-        }));
+    var request =
+        await http.post(Uri.parse("$server/api/products/dashboard/logistic"),
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: json.encode({
+              "start": sharedPrefs!.getString("dateDesdeLogistica"),
+              "end": sharedPrefs!.getString("dateHastaLogistica"),
+              "populate": jsonEncode(populate),
+              "and": jsonEncode(and)
+            }));
 
     var response = await request.body;
     var decodeData = json.decode(response);
