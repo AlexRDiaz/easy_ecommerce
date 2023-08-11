@@ -7,6 +7,7 @@ import 'package:data_table_2/data_table_2.dart';
 import 'package:frontend/connections/connections.dart';
 import 'package:frontend/helpers/responsive.dart';
 import 'package:frontend/main.dart';
+import 'package:frontend/ui/logistic/print_guides/model_guide/model_guide.dart';
 import 'package:frontend/ui/transport/delivery_status_transport/Opcion.dart';
 import 'package:frontend/ui/widgets/OpcionesWidget.dart';
 import 'package:frontend/ui/transport/delivery_status_transport/delivery_details.dart';
@@ -52,6 +53,8 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
   int pageSize = 70;
   int pageCount = 100;
   bool isLoading = false;
+  Map dataCounters = {};
+  Map valuesTransporter = {};
   List<String> listOperators = [];
   Color currentColor = Color.fromARGB(255, 108, 108, 109);
   List<Map<dynamic, dynamic>> arrayFiltersAndEq = [];
@@ -73,9 +76,15 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
   ];
   List filtersDefaultAnd = [
     {
-      'filter': 'transportadora',
-      'value': sharedPrefs!.getString("idTransportadora").toString()
+      'transportadora': {
+        'id': sharedPrefs!.getString("idTransportadora").toString()
+      }
     }
+  ];
+  List arrayFiltersAnd = [
+    // {
+    //   "transportadora": {"\$not": null}
+    // }
   ];
 
   List filtersOrCont = [
@@ -103,10 +112,8 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
   NumberPaginatorController paginatorController = NumberPaginatorController();
 
   @override
-  void didChangeDependencies() {
-    if (_controllers.startDateController.text == "") {
-      _controllers.startDateController.text = getCurrentDate();
-    }
+  Future<void> didChangeDependencies() async {
+    await initializeDates();
 
     loadData();
     getOperatorsList();
@@ -120,30 +127,41 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getLoadingModal(context, false);
     });
-    var response = [];
 
-    currentPage = 1;
+    var responseValues = await Connections().getValuesTrasporter(populate, [
+      {
+        "transportadora": {"\$not": null}
+      }
+    ]);
 
-    response = await Connections().getOrdersForSellerStateSearchForDate(
+    var responseCounters = await Connections()
+        .getOrdersDashboardTransportadora(populate, arrayFiltersAndEq);
+
+    var response = await Connections().getOrdersForSellerStateSearchForDate(
         _controllers.searchController.text,
         filtersOrCont,
         arrayFiltersAndEq,
-        arrayDateRanges,
         arrayFiltersNotEq,
         filtersDefaultAnd,
         [],
-        populate);
+        populate,
+        currentPage,
+        pageSize);
 
-    allData = response;
-    pageCount = calcularTotalPaginas(allData.length, pageSize);
+    valuesTransporter = responseValues;
+    dataCounters = responseCounters;
+    data = response['data'];
+    total = response['meta']['total'];
+    pageCount = calcularTotalPaginas(total, pageSize);
 
     // print(sharedPrefs!.getString("idTransportadora").toString());
 
-    paginate();
+    //paginate();
 
-    paginatorController.navigateToPage(0);
+    // paginatorController.navigateToPage(0);
 
     updateCounters();
+    calculateValues();
 
     Future.delayed(Duration(milliseconds: 500), () {
       Navigator.pop(context);
@@ -193,11 +211,12 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
         _controllers.searchController.text,
         filtersOrCont,
         arrayFiltersAndEq,
-        arrayDateRanges,
         arrayFiltersNotEq,
         filtersDefaultAnd,
         [],
-        populate);
+        populate,
+        1,
+        75);
 
     allData = response;
     pageCount = calcularTotalPaginas(allData.length, pageSize);
@@ -212,6 +231,19 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
     setState(() {});
     isFirst = false;
     isLoading = false;
+  }
+
+  initializeDates() {
+    if (sharedPrefs!.getString("dateDesdeTransportadora") == null) {
+      sharedPrefs!.setString("dateDesdeTransportadora",
+          "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}");
+    }
+    // _controllers.startDateController.text =
+    //     sharedPrefs!.getString("dateDesdeTransportadora")!;
+
+    if (sharedPrefs!.getString("dateHastaTransportadora") == null) {
+      sharedPrefs!.setString("dateHastaTransportadora", "1/1/2200");
+    }
   }
 
   paginateData() {
@@ -247,6 +279,7 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
     DateTime now = DateTime.now();
     String formattedDate =
         "${now.day}/${now.month}/20${now.year.toString().substring(2)}";
+
     return formattedDate;
   }
 
@@ -1042,7 +1075,7 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
     return [
       Row(
         children: [
-          Text(_controllers.startDateController.text),
+          Text(sharedPrefs!.getString("dateDesdeTransportadora")!),
           IconButton(
             icon: const Icon(Icons.calendar_month),
             onPressed: () async {
@@ -1050,9 +1083,7 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
             },
           ),
           const Text(' - '),
-          Text(
-            _controllers.endDateController.text,
-          ),
+          Text(sharedPrefs!.getString("dateHastaTransportadora")!),
           IconButton(
             icon: Icon(Icons.calendar_month),
             onPressed: () async {
@@ -1143,6 +1174,17 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
           : '1/1/2200'
     });
 
+    sharedPrefs!.setString(
+        "dateDesdeTransportadora",
+        _controllers.startDateController.text != ""
+            ? _controllers.startDateController.text
+            : '1/1/1900');
+    sharedPrefs!.setString(
+        "dateHastaTransportadora",
+        _controllers.endDateController.text != ""
+            ? _controllers.endDateController.text
+            : '1/1/2200');
+
     await loadData();
     calculateValues();
     isFirst = false;
@@ -1180,42 +1222,21 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
   }
 
   updateCounters() {
-    total = 0;
     entregados = 0;
     noEntregados = 0;
     conNovedad = 0;
     reagendados = 0;
     enRuta = 0;
     programado = 0;
-    total = allData.length;
-    // print(data.toString());
-    for (var element in allData) {
-      element['attributes']['Status'];
-      switch (element['attributes']['Status']) {
-        case 'ENTREGADO':
-          entregados++;
-          break;
-
-        case 'NO ENTREGADO':
-          noEntregados++;
-          break;
-
-        case 'NOVEDAD':
-          conNovedad++;
-          break;
-        case 'REAGENDADO':
-          reagendados++;
-          break;
-        case 'EN RUTA':
-          enRuta++;
-          break;
-        case 'PEDIDO PROGRAMADO':
-          programado++;
-          break;
-
-        default:
-      }
-    }
+    setState(() {
+      entregados = int.parse(dataCounters['ENTREGADO'].toString()) ?? 0;
+      noEntregados = int.parse(dataCounters['NO ENTREGADO'].toString()) ?? 0;
+      conNovedad = int.parse(dataCounters['NOVEDAD'].toString()) ?? 0;
+      reagendados = int.parse(dataCounters['REAGENDADO'].toString()) ?? 0;
+      enRuta = int.parse(dataCounters['EN RUTA'].toString()) ?? 0;
+      // programado = int.parse(data['EN OFICINA'].toString()) ?? 0;
+      programado = int.parse(dataCounters['PEDIDO PROGRAMADO'].toString()) ?? 0;
+    });
   }
 
   AddFilterAndEq(value, filtro) {
@@ -1289,33 +1310,10 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
   }
 
   calculateValues() {
-    totalValoresRecibidos = 0;
-    costoTransportadora = 0;
-
-    for (var element in allData) {
-      element['attributes']['transportadora']['Costo_Transportadora'] != null
-          ? element['attributes']['transportadora']['Costo_Transportadora']
-              .replaceAll(',', '.')
-          : 0;
-
-      if (element['attributes']['Status'] == 'ENTREGADO') {
-        if (element['attributes']['PrecioTotal'].toString().contains(',')) {
-          element['attributes']['PrecioTotal'] = element['attributes']
-                  ['PrecioTotal']
-              .toString()
-              .replaceAll(',', '.');
-        }
-        totalValoresRecibidos +=
-            double.parse(element['attributes']['PrecioTotal']);
-      }
-
-      if (element['attributes']['Status'] == 'ENTREGADO' ||
-          element['attributes']['Status'] == 'NO ENTREGADO') {
-        costoTransportadora += double.parse(element['attributes']
-                ['transportadora']['Costo_Transportadora'] ??
-            0);
-      }
-    }
+    totalValoresRecibidos =
+        double.parse(valuesTransporter['totalValoresRecibido'].toString());
+    costoTransportadora =
+        double.parse(valuesTransporter['costoTransportadora'].toString());
   }
 
   Column SelectFilter(String title, filter, value,

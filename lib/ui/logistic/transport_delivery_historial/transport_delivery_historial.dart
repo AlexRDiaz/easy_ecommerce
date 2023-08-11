@@ -212,43 +212,30 @@ class _TransportDeliveryHistorialState
       search = false;
     });
 
-    var response = await Connections()
-        .getOrdersForHistorialTransportByDates(populate, arrayFiltersAnd);
+    var response = await Connections().getOrdersForHistorialTransportByDates(
+      populate,
+      arrayFiltersAnd,
+      currentPage,
+      pageSize,
+    );
     setState(() {
-      allData = response;
+      data = response['data'];
 
-      total = allData.length;
+      data = data.map((item) {
+        return {...item, 'check': false};
+      }).toList();
 
-      pageCount = calcularTotalPaginas(allData.length, pageSize);
-      paginate();
-      paginatorController.navigateToPage(0);
+      total = response['meta']['total'];
+
+      pageCount = calcularTotalPaginas(total, pageSize);
+      //paginate();
+      //paginatorController.navigateToPage(0);
     });
 
     setState(() {
       optionsCheckBox = [];
       counterChecks = 0;
     });
-    for (var i = 0; i < allData.length; i++) {
-      optionsCheckBox.add({
-        "check": false,
-        "id": "",
-        "numPedido": "",
-        "date": "",
-        "city": "",
-        "product": "",
-        "extraProduct": "",
-        "quantity": "",
-        "phone": "",
-        "price": "",
-        "name": "",
-        "transport": "",
-        "address": "",
-        "obervation": "",
-        "qrLink": "",
-      });
-
-      isLoading = false;
-    }
 
     Future.delayed(const Duration(milliseconds: 500), () {
       Navigator.pop(context);
@@ -950,21 +937,26 @@ class _TransportDeliveryHistorialState
                                 onPressed: () async {
                                   getLoadingModal(context, false);
 
-                                  for (var i = 0;
-                                      i < optionsCheckBox.length;
-                                      i++) {
-                                    if (optionsCheckBox[i]['id']
-                                            .toString()
-                                            .isNotEmpty &&
-                                        optionsCheckBox[i]['id'].toString() !=
-                                            '' &&
-                                        optionsCheckBox[i]['check'] == true) {
-                                      var response = await Connections()
-                                          .updateOrderLogisticStatus(
-                                              "IMPRESO",
-                                              optionsCheckBox[i]['id']
-                                                  .toString());
-                                    }
+                                  // for (var i = 0;
+                                  //     i < optionsCheckBox.length;
+                                  //     i++) {
+                                  //   if (optionsCheckBox[i]['id']
+                                  //           .toString()
+                                  //           .isNotEmpty &&
+                                  //       optionsCheckBox[i]['id'].toString() !=
+                                  //           '' &&
+                                  //       optionsCheckBox[i]['check'] == true) {
+                                  //     var response = await Connections()
+                                  //         .updateOrderLogisticStatus(
+                                  //             "IMPRESO",
+                                  //             optionsCheckBox[i]['id']
+                                  //                 .toString());
+                                  //   }
+                                  // }
+                                  for (var option in optionsCheckBox) {
+                                    await Connections()
+                                        .updateOrderLogisticStatus(
+                                            "IMPRESO", option['id'].toString());
                                   }
 
                                   Navigator.pop(context);
@@ -981,21 +973,26 @@ class _TransportDeliveryHistorialState
                                 onPressed: () async {
                                   getLoadingModal(context, false);
 
-                                  for (var i = 0;
-                                      i < optionsCheckBox.length;
-                                      i++) {
-                                    if (optionsCheckBox[i]['id']
-                                            .toString()
-                                            .isNotEmpty &&
-                                        optionsCheckBox[i]['id'].toString() !=
-                                            '' &&
-                                        optionsCheckBox[i]['check'] == true) {
-                                      var response = await Connections()
-                                          .updateOrderLogisticStatusPrint(
-                                              "ENVIADO",
-                                              optionsCheckBox[i]['id']
-                                                  .toString());
-                                    }
+                                  // for (var i = 0;
+                                  //     i < optionsCheckBox.length;
+                                  //     i++) {
+                                  //   if (optionsCheckBox[i]['id']
+                                  //           .toString()
+                                  //           .isNotEmpty &&
+                                  //       optionsCheckBox[i]['id'].toString() !=
+                                  //           '' &&
+                                  //       optionsCheckBox[i]['check'] == true) {
+                                  //     var response = await Connections()
+                                  //         .updateOrderLogisticStatusPrint(
+                                  //             "ENVIADO",
+                                  //             optionsCheckBox[i]['id']
+                                  //                 .toString());
+                                  //   }
+                                  // }
+                                  for (var option in optionsCheckBox) {
+                                    await Connections()
+                                        .updateOrderLogisticStatusPrint(
+                                            "ENVIADO", option['id'].toString());
                                   }
 
                                   Navigator.pop(context);
@@ -1017,55 +1014,91 @@ class _TransportDeliveryHistorialState
                                   getLoadingModal(context, false);
                                   final doc = pw.Document();
 
-                                  for (var i = 0;
-                                      i < optionsCheckBox.length;
-                                      i++) {
-                                    if (optionsCheckBox[i]['id']
-                                            .toString()
-                                            .isNotEmpty &&
-                                        optionsCheckBox[i]['id'].toString() !=
-                                            '' &&
-                                        optionsCheckBox[i]['check'] == true) {
-                                      final capturedImage =
-                                          await screenshotController
-                                              .captureFromWidget(Container(
-                                                  child: ModelGuide(
-                                        address: optionsCheckBox[i]['address'],
-                                        city: optionsCheckBox[i]['city'],
-                                        date: optionsCheckBox[i]['date'],
-                                        extraProduct: optionsCheckBox[i]
-                                            ['extraProduct'],
-                                        idForBarcode: optionsCheckBox[i]['id'],
-                                        name: optionsCheckBox[i]['name'],
-                                        numPedido: optionsCheckBox[i]
-                                            ['numPedido'],
-                                        observation: optionsCheckBox[i]
-                                            ['obervation'],
-                                        phone: optionsCheckBox[i]['phone'],
-                                        price: optionsCheckBox[i]['price'],
-                                        product: optionsCheckBox[i]['product'],
-                                        qrLink: optionsCheckBox[i]['qrLink'],
-                                        quantity: optionsCheckBox[i]
-                                            ['quantity'],
-                                        transport: optionsCheckBox[i]
-                                            ['transport'],
-                                      )));
-                                      doc.addPage(pw.Page(
-                                        pageFormat: PdfPageFormat(
-                                            21.0 * cm, 21.0 * cm,
-                                            marginAll: 0.1 * cm),
-                                        build: (pw.Context context) {
-                                          return pw.Row(
-                                            children: [
-                                              pw.Image(
-                                                  pw.MemoryImage(capturedImage),
-                                                  fit: pw.BoxFit.contain)
-                                            ],
-                                          );
-                                        },
-                                      ));
-                                    }
+                                  for (var option in optionsCheckBox) {
+                                    final capturedImage =
+                                        await screenshotController
+                                            .captureFromWidget(Container(
+                                                child: ModelGuide(
+                                      address: option['address'],
+                                      city: option['city'],
+                                      date: option['date'],
+                                      extraProduct: option['extraProduct'],
+                                      idForBarcode: option['id'],
+                                      name: option['name'],
+                                      numPedido: option['numPedido'],
+                                      observation: option['obervation'],
+                                      phone: option['phone'],
+                                      price: option['price'],
+                                      product: option['product'],
+                                      qrLink: option['qrLink'],
+                                      quantity: option['quantity'],
+                                      transport: option['transport'],
+                                    )));
+                                    doc.addPage(pw.Page(
+                                      pageFormat: PdfPageFormat(
+                                          21.0 * cm, 21.0 * cm,
+                                          marginAll: 0.1 * cm),
+                                      build: (pw.Context context) {
+                                        return pw.Row(
+                                          children: [
+                                            pw.Image(
+                                                pw.MemoryImage(capturedImage),
+                                                fit: pw.BoxFit.contain)
+                                          ],
+                                        );
+                                      },
+                                    ));
                                   }
+
+                                  // for (var i = 0;
+                                  //     i < optionsCheckBox.length;
+                                  //     i++) {
+                                  //   if (optionsCheckBox[i]['id']
+                                  //           .toString()
+                                  //           .isNotEmpty &&
+                                  //       optionsCheckBox[i]['id'].toString() !=
+                                  //           '' &&
+                                  //       optionsCheckBox[i]['check'] == true) {
+                                  //     final capturedImage =
+                                  //         await screenshotController
+                                  //             .captureFromWidget(Container(
+                                  //                 child: ModelGuide(
+                                  //       address: optionsCheckBox[i]['address'],
+                                  //       city: optionsCheckBox[i]['city'],
+                                  //       date: optionsCheckBox[i]['date'],
+                                  //       extraProduct: optionsCheckBox[i]
+                                  //           ['extraProduct'],
+                                  //       idForBarcode: optionsCheckBox[i]['id'],
+                                  //       name: optionsCheckBox[i]['name'],
+                                  //       numPedido: optionsCheckBox[i]
+                                  //           ['numPedido'],
+                                  //       observation: optionsCheckBox[i]
+                                  //           ['obervation'],
+                                  //       phone: optionsCheckBox[i]['phone'],
+                                  //       price: optionsCheckBox[i]['price'],
+                                  //       product: optionsCheckBox[i]['product'],
+                                  //       qrLink: optionsCheckBox[i]['qrLink'],
+                                  //       quantity: optionsCheckBox[i]
+                                  //           ['quantity'],
+                                  //       transport: optionsCheckBox[i]
+                                  //           ['transport'],
+                                  //     )));
+                                  //     doc.addPage(pw.Page(
+                                  //       pageFormat: PdfPageFormat(
+                                  //           21.0 * cm, 21.0 * cm,
+                                  //           marginAll: 0.1 * cm),
+                                  //       build: (pw.Context context) {
+                                  //         return pw.Row(
+                                  //           children: [
+                                  //             pw.Image(
+                                  //                 pw.MemoryImage(capturedImage),
+                                  //                 fit: pw.BoxFit.contain)
+                                  //           ],
+                                  //         );
+                                  //       },
+                                  //     ));
+                                  //   }
+                                  // }
                                   Navigator.pop(context);
                                   await Printing.layoutPdf(
                                       onLayout: (PdfPageFormat format) async =>
@@ -1443,55 +1476,17 @@ class _TransportDeliveryHistorialState
 
     return [
       DataCell(Checkbox(
-          value: verificarIndice(index),
+          value: data[index]['check'],
           onChanged: (value) {
             setState(() {
-              var subIndex = index + ((currentPage - 1) * pageSize);
-
-              if (value!) {
-                optionsCheckBox[subIndex]['check'] = value;
-                optionsCheckBox[subIndex]['id'] = data[index]['id'].toString();
-                optionsCheckBox[subIndex]['numPedido'] =
-                    "${data[index]['users'] != null ? data[index]['users'][0]['vendedores'][0]['Nombre_Comercial'] : data[index]['Tienda_Temporal'].toString()}-${data[index]['NumeroOrden']}"
-                        .toString();
-                optionsCheckBox[subIndex]['date'] =
-                    data[index]['pedido_fecha']['Fecha'].toString();
-                optionsCheckBox[subIndex]['city'] =
-                    data[index]['CiudadShipping'].toString();
-                optionsCheckBox[subIndex]['product'] =
-                    data[index]['ProductoP'].toString();
-                optionsCheckBox[subIndex]['extraProduct'] =
-                    data[index]['ProductoExtra'].toString();
-                optionsCheckBox[subIndex]['quantity'] =
-                    data[index]['Cantidad_Total'].toString();
-                optionsCheckBox[subIndex]['phone'] =
-                    data[index]['TelefonoShipping'].toString();
-                optionsCheckBox[subIndex]['price'] =
-                    data[index]['PrecioTotal'].toString();
-                optionsCheckBox[subIndex]['name'] =
-                    data[index]['NombreShipping'].toString();
-                optionsCheckBox[subIndex]['transport'] =
-                    "${data[index]['transportadora'] != null ? data[index]['transportadora']['Nombre'].toString() : ""}";
-                optionsCheckBox[subIndex]['address'] =
-                    data[index]['DireccionShipping'].toString();
-                optionsCheckBox[subIndex]['obervation'] =
-                    data[index]['Observacion'].toString();
-                optionsCheckBox[subIndex]['qrLink'] =
-                    data[index]['users'] != null
-                        ? data[index]['users'][0]['vendedores'][0]['Url_Tienda']
-                            .toString()
-                        : "";
-
-                counterChecks += 1;
-              } else {
-                optionsCheckBox[subIndex]['check'] = value;
-                optionsCheckBox[subIndex]['id'] = '';
-                counterChecks -= 1;
-              }
-              counterChecks > 0
-                  ? enabledBusqueda = false
-                  : enabledBusqueda = true;
+              data[index]['check'] = value;
             });
+            if (value == true) {
+              optionsCheckBox.add(data[index]);
+            } else {
+              optionsCheckBox
+                  .removeWhere((option) => option['id'] == data[index]['id']);
+            }
           })),
       DataCell(Text('${data[index]['Marca_T_I'].toString()}'), onTap: () {
         showDialog(
@@ -1869,13 +1864,12 @@ class _TransportDeliveryHistorialState
 
                     String nuevaFecha = "$dia/$mes/$anio";
 
-                    sharedPrefs!
-                        .setString("dateDesdeTransportHistorial", nuevaFecha);
+                    sharedPrefs!.setString("dateDesdeLogistica", nuevaFecha);
                   }
                 });
               },
               child: Text(
-                "DESDE: ${sharedPrefs!.getString("dateDesdeTransportHistorial")}",
+                "DESDE: ${sharedPrefs!.getString("dateDesdeLogistica")}",
                 style: TextStyle(fontWeight: FontWeight.bold),
               )),
           SizedBox(
@@ -1914,13 +1908,12 @@ class _TransportDeliveryHistorialState
 
                     String nuevaFecha = "$dia/$mes/$anio";
 
-                    sharedPrefs!
-                        .setString("dateHastaTransportHistorial", nuevaFecha);
+                    sharedPrefs!.setString("dateHastaLogistica", nuevaFecha);
                   }
                 });
               },
               child: Text(
-                "HASTA: ${sharedPrefs!.getString("dateHastaTransportHistorial")}",
+                "HASTA: ${sharedPrefs!.getString("dateHastaLogistica")}",
                 style: TextStyle(fontWeight: FontWeight.bold),
               )),
           SizedBox(
@@ -2167,13 +2160,11 @@ class _TransportDeliveryHistorialState
               {
                 'TipoPago': {'\$contains': _controllers.searchController.text},
               },
-
               {
                 'ruta': {
                   'Titulo': {'\$contains': _controllers.searchController.text},
                 },
               },
-
               {
                 'transportadora': {
                   'Nombre': {'\$contains': _controllers.searchController.text},
@@ -2184,7 +2175,6 @@ class _TransportDeliveryHistorialState
                   'Titulo': {'\$contains': _controllers.searchController.text},
                 }
               },
-
               {
                 'operadore': {
                   'user': {
@@ -2194,19 +2184,16 @@ class _TransportDeliveryHistorialState
                   },
                 },
               },
-
               {
                 'Fecha_Entrega': {
                   '\$contains': _controllers.searchController.text
                 },
               },
-
               {
                 'Tienda_Temporal': {
                   '\$contains': _controllers.searchController.text
                 },
               },
-
               {
                 'Estado_Interno': {
                   '\$contains': _controllers.searchController.text
@@ -2217,7 +2204,6 @@ class _TransportDeliveryHistorialState
                   '\$contains': _controllers.searchController.text
                 },
               },
-
               {
                 'transportadora': {
                   'Costo_Transportadora': {
@@ -2225,7 +2211,6 @@ class _TransportDeliveryHistorialState
                   }
                 },
               },
-
               {
                 'operadore': {
                   'Costo_Operador': {
@@ -2233,7 +2218,6 @@ class _TransportDeliveryHistorialState
                   }
                 },
               },
-
               {
                 'users': {
                   'vendedores': {
@@ -2252,15 +2236,13 @@ class _TransportDeliveryHistorialState
                   }
                 },
               },
-
-              //falta parametro estado_devolucion es un dropdown
               {
                 'Marca_T_D': {'\$contains': _controllers.searchController.text},
               },
-              //falta parametro estado pago logistico  es un dropdown
             ]
           });
-
+          //  sharedPrefs!.setString("dateDesdeLogistica", '1900');
+          //     sharedPrefs!.setString("dateHastaLogistica", '2200');
           loadData();
         },
         onChanged: (value) {
@@ -2557,9 +2539,9 @@ class _TransportDeliveryHistorialState
         setState(() {
           currentPage = index + 1;
         });
-        if (!isLoading) {
-          await paginateData();
-        }
+        // if (!isLoading) {
+        await loadData();
+        //  }
       },
     );
   }

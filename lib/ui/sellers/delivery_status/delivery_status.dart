@@ -132,11 +132,12 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
         _controllers.searchController.text,
         filtersOrCont,
         arrayFiltersAndEq,
-        arrayDateRanges,
         arrayFiltersNotEq,
         arrayfiltersDefaultAnd,
         [],
-        populate);
+        populate,
+        1,
+        1);
 
     allData = response;
     pageCount = calcularTotalPaginas(allData.length, pageSize);
@@ -183,11 +184,12 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
         _controllers.searchController.text,
         filtersOrCont,
         arrayFiltersAndEq,
-        arrayDateRanges,
         arrayFiltersNotEq,
         arrayfiltersDefaultAnd,
         [],
-        populate);
+        populate,
+        1,
+        70);
 
     allData = response;
     pageCount = calcularTotalPaginas(allData.length, pageSize);

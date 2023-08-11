@@ -826,23 +826,26 @@ class Connections {
     return decodeData['data'];
   }
 
-  getOrdersForHistorialTransportByDates(List populate, List and) async {
-    print('start: ${sharedPrefs!.getString("dateDesdeTransportHistorial")}');
-    print('end: ${sharedPrefs!.getString("dateHastaTransportHistorial")}');
+  getOrdersForHistorialTransportByDates(
+      List populate, List and, currentPage, sizePage) async {
+    print('start: ${sharedPrefs!.getString("dateDesdeLogistica")}');
+    print('end: ${sharedPrefs!.getString("dateHastaLogistica")}');
 
     var request = await http.post(
         Uri.parse("$server/api/history/transport?pagination[limit]=-1"),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
-          "start": sharedPrefs!.getString("dateDesdeTransportHistorial"),
-          "end": sharedPrefs!.getString("dateHastaTransportHistorial"),
+          "start": sharedPrefs!.getString("dateDesdeLogistica"),
+          "end": sharedPrefs!.getString("dateHastaLogistica"),
           "populate": jsonEncode(populate),
-          "and": jsonEncode(and)
+          "and": jsonEncode(and),
+          "currentPage": currentPage,
+          "sizePage": sizePage
         }));
 
     var response = await request.body;
     var decodeData = json.decode(response);
-    return decodeData['data'];
+    return decodeData;
   }
 
   getOrdersDashboard(List populate, List and) async {
@@ -879,6 +882,69 @@ class Connections {
               "populate": jsonEncode(populate),
               "and": jsonEncode(and)
             }));
+
+    var response = await request.body;
+    var decodeData = json.decode(response);
+    return decodeData['data'];
+  }
+
+  getOrdersDashboardTransportadora(List populate, List and) async {
+    print('start: ${sharedPrefs!.getString("dateDesdeTransportadora")}');
+    print('end: ${sharedPrefs!.getString("dateHastaTransportadora")}');
+
+    var request =
+        await http.post(Uri.parse("$server/api/products/dashboard/logistic"),
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: json.encode({
+              "start": sharedPrefs!.getString("dateDesdeTransportadora"),
+              "end": sharedPrefs!.getString("dateHastaTransportadora"),
+              "populate": jsonEncode(populate),
+              "and": jsonEncode(and)
+            }));
+
+    var response = await request.body;
+    var decodeData = json.decode(response);
+    return decodeData['data'];
+  }
+
+  getValuesTrasporter(List populate, List and) async {
+    print('start: ${sharedPrefs!.getString("dateDesdeTransportadora")}');
+    print('end: ${sharedPrefs!.getString("dateHastaTransportadora")}');
+
+    var request =
+        await http.post(Uri.parse("$server/api/pedidos/values/transporter/"),
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: json.encode({
+              "start": sharedPrefs!.getString("dateDesdeTransportadora"),
+              "end": sharedPrefs!.getString("dateHastaTransportadora"),
+              "populate": jsonEncode(populate),
+              "and": jsonEncode(and)
+            }));
+
+    var response = await request.body;
+    var decodeData = json.decode(response);
+    return decodeData;
+  }
+
+  getOrdersDashboardLogisticRoutes(List populate, List and) async {
+    print('start: ${sharedPrefs!.getString("dateDesdeLogistica")}');
+    print('end: ${sharedPrefs!.getString("dateHastaLogistica")}');
+
+    var request = await http.post(
+        Uri.parse("$server/api/products/city/dashboard/logistic"),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          "start": sharedPrefs!.getString("dateDesdeLogistica"),
+          "end": sharedPrefs!.getString("dateHastaLogistica"),
+          "populate": jsonEncode(populate),
+          "and": jsonEncode(and)
+        }));
 
     var response = await request.body;
     var decodeData = json.decode(response);
@@ -2211,15 +2277,17 @@ class Connections {
       code,
       arrayFiltersOrCont,
       arrayFiltersAndEq,
-      List<dynamic> arrayDateRanges,
       List arrayFiltersNotEq,
       List arrayDefaultAnd,
       List arrayDefaultOr,
-      List populate) async {
+      List populate,
+      currentPage,
+      sizePage) async {
     String url = "$server/api/shopify/pedidos/filter/seller/dates?";
 
     List<dynamic> filtersOrCont = [];
     List<dynamic> filtersAndEq = [];
+    var bodyParams;
 
     for (var filter in arrayDefaultAnd) {
       filtersAndEq.add({filter['filter']: filter['value']});
@@ -2229,23 +2297,6 @@ class Connections {
       filtersOrCont.add({filter['filter']: filter['value']});
     }
 
-    var bodyParams;
-    if (arrayDateRanges.isNotEmpty) {
-      bodyParams = {
-        arrayDateRanges[0]['body_param']: arrayDateRanges[0]['value'] != ""
-            ? arrayDateRanges[0]['value']
-            : '1/1/1999',
-        arrayDateRanges[1]['body_param']: arrayDateRanges[1]['value'] != ""
-            ? arrayDateRanges[1]['value']
-            : '1/1/2200'
-      };
-    } else {
-      bodyParams = {
-        'start': sharedPrefs!.getString("dateOperatorState"),
-        'end': '1/1/2200'
-      };
-    }
-    bodyParams['populate'] = jsonEncode(populate);
     if (code != "") {
       for (var filter in arrayFiltersOrCont) {
         filtersOrCont.add({
@@ -2254,24 +2305,40 @@ class Connections {
       }
     }
 
-    bodyParams['not'] = jsonEncode(arrayFiltersNotEq);
+    // bodyParams['not'] = jsonEncode(arrayFiltersNotEq);
 
-    bodyParams['or'] = jsonEncode(filtersOrCont);
+    // bodyParams['or'] = jsonEncode(filtersOrCont);
 
     for (var filter in arrayFiltersAndEq) {
       filtersAndEq.add({filter['filter']: filter['value']});
     }
-
-    bodyParams['not'] = jsonEncode(arrayFiltersNotEq);
-    bodyParams['or'] = jsonEncode(filtersOrCont);
-    bodyParams['and'] = jsonEncode(filtersAndEq);
+    // bodyParams['start'] = sharedPrefs!.getString("dateDesdeTransportadora");
+    // bodyParams['end'] = sharedPrefs!.getString("dateHastaTransportadora");
+    // bodyParams['not'] = jsonEncode(arrayFiltersNotEq);
+    // bodyParams['or'] = jsonEncode(filtersOrCont);
+    // bodyParams['and'] = jsonEncode(filtersAndEq);
+    // bodyParams['populate'] = jsonEncode(populate);
+    print(sharedPrefs!.getString("dateDesdeTransportadora"));
+    print(sharedPrefs!.getString("dateHastaTransportadora"));
     var request = await http.post(Uri.parse(url),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(bodyParams));
+        body: json.encode({
+          "start": sharedPrefs!.getString("dateDesdeTransportadora"),
+          "end": sharedPrefs!.getString("dateHastaTransportadora"),
+          "populate": jsonEncode(populate),
+          "not": jsonEncode(arrayFiltersNotEq),
+          "or": jsonEncode(filtersOrCont),
+          "and": jsonEncode(arrayDefaultAnd),
+          // "currentPage": currentPage,
+          // "sizePage": sizePage
+
+          "currentPage": currentPage,
+          "sizePage": sizePage
+        }));
 
     var response = await request.body;
     var decodeData = json.decode(response);
-    return decodeData['data'];
+    return decodeData;
   }
 
   getWithdrawalSellers(code) async {
@@ -2283,7 +2350,7 @@ class Connections {
     var response = await request.body;
     var decodeData = json.decode(response);
 
-    return decodeData['data'];
+    return decodeData;
   }
 
   getOrdersForSellerState(code) async {

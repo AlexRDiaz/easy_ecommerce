@@ -30,6 +30,7 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
   bool programado = false;
   bool openStatus = false;
   List checks = [];
+  List<Map<String, dynamic>> routeSelected = [];
   TextEditingController _search = TextEditingController();
   List sections = [];
   List routes = [];
@@ -53,7 +54,7 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
   List<DateTime?> _datesDesde = [];
   List<DateTime?> _datesHasta = [];
   List counters = [];
-
+  List dataRoutes = [];
   bool sort = false;
   String currentValue = "";
   int total = 0;
@@ -235,46 +236,25 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
 
   loadData() async {
     isLoading = true;
-
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   getLoadingModal(context, false);
-    // });
-
-    // loadConfigs();
     setState(() {
       subFilters = [];
       sections = [];
     });
-    // for (FilterCheckModel filter in filters) {
-    //   setState(() {
-    //     filter.check = false;
-    //   });
-    // }
 
     var response = await Connections()
         .getOrdersDashboardLogistic(populate, arrayFiltersAnd);
+    var responseRoutes = await Connections()
+        .getOrdersDashboardLogisticRoutes(populate, arrayFiltersAnd);
     setState(() {
       data = response;
-      // total = data.length;
+      dataRoutes = responseRoutes;
+
       loadCounterStates();
+      loadCounterRoute();
     });
 
-    // Future.delayed(const Duration(milliseconds: 500), () {
-    //   Navigator.pop(context);
-    // });
-
-    //addCounts();
-
-    //  updateChartValues();
-    // calculateValues();
     isLoading = false;
   }
-
-  // updateChartValues() {
-  //   subData =
-  //       data.where((elemento) => elemento['Status'] == 'ENTREGADO').toList();
-  //   var m = subData;
-  // }
 
   bool _isMenuOpen = false;
   final double _menuWidth = 300.0; // Ancho del menú lateral
@@ -286,15 +266,13 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
   }
 
   loadCounterStates() {
-    entregados = int.parse(data['stateTotals']['ENTREGADO'].toString()) ?? 0;
-    noEntregados =
-        int.parse(data['stateTotals']['NO ENTREGADO'].toString()) ?? 0;
-    conNovedad = int.parse(data['stateTotals']['NOVEDAD'].toString()) ?? 0;
-    reagendados = int.parse(data['stateTotals']['REAGENDADO'].toString()) ?? 0;
-    regEnRuta = int.parse(data['stateTotals']['EN RUTA'].toString()) ?? 0;
-    regEnOficina = int.parse(data['stateTotals']['EN OFICINA'].toString()) ?? 0;
-    regPedidoProgramado =
-        int.parse(data['stateTotals']['PEDIDO PROGRAMADO'].toString()) ?? 0;
+    entregados = int.parse(data['ENTREGADO'].toString()) ?? 0;
+    noEntregados = int.parse(data['NO ENTREGADO'].toString()) ?? 0;
+    conNovedad = int.parse(data['NOVEDAD'].toString()) ?? 0;
+    reagendados = int.parse(data['REAGENDADO'].toString()) ?? 0;
+    regEnRuta = int.parse(data['EN RUTA'].toString()) ?? 0;
+    regEnOficina = int.parse(data['EN OFICINA'].toString()) ?? 0;
+    regPedidoProgramado = int.parse(data['PEDIDO PROGRAMADO'].toString()) ?? 0;
 
     List arrayVals = [
       entregados,
@@ -318,90 +296,69 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
     });
   }
 
-  // loadCounterRoute(id, titulo) {
-  //   int rutaEntregado = 0;
-  //   int rutaNoEntregado = 0;
-  //   int rutaReagendado = 0;
-  //   int rutaNovedad = 0;
-  //   int rutaEnRuta = 0;
-  //   int rutaEnOficina = 0;
-  //   int rutaPedidoProgramado = 0;
-  //   Color colors = Colors.black;
-  //   for (var mapa in data) {
-  //     var estado = mapa['Status'];
-  //     var idMapa = mapa['ruta']['id'];
-  //     if (estado == 'ENTREGADO' && idMapa == id) {
-  //       rutaEntregado++;
-  //       colors = Colors.red;
-  //     }
-  //     if (estado == 'NO ENTREGADO' && idMapa == id) {
-  //       rutaNoEntregado++;
-  //     }
+  loadCounterRoute() {
+    int rutaId = -1;
+    int rutaEntregado = 0;
+    int rutaNoEntregado = 0;
+    int rutaReagendado = 0;
+    int rutaNovedad = 0;
+    int rutaEnRuta = 0;
+    int rutaEnOficina = 0;
+    int rutaPedidoProgramado = 0;
+    Color colors = Colors.black;
+    for (var mapa in dataRoutes) {
+      rutaId = mapa["rutaId"];
+      rutaEntregado = mapa["ENTREGADO"];
+      rutaNoEntregado = mapa["NO ENTREGADO"];
+      rutaReagendado = mapa["REAGENDADO"];
+      rutaNovedad = mapa["NOVEDAD"];
+      rutaEnRuta = mapa["EN RUTA"];
+      rutaEnOficina = mapa["EN OFICINA"];
+      rutaPedidoProgramado = mapa["PEDIDO PROGRAMADO"];
 
-  //     if (estado == 'NOVEDAD' && idMapa == id) {
-  //       rutaNovedad++;
-  //     }
-  //     if (estado == 'REAGENDADO' && idMapa == id) {
-  //       rutaReagendado++;
-  //     }
-  //     if (estado == 'EN RUTA' && idMapa == id) {
-  //       rutaEnRuta++;
-  //     }
-  //     if (estado == 'EN OFICINA' && idMapa == id) {
-  //       rutaEnOficina++;
-  //     }
-  //     if (estado == 'PEDIDO PROGRAMADO' && idMapa == id) {
-  //       rutaPedidoProgramado++;
-  //       colors = Color.fromARGB(255, 146, 18, 73);
-  //     }
-  //   }
-  //   Map<String, dynamic> newMap = {
-  //     'x': titulo,
-  //     'y1': {"title": "entregado", "value": rutaEntregado, "color": Colors.red},
-  //     'y2': {
-  //       "title": "No Entregado",
-  //       "value": rutaNoEntregado,
-  //       "color": Color.fromARGB(255, 2, 51, 22)
-  //     },
-  //     'y3': {
-  //       "title": "Novedad",
-  //       "value": rutaNovedad,
-  //       "color": Color.fromARGB(255, 76, 54, 244)
-  //     },
-  //     'y4': {
-  //       "title": "Reagendado",
-  //       "value": rutaReagendado,
-  //       "color": Color.fromARGB(255, 42, 163, 67)
-  //     },
-  //     'y5': {
-  //       "title": "En Ruta",
-  //       "value": rutaEnRuta,
-  //       "color": Color.fromARGB(255, 146, 76, 29)
-  //     },
-  //     'y6': {
-  //       "title": "En Oficina",
-  //       "value": rutaEnOficina,
-  //       "color": Color.fromARGB(255, 11, 6, 123)
-  //     },
-  //     'y7': {
-  //       "title": "Programado",
-  //       "value": rutaEntregado,
-  //       "color": Color.fromARGB(255, 146, 18, 73)
-  //     },
-  //     // 'color': colors
-  //   };
-  //   print("entregados:" + rutaEntregado.toString());
-  //   print("no entregados: " + rutaNoEntregado.toString());
-  //   print("novedad: " + rutaNovedad.toString());
-  //   print("reagendado: " + rutaReagendado.toString());
-  //   print("enRuta: " + rutaEnRuta.toString());
-  //   print("en oficina: " + rutaEnOficina.toString());
-  //   print("pedido porgramado: " + rutaPedidoProgramado.toString());
+      Map<String, dynamic> newMap = {
+        'x': rutaId,
+        'y1': {
+          "title": "entregado",
+          "value": rutaEntregado,
+          "color": Colors.red
+        },
+        'y2': {
+          "title": "No Entregado",
+          "value": rutaNoEntregado,
+          "color": Color.fromARGB(255, 2, 51, 22)
+        },
+        'y3': {
+          "title": "Novedad",
+          "value": rutaNovedad,
+          "color": Color.fromARGB(255, 76, 54, 244)
+        },
+        'y4': {
+          "title": "Reagendado",
+          "value": rutaReagendado,
+          "color": Color.fromARGB(255, 42, 163, 67)
+        },
+        'y5': {
+          "title": "En Ruta",
+          "value": rutaEnRuta,
+          "color": Color.fromARGB(255, 146, 76, 29)
+        },
+        'y6': {
+          "title": "En Oficina",
+          "value": rutaEnOficina,
+          "color": Color.fromARGB(255, 11, 6, 123)
+        },
+        'y7': {
+          "title": "Programado",
+          "value": rutaEntregado,
+          "color": Color.fromARGB(255, 146, 18, 73)
+        },
+        // 'color': colors
+      };
 
-  //   setState(() {
-  //     routeCounter.add(newMap);
-  //   });
-  // }
+      routeCounter.add(newMap);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -436,7 +393,9 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
                           borderRadius: BorderRadius.circular(3)),
                       width: MediaQuery.of(context).size.width * 0.8,
                       height: 200,
-                      child: DynamicStackedColumnChart(dataList: routeCounter)),
+                      child: isLoading
+                          ? CustomCircularProgressIndicator()
+                          : DynamicStackedColumnChart(dataList: routeSelected)),
                 ),
               ],
             ),
@@ -517,46 +476,6 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
                             ],
                           ),
                         ),
-
-                        // Padding(
-                        //   padding: const EdgeInsets.symmetric(horizontal: 16),
-                        //   child: ExpansionTile(
-                        //     title: Text("Entidades"),
-                        //     children: filters
-                        //         .map((filter) => Row(
-                        //               children: [
-                        //                 Container(
-                        //                   width: 200,
-                        //                   child: Text(
-                        //                     filter.title.toString(),
-                        //                     style: TextStyle(fontSize: 16),
-                        //                   ),
-                        //                 ),
-                        //                 Checkbox(
-                        //                   checkColor: filter.color,
-                        //                   activeColor:
-                        //                       filter.color!.withOpacity(0.5),
-                        //                   focusColor:
-                        //                       filter.color!.withOpacity(0.8),
-                        //                   value: filter.check,
-                        //                   onChanged: (value) => sendFilter(
-                        //                       filter.filter.toString(), value!),
-                        //                 )
-                        //               ],
-                        //             ))
-                        //         .toList(),
-                        //   ),
-                        // ),
-
-                        // const ListTile(
-                        //   title: Text(
-                        //     'Ciudades',
-                        //     style: TextStyle(
-                        //       fontWeight: FontWeight.bold,
-                        //       fontSize: 18,
-                        //     ),
-                        //   ),
-                        // ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 7),
                           child: ExpansionTile(
@@ -578,10 +497,13 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
                                           Checkbox(
                                             value: route['check'],
                                             onChanged: (value) {
-                                              // loadCounterRoute(
-                                              //     route['id'],
-                                              //     route['attributes']
-                                              //         ['Titulo']);
+                                              setState(() {
+                                                route['check'] = value;
+                                              });
+                                              addCounterRoute(
+                                                  route['id'],
+                                                  route['attributes']['Titulo'],
+                                                  value);
                                             },
                                           )
                                         ],
@@ -654,6 +576,19 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
         // )
       ],
     )));
+  }
+
+  addCounterRoute(routeId, title, value) {
+    var route = routeCounter.firstWhere((route) => route['x'] == routeId);
+    if (value) {
+      setState(() {
+        route['title'] = title;
+        routeSelected.add(route);
+      });
+    } else {
+      route['title'] = title;
+      routeSelected.removeWhere((route) => route['x'] == routeId);
+    }
   }
 
   Widget _expansionPanel() {

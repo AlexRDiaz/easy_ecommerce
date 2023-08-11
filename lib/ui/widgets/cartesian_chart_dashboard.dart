@@ -26,7 +26,7 @@ class _DynamicStackedColumnChartState extends State<DynamicStackedColumnChart> {
             widget.dataList.isEmpty ? '' : widget.dataList[0][yKey]['title'];
         return StackedColumnSeries<Map<String, dynamic>, String>(
           dataSource: widget.dataList,
-          xValueMapper: (Map<String, dynamic> data, _) => data['x'],
+          xValueMapper: (Map<String, dynamic> data, _) => data['title'],
           yValueMapper: (Map<String, dynamic> data, _) => data[yKey]['value'],
           color: color, // Assign the color to the series
 
