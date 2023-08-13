@@ -9,7 +9,7 @@ import 'package:frontend/helpers/responsive.dart';
 import 'package:frontend/main.dart';
 import 'package:frontend/ui/logistic/print_guides/model_guide/model_guide.dart';
 import 'package:frontend/ui/transport/delivery_status_transport/Opcion.dart';
-import 'package:frontend/ui/widgets/OpcionesWidget.dart';
+import 'package:frontend/ui/widgets/OptionsWidget.dart';
 import 'package:frontend/ui/transport/delivery_status_transport/delivery_details.dart';
 import 'package:frontend/ui/transport/delivery_status_transport/scanner_delivery_status_transport.dart';
 import 'package:frontend/ui/transport/my_orders_prv/controllers/controllers.dart';
@@ -33,7 +33,7 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
 
   List data = [];
   //List<String> transporterOperators = [];
-
+  bool isLoadingTotalOrders = false;
   List<DateTime?> _dates = [];
   bool sort = false;
   String currentValue = "";
@@ -121,9 +121,6 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
   }
 
   Future loadData() async {
-    setState(() {
-      isLoading = true;
-    });
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getLoadingModal(context, false);
     });
@@ -131,29 +128,42 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
     var responseValues = await Connections().getValuesTrasporter(populate, [
       {
         "transportadora": {"\$not": null}
+      },
+      {
+        'transportadora': {
+          'id': sharedPrefs!.getString("idTransportadora").toString()
+        }
       }
     ]);
 
     var responseCounters = await Connections()
         .getOrdersDashboardTransportadora(populate, arrayFiltersAndEq);
 
-    var response = await Connections().getOrdersForSellerStateSearchForDate(
-        _controllers.searchController.text,
-        filtersOrCont,
-        arrayFiltersAndEq,
-        arrayFiltersNotEq,
-        filtersDefaultAnd,
-        [],
-        populate,
-        currentPage,
-        pageSize);
+    setState(() {
+      isLoading = true;
+    });
+    var response = await Connections()
+        .getOrdersForSellerStateSearchForDateTransporter(
+            _controllers.searchController.text,
+            filtersOrCont,
+            arrayFiltersAndEq,
+            arrayFiltersNotEq,
+            filtersDefaultAnd,
+            [],
+            populate,
+            currentPage,
+            pageSize);
 
     valuesTransporter = responseValues;
     dataCounters = responseCounters;
     data = response['data'];
     total = response['meta']['total'];
-    pageCount = calcularTotalPaginas(total, pageSize);
+    pageCount = updateTotalPages(total, pageSize);
+    setState(() {
+      isFirst = false;
 
+      isLoading = false;
+    });
     // print(sharedPrefs!.getString("idTransportadora").toString());
 
     //paginate();
@@ -165,11 +175,6 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
 
     Future.delayed(Duration(milliseconds: 500), () {
       Navigator.pop(context);
-    });
-    setState(() {
-      isFirst = false;
-
-      isLoading = false;
     });
   }
 
@@ -207,23 +212,24 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
     var response = [];
     var operators = [];
     currentPage = 1;
-    response = await Connections().getOrdersForSellerStateSearchForDate(
-        _controllers.searchController.text,
-        filtersOrCont,
-        arrayFiltersAndEq,
-        arrayFiltersNotEq,
-        filtersDefaultAnd,
-        [],
-        populate,
-        1,
-        75);
+    response = await Connections()
+        .getOrdersForSellerStateSearchForDateTransporter(
+            _controllers.searchController.text,
+            filtersOrCont,
+            arrayFiltersAndEq,
+            arrayFiltersNotEq,
+            filtersDefaultAnd,
+            [],
+            populate,
+            1,
+            75);
 
     allData = response;
-    pageCount = calcularTotalPaginas(allData.length, pageSize);
+    pageCount = updateTotalPages(allData.length, pageSize);
     //if (allData.isEmpty) {
-    paginate();
+
     //}
-    paginatorController.navigateToPage(0);
+    //paginatorController.navigateToPage(0);
 
     Future.delayed(Duration(milliseconds: 500), () {
       Navigator.pop(context);
@@ -246,25 +252,43 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
     }
   }
 
-  paginateData() {
-    paginate();
+  paginateData() async {
+    setState(() {
+      isLoading = true;
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getLoadingModal(context, false);
+    });
+
+    var response = await Connections()
+        .getOrdersForSellerStateSearchForDateTransporter(
+            _controllers.searchController.text,
+            filtersOrCont,
+            arrayFiltersAndEq,
+            arrayFiltersNotEq,
+            filtersDefaultAnd,
+            [],
+            populate,
+            currentPage,
+            pageSize);
+
+    setState(() {
+      data = response['data'];
+
+      pageCount = updateTotalPages(response['meta']['total'], pageSize);
+    });
+
+    Future.delayed(Duration(milliseconds: 500), () {
+      Navigator.pop(context);
+    });
+    setState(() {
+      isFirst = false;
+
+      isLoading = false;
+    });
   }
 
-  paginate() {
-    if (allData.isNotEmpty) {
-      if (currentPage == pageCount) {
-        data = allData.sublist((pageSize * (currentPage - 1)), allData.length);
-      } else {
-        data = allData.sublist(
-            (pageSize * (currentPage - 1)), (pageSize * currentPage));
-      }
-    } else {
-      data = [];
-    }
-    var res = 1;
-  }
-
-  int calcularTotalPaginas(int totalRegistros, int registrosPorPagina) {
+  int updateTotalPages(int totalRegistros, int registrosPorPagina) {
     final int totalPaginas = totalRegistros ~/ registrosPorPagina;
     final int registrosRestantes = totalRegistros % registrosPorPagina;
 
@@ -286,40 +310,47 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
   @override
   Widget build(BuildContext context) {
     String operatorVal = transporterOperator;
-    List<Opcion> opciones = [
+    List<Opcion> options = [
       Opcion(
           icono: Icon(Icons.all_inbox),
           titulo: 'Total',
+          filtro: 'Total',
           valor: total,
           color: Color.fromARGB(255, 108, 108, 109)),
       Opcion(
           icono: Icon(Icons.send),
           titulo: 'Entregado',
+          filtro: 'Entregado',
           valor: entregados,
           color: const Color.fromARGB(255, 102, 187, 106)),
       Opcion(
           icono: Icon(Icons.error),
           titulo: 'No Entregado',
+          filtro: 'No Entregado',
           valor: noEntregados,
           color: Color.fromARGB(255, 243, 33, 33)),
       Opcion(
           icono: Icon(Icons.ac_unit),
           titulo: 'Novedad',
+          filtro: 'Novedad',
           valor: conNovedad,
           color: const Color.fromARGB(255, 244, 225, 57)),
       Opcion(
           icono: Icon(Icons.schedule),
           titulo: 'Reagendado',
+          filtro: 'Reagendado',
           valor: reagendados,
           color: Color.fromARGB(255, 227, 32, 241)),
       Opcion(
           icono: Icon(Icons.route),
           titulo: 'En Ruta',
+          filtro: 'En Ruta',
           valor: enRuta,
           color: const Color.fromARGB(255, 33, 150, 243)),
       Opcion(
           icono: Icon(Icons.lock_clock),
           titulo: 'Programado',
+          filtro: 'Pedido Programado',
           valor: programado,
           color: Color.fromARGB(255, 239, 127, 14)),
     ];
@@ -395,15 +426,15 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
             responsive(
                 Container(
                     height: MediaQuery.of(context).size.height * 0.10,
-                    child: OpcionesWidget(
-                        function: loadDataNoCounts,
-                        opciones: opciones,
+                    child: OptionsWidget(
+                        function: addFilter,
+                        options: options,
                         currentValue: currentValue)),
                 Container(
                     height: MediaQuery.of(context).size.height * 0.16,
-                    child: OpcionesWidget(
-                        function: loadDataNoCounts,
-                        opciones: opciones,
+                    child: OptionsWidget(
+                        function: addFilter,
+                        options: options,
                         currentValue: currentValue)),
                 context),
             Container(
@@ -1075,7 +1106,10 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
     return [
       Row(
         children: [
-          Text(sharedPrefs!.getString("dateDesdeTransportadora")!),
+          Text(sharedPrefs!.getString("dateDesdeTransportadora").toString() !=
+                  "1/1/2000"
+              ? sharedPrefs!.getString("dateDesdeTransportadora").toString()
+              : ""),
           IconButton(
             icon: const Icon(Icons.calendar_month),
             onPressed: () async {
@@ -1083,7 +1117,10 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
             },
           ),
           const Text(' - '),
-          Text(sharedPrefs!.getString("dateHastaTransportadora")!),
+          Text(sharedPrefs!.getString("dateHastaTransportadora").toString() !=
+                  "1/1/2200"
+              ? sharedPrefs!.getString("dateHastaTransportadora").toString()
+              : ""),
           IconButton(
             icon: Icon(Icons.calendar_month),
             onPressed: () async {
@@ -1173,18 +1210,18 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
           ? _controllers.endDateController.text
           : '1/1/2200'
     });
-
-    sharedPrefs!.setString(
-        "dateDesdeTransportadora",
-        _controllers.startDateController.text != ""
-            ? _controllers.startDateController.text
-            : '1/1/1900');
-    sharedPrefs!.setString(
-        "dateHastaTransportadora",
-        _controllers.endDateController.text != ""
-            ? _controllers.endDateController.text
-            : '1/1/2200');
-
+    setState(() {
+      sharedPrefs!.setString(
+          "dateDesdeTransportadora",
+          _controllers.startDateController.text != ""
+              ? _controllers.startDateController.text
+              : '1/1/2000');
+      sharedPrefs!.setString(
+          "dateHastaTransportadora",
+          _controllers.endDateController.text != ""
+              ? _controllers.endDateController.text
+              : '1/1/2200');
+    });
     await loadData();
     calculateValues();
     isFirst = false;
@@ -1310,10 +1347,12 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
   }
 
   calculateValues() {
-    totalValoresRecibidos =
-        double.parse(valuesTransporter['totalValoresRecibido'].toString());
-    costoTransportadora =
-        double.parse(valuesTransporter['costoTransportadora'].toString());
+    setState(() {
+      totalValoresRecibidos =
+          double.parse(valuesTransporter['totalValoresRecibido'].toString());
+      costoTransportadora =
+          double.parse(valuesTransporter['costoTransportadora'].toString());
+    });
   }
 
   Column SelectFilter(String title, filter, value,
@@ -1341,11 +1380,6 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
                       .where((element) => element['filter'] != filter)
                       .toList();
 
-                  // for (Map element in arrayFiltersAndEq) {
-                  //   if (element['filter'] == filter) {
-                  //     arrayFiltersAndEq.remove(element);
-                  //   }
-                  // }
                   if (newValue != 'TODO') {
                     reemplazarValor(value, newValue!);
                     //  print(value);
@@ -1380,6 +1414,18 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
         mapa[key] = nuevoValor;
       }
     });
+  }
+
+  addFilter(value) {
+    arrayFiltersAndEq.removeWhere((element) => element.containsKey("Status"));
+    if (value["filtro"] != "Total") {
+      arrayFiltersAndEq.add({"Status": value["filtro"]});
+    }
+
+    setState(() {
+      currentColor = value['color'];
+    });
+    paginateData();
   }
 
   NumberPaginator numberPaginator() {

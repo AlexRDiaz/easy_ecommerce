@@ -9,7 +9,7 @@ import 'package:frontend/helpers/responsive.dart';
 import 'package:frontend/main.dart';
 import 'package:frontend/ui/sellers/delivery_status/info_delivery.dart';
 import 'package:frontend/ui/transport/delivery_status_transport/Opcion.dart';
-import 'package:frontend/ui/widgets/OpcionesWidget.dart';
+import 'package:frontend/ui/widgets/OptionsWidget.dart';
 import 'package:frontend/ui/transport/delivery_status_transport/delivery_details.dart';
 import 'package:frontend/ui/transport/delivery_status_transport/scanner_delivery_status_transport.dart';
 import 'package:frontend/ui/transport/my_orders_prv/controllers/controllers.dart';
@@ -35,6 +35,8 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
   //List<String> transporterOperators = [];
 
   List<DateTime?> _dates = [];
+  Map dataCounters = {};
+  Map valuesTransporter = {};
   bool sort = false;
   String currentValue = "";
   int total = 0;
@@ -109,44 +111,119 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
 
   @override
   void didChangeDependencies() {
-    if (_controllers.startDateController.text == "") {
-      _controllers.startDateController.text = getCurrentDate();
-    }
+    initializeDates();
 
     loadData();
     super.didChangeDependencies();
   }
 
   Future loadData() async {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getLoadingModal(context, false);
+    });
+
+    var responseCounters = await Connections()
+        .getOrdersDashboardSellers(populate, arrayFiltersAndEq);
+
+    setState(() {
+      isLoading = true;
+    });
+
+    var responseValues = await Connections().getValuesSeller(populate, [
+      {
+        "transportadora": {"\$not": null}
+      },
+      {
+        'IdComercial':
+            sharedPrefs!.getString("idComercialMasterSeller").toString()
+      }
+    ]);
+
+    var response = await Connections()
+        .getOrdersForSellerStateSearchForDateSeller(
+            _controllers.searchController.text,
+            filtersOrCont,
+            arrayFiltersAndEq,
+            arrayFiltersNotEq,
+            arrayfiltersDefaultAnd,
+            [],
+            populate,
+            currentPage,
+            pageSize);
+
+    valuesTransporter = responseValues;
+    dataCounters = responseCounters;
+    data = response['data'];
+    total = response['meta']['total'];
+    pageCount = updateTotalPages(total, pageSize);
+    setState(() {
+      isFirst = false;
+
+      isLoading = false;
+    });
+    // print(sharedPrefs!.getString("idTransportadora").toString());
+
+    //paginate();
+
+    // paginatorController.navigateToPage(0);
+
+    updateCounters();
+    calculateValues();
+
+    Future.delayed(Duration(milliseconds: 500), () {
+      Navigator.pop(context);
+    });
+  }
+
+  int updateTotalPages(int totalRegistros, int registrosPorPagina) {
+    final int totalPaginas = totalRegistros ~/ registrosPorPagina;
+    final int registrosRestantes = totalRegistros % registrosPorPagina;
+
+    return registrosRestantes > 0
+        ? totalPaginas + 1
+        : totalPaginas == 0
+            ? 1
+            : totalPaginas;
+  }
+
+  initializeDates() {
+    if (sharedPrefs!.getString("dateDesdeVendedor") == null) {
+      sharedPrefs!.setString("dateDesdeVendedor",
+          "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}");
+    }
+    // _controllers.startDateController.text =
+    //     sharedPrefs!.getString("dateDesdeTransportadora")!;
+
+    if (sharedPrefs!.getString("dateHastaVendedor") == null) {
+      sharedPrefs!.setString("dateHastaVendedor", "1/1/2200");
+    }
+  }
+
+  paginateData() async {
     setState(() {
       isLoading = true;
     });
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getLoadingModal(context, false);
     });
-    var response = [];
 
-    currentPage = 1;
+    var response = await Connections()
+        .getOrdersForSellerStateSearchForDateSeller(
+            _controllers.searchController.text,
+            filtersOrCont,
+            arrayFiltersAndEq,
+            arrayFiltersNotEq,
+            arrayfiltersDefaultAnd,
+            [],
+            populate,
+            currentPage,
+            pageSize);
 
-    response = await Connections().getOrdersForSellerStateSearchForDate(
-        _controllers.searchController.text,
-        filtersOrCont,
-        arrayFiltersAndEq,
-        arrayFiltersNotEq,
-        arrayfiltersDefaultAnd,
-        [],
-        populate,
-        1,
-        1);
+    setState(() {
+      data = response['data'];
 
-    allData = response;
-    pageCount = calcularTotalPaginas(allData.length, pageSize);
-
-    paginate();
-
-    paginatorController.navigateToPage(0);
-
-    updateCounters();
+      pageCount = updateTotalPages(response['meta']['total'], pageSize);
+    });
 
     Future.delayed(Duration(milliseconds: 500), () {
       Navigator.pop(context);
@@ -156,72 +233,6 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
 
       isLoading = false;
     });
-  }
-
-  Future loadDataNoCounts(value) async {
-    isLoading = true;
-    setState(() {
-      isFirst = false;
-      arrayFiltersAndEq = [];
-      if (value['titulo'] != "Total") {
-        arrayFiltersAndEq.add({
-          'filter': 'Status',
-          'value': value['titulo'] == 'Programado'
-              ? "PEDIDO PROGRAMADO"
-              : value['titulo']
-        });
-      }
-      currentColor = value['color'] as Color;
-    });
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      getLoadingModal(context, false);
-    });
-    var response = [];
-    var operators = [];
-    currentPage = 1;
-    response = await Connections().getOrdersForSellerStateSearchForDate(
-        _controllers.searchController.text,
-        filtersOrCont,
-        arrayFiltersAndEq,
-        arrayFiltersNotEq,
-        arrayfiltersDefaultAnd,
-        [],
-        populate,
-        1,
-        70);
-
-    allData = response;
-    pageCount = calcularTotalPaginas(allData.length, pageSize);
-    //if (allData.isEmpty) {
-    paginate();
-    //}
-    paginatorController.navigateToPage(0);
-
-    Future.delayed(Duration(milliseconds: 500), () {
-      Navigator.pop(context);
-    });
-    setState(() {});
-    isFirst = false;
-    isLoading = false;
-  }
-
-  paginateData() {
-    paginate();
-  }
-
-  paginate() {
-    if (allData.isNotEmpty) {
-      if (currentPage == pageCount) {
-        data = allData.sublist((pageSize * (currentPage - 1)), allData.length);
-      } else {
-        data = allData.sublist(
-            (pageSize * (currentPage - 1)), (pageSize * currentPage));
-      }
-    } else {
-      data = [];
-    }
-    var res = 1;
   }
 
   int calcularTotalPaginas(int totalRegistros, int registrosPorPagina) {
@@ -248,31 +259,37 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
       Opcion(
           icono: Icon(Icons.all_inbox),
           titulo: 'Total',
+          filtro: 'Total',
           valor: total,
           color: Color.fromARGB(255, 108, 108, 109)),
       Opcion(
           icono: Icon(Icons.send),
           titulo: 'Entregado',
+          filtro: 'Entregado',
           valor: entregados,
           color: const Color.fromARGB(255, 102, 187, 106)),
       Opcion(
           icono: Icon(Icons.error),
           titulo: 'No Entregado',
+          filtro: 'No Entregado',
           valor: noEntregados,
           color: Color.fromARGB(255, 243, 33, 33)),
       Opcion(
           icono: Icon(Icons.ac_unit),
           titulo: 'Novedad',
+          filtro: 'Novedad',
           valor: conNovedad,
           color: const Color.fromARGB(255, 244, 225, 57)),
       Opcion(
           icono: Icon(Icons.schedule),
           titulo: 'Reagendado',
+          filtro: 'Reagendado',
           valor: reagendados,
           color: Color.fromARGB(255, 227, 32, 241)),
       Opcion(
           icono: Icon(Icons.route),
           titulo: 'En Ruta',
+          filtro: 'En Ruta',
           valor: enRuta,
           color: const Color.fromARGB(255, 33, 150, 243)),
     ];
@@ -350,15 +367,15 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
             responsive(
                 Container(
                     height: MediaQuery.of(context).size.height * 0.10,
-                    child: OpcionesWidget(
-                        function: loadDataNoCounts,
-                        opciones: opciones,
+                    child: OptionsWidget(
+                        function: addFilter,
+                        options: opciones,
                         currentValue: currentValue)),
                 Container(
                     height: MediaQuery.of(context).size.height * 0.16,
-                    child: OpcionesWidget(
-                        function: loadDataNoCounts,
-                        opciones: opciones,
+                    child: OptionsWidget(
+                        function: addFilter,
+                        options: opciones,
                         currentValue: currentValue)),
                 context),
             const SizedBox(height: 8.0),
@@ -771,48 +788,14 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
     costoDeEntregas = 0;
     devoluciones = 0;
 
-    for (var element in allData) {
-      element['attributes']['PrecioTotal'] =
-          element['attributes']['PrecioTotal'].replaceAll(',', '.');
-      if (element['attributes']['users'][0]['vendedores'][0]['CostoEnvio'] !=
-          null) {
-        element['attributes']['users'][0]['vendedores'][0]['CostoEnvio'] =
-            element['attributes']['users'][0]['vendedores'][0]['CostoEnvio']
-                .replaceAll(',', '.');
-      } else {
-        element['attributes']['users'][0]['vendedores'][0]['CostoEnvio'] = 0;
-      }
-
-      if (element['attributes']['users'][0]['vendedores'][0]
-              ['CostoDevolucion'] !=
-          null) {
-        element['attributes']['users'][0]['vendedores'][0]['CostoDevolucion'] =
-            element['attributes']['users'][0]['vendedores'][0]
-                    ['CostoDevolucion']
-                .replaceAll(',', '.');
-      } else {
-        element['attributes']['users'][0]['vendedores'][0]['CostoDevolucion'] =
-            0;
-      }
-
-      if (element['attributes']['Status'] == 'ENTREGADO') {
-        totalValoresRecibidos +=
-            double.parse(element['attributes']['PrecioTotal']);
-      }
-
-      if (element['attributes']['Status'] == 'ENTREGADO' ||
-          element['attributes']['Status'] == 'NO ENTREGADO') {
-        costoDeEntregas += double.parse(element['attributes']['users'][0]
-                ['vendedores'][0]['CostoEnvio'] ??
-            0);
-      }
-      if (element['attributes']['Status'] == 'NOVEDAD' &&
-          element['attributes']['Estado_Devolucion'] != 'PENDIENTE') {
-        devoluciones += double.parse(element['attributes']['users'][0]
-            ['vendedores'][0]['CostoDevolucion']);
-      }
-    }
-    utilidad = totalValoresRecibidos - costoDeEntregas - devoluciones;
+    setState(() {
+      totalValoresRecibidos =
+          double.parse(valuesTransporter['totalValoresRecibido'].toString());
+      costoDeEntregas =
+          double.parse(valuesTransporter['costoDeEntregas'].toString());
+      devoluciones = double.parse(valuesTransporter['devoluciones'].toString());
+      utilidad = double.parse(valuesTransporter['utilidad'].toString());
+    });
   }
 
   getLengthArrayMap(List data) {
@@ -824,6 +807,18 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
               ? const Color.fromARGB(255, 54, 244, 73)
               : Colors.black),
     );
+  }
+
+  addFilter(value) {
+    arrayFiltersAndEq.removeWhere((element) => element.containsKey("Status"));
+    if (value["filtro"] != "Total") {
+      arrayFiltersAndEq.add({"Status": value["filtro"]});
+    }
+
+    setState(() {
+      currentColor = value['color'];
+    });
+    paginateData();
   }
 
   Future<dynamic> OpenShowDialog(BuildContext context, int index) {
@@ -1033,7 +1028,10 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
     return [
       Row(
         children: [
-          Text(_controllers.startDateController.text),
+          Text(sharedPrefs!.getString("dateDesdeVendedor").toString() !=
+                  "1/1/2000"
+              ? sharedPrefs!.getString("dateDesdeVendedor").toString()
+              : ""),
           IconButton(
             icon: const Icon(Icons.calendar_month),
             onPressed: () async {
@@ -1041,9 +1039,10 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
             },
           ),
           const Text(' - '),
-          Text(
-            _controllers.endDateController.text,
-          ),
+          Text(sharedPrefs!.getString("dateHastaVendedor").toString() !=
+                  "1/1/2200"
+              ? sharedPrefs!.getString("dateHastaVendedor").toString()
+              : ""),
           IconButton(
             icon: Icon(Icons.calendar_month),
             onPressed: () async {
@@ -1123,7 +1122,7 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
       'body_param': 'start',
       'value': _controllers.startDateController.text != ""
           ? _controllers.startDateController.text
-          : '1/1/1991'
+          : '1/1/2000'
     });
 
     arrayDateRanges.add({
@@ -1134,6 +1133,18 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
           : '1/1/2200'
     });
 
+    setState(() {
+      sharedPrefs!.setString(
+          "dateDesdeVendedor",
+          _controllers.startDateController.text != ""
+              ? _controllers.startDateController.text
+              : '1/1/1900');
+      sharedPrefs!.setString(
+          "dateHastaVendedor",
+          _controllers.endDateController.text != ""
+              ? _controllers.endDateController.text
+              : '1/1/2200');
+    });
     await loadData();
     calculateValues();
     isFirst = false;
@@ -1175,42 +1186,21 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
   }
 
   updateCounters() {
-    total = 0;
     entregados = 0;
     noEntregados = 0;
     conNovedad = 0;
     reagendados = 0;
     enRuta = 0;
-    programado = 0;
-    total = allData.length;
-    // print(data.toString());
-    for (var element in allData) {
-      element['attributes']['Status'];
-      switch (element['attributes']['Status']) {
-        case 'ENTREGADO':
-          entregados++;
-          break;
-
-        case 'NO ENTREGADO':
-          noEntregados++;
-          break;
-
-        case 'NOVEDAD':
-          conNovedad++;
-          break;
-        case 'REAGENDADO':
-          reagendados++;
-          break;
-        case 'EN RUTA':
-          enRuta++;
-          break;
-        case 'PEDIDO PROGRAMADO':
-          programado++;
-          break;
-
-        default:
-      }
-    }
+    // programado = 0;
+    setState(() {
+      entregados = int.parse(dataCounters['ENTREGADO'].toString()) ?? 0;
+      noEntregados = int.parse(dataCounters['NO ENTREGADO'].toString()) ?? 0;
+      conNovedad = int.parse(dataCounters['NOVEDAD'].toString()) ?? 0;
+      reagendados = int.parse(dataCounters['REAGENDADO'].toString()) ?? 0;
+      enRuta = int.parse(dataCounters['EN RUTA'].toString()) ?? 0;
+      // programado = int.parse(data['EN OFICINA'].toString()) ?? 0;
+      // programado = int.parse(dataCounters['PEDIDO PROGRAMADO'].toString()) ?? 0;
+    });
   }
 
   AddFilterAndEq(value, filtro) {

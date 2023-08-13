@@ -909,9 +909,32 @@ class Connections {
     return decodeData['data'];
   }
 
+  getOrdersDashboardSellers(List populate, List and) async {
+    print('start: ${sharedPrefs!.getString("dateDesdeVendedor")}');
+    print('end: ${sharedPrefs!.getString("dateHastaVendedor")}');
+
+    var request =
+        await http.post(Uri.parse("$server/api/products/dashboard/logistic"),
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: json.encode({
+              "start": sharedPrefs!.getString("dateDesdeVendedor"),
+              "end": sharedPrefs!.getString("dateHastaVendedor"),
+              "populate": jsonEncode(populate),
+              "and": jsonEncode(and)
+            }));
+
+    var response = await request.body;
+    var decodeData = json.decode(response);
+    return decodeData['data'];
+  }
+
   getValuesTrasporter(List populate, List and) async {
-    print('start: ${sharedPrefs!.getString("dateDesdeTransportadora")}');
-    print('end: ${sharedPrefs!.getString("dateHastaTransportadora")}');
+    print(
+        'startValuesTransport: ${sharedPrefs!.getString("dateDesdeTransportadora")}');
+    print(
+        'endValuesTransport: ${sharedPrefs!.getString("dateHastaTransportadora")}');
 
     var request =
         await http.post(Uri.parse("$server/api/pedidos/values/transporter/"),
@@ -921,6 +944,28 @@ class Connections {
             body: json.encode({
               "start": sharedPrefs!.getString("dateDesdeTransportadora"),
               "end": sharedPrefs!.getString("dateHastaTransportadora"),
+              "populate": jsonEncode(populate),
+              "and": jsonEncode(and)
+            }));
+
+    var response = await request.body;
+    var decodeData = json.decode(response);
+    return decodeData;
+  }
+
+  getValuesSeller(List populate, List and) async {
+    print(
+        'startValuesTransport: ${sharedPrefs!.getString("dateDesdeVendedor")}');
+    print('endValuesTransport: ${sharedPrefs!.getString("dateHastaVendedor")}');
+
+    var request =
+        await http.post(Uri.parse("$server/api/pedidos/values/seller/"),
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: json.encode({
+              "start": sharedPrefs!.getString("dateDesdeVendedor"),
+              "end": sharedPrefs!.getString("dateHastaVendedor"),
               "populate": jsonEncode(populate),
               "and": jsonEncode(and)
             }));
@@ -2273,7 +2318,7 @@ class Connections {
     return decodeData['data'];
   }
 
-  getOrdersForSellerStateSearchForDate(
+  getOrdersForSellerStateSearchForDateSeller(
       code,
       arrayFiltersOrCont,
       arrayFiltersAndEq,
@@ -2289,10 +2334,13 @@ class Connections {
     List<dynamic> filtersAndEq = [];
     var bodyParams;
 
-    for (var filter in arrayDefaultAnd) {
-      filtersAndEq.add({filter['filter']: filter['value']});
+    for (var filter in arrayFiltersAndEq) {
+      filtersAndEq.add(filter);
     }
 
+    for (var filter in arrayDefaultOr) {
+      filtersOrCont.add({filter['filter']: filter['value']});
+    }
     for (var filter in arrayDefaultOr) {
       filtersOrCont.add({filter['filter']: filter['value']});
     }
@@ -2304,20 +2352,60 @@ class Connections {
         });
       }
     }
+    print(sharedPrefs!.getString("dateDesdeVendedor"));
+    print(sharedPrefs!.getString("dateHastaVendedor"));
+    var request = await http.post(Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          "start": sharedPrefs!.getString("dateDesdeVendedor"),
+          "end": sharedPrefs!.getString("dateHastaVendedor"),
+          "populate": jsonEncode(populate),
+          "not": jsonEncode(arrayFiltersNotEq),
+          "or": jsonEncode(filtersOrCont),
+          "and": jsonEncode(filtersAndEq),
+          "currentPage": currentPage,
+          "sizePage": sizePage
+        }));
 
-    // bodyParams['not'] = jsonEncode(arrayFiltersNotEq);
+    var response = await request.body;
+    var decodeData = json.decode(response);
+    return decodeData;
+  }
 
-    // bodyParams['or'] = jsonEncode(filtersOrCont);
+  getOrdersForSellerStateSearchForDateTransporter(
+      code,
+      arrayFiltersOrCont,
+      arrayFiltersAndEq,
+      List arrayFiltersNotEq,
+      List arrayDefaultAnd,
+      List arrayDefaultOr,
+      List populate,
+      currentPage,
+      sizePage) async {
+    String url = "$server/api/shopify/pedidos/filter/seller/dates?";
+
+    List<dynamic> filtersOrCont = [];
+    List<dynamic> filtersAndEq = [];
+    var bodyParams;
 
     for (var filter in arrayFiltersAndEq) {
-      filtersAndEq.add({filter['filter']: filter['value']});
+      filtersAndEq.add(filter);
     }
-    // bodyParams['start'] = sharedPrefs!.getString("dateDesdeTransportadora");
-    // bodyParams['end'] = sharedPrefs!.getString("dateHastaTransportadora");
-    // bodyParams['not'] = jsonEncode(arrayFiltersNotEq);
-    // bodyParams['or'] = jsonEncode(filtersOrCont);
-    // bodyParams['and'] = jsonEncode(filtersAndEq);
-    // bodyParams['populate'] = jsonEncode(populate);
+
+    for (var filter in arrayDefaultOr) {
+      filtersOrCont.add({filter['filter']: filter['value']});
+    }
+    for (var filter in arrayDefaultOr) {
+      filtersOrCont.add({filter['filter']: filter['value']});
+    }
+
+    if (code != "") {
+      for (var filter in arrayFiltersOrCont) {
+        filtersOrCont.add({
+          filter['filter']: {'\$contains': code}
+        });
+      }
+    }
     print(sharedPrefs!.getString("dateDesdeTransportadora"));
     print(sharedPrefs!.getString("dateHastaTransportadora"));
     var request = await http.post(Uri.parse(url),
@@ -2328,10 +2416,7 @@ class Connections {
           "populate": jsonEncode(populate),
           "not": jsonEncode(arrayFiltersNotEq),
           "or": jsonEncode(filtersOrCont),
-          "and": jsonEncode(arrayDefaultAnd),
-          // "currentPage": currentPage,
-          // "sizePage": sizePage
-
+          "and": jsonEncode(filtersAndEq),
           "currentPage": currentPage,
           "sizePage": sizePage
         }));

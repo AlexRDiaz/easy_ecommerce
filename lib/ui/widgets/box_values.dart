@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/ui/widgets/build_info_container.dart';
 
 class boxValues extends StatelessWidget {
   const boxValues({
@@ -16,109 +17,21 @@ class boxValues extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      children: [
-        Container(
-          padding: EdgeInsets.all(3),
-          width: 80,
-          decoration: BoxDecoration(border: Border.all(color: Colors.black)),
-          child: Column(
-            children: [
-              const Text(
-                'Val. recibidos:',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 9,
-                  color: Colors.black,
-                ),
-              ),
-              Text(
-                '\$${totalValoresRecibidos.toStringAsFixed(2)}',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                  color: Colors.black,
-                ),
-              ),
-            ],
-          ),
-        ),
-        Container(
-          padding: EdgeInsets.all(3),
-          width: 80,
-          decoration: BoxDecoration(border: Border.all(color: Colors.black)),
-          child: Column(
-            children: [
-              const Text(
-                'Costo de envío:',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 9,
-                  color: Colors.black,
-                ),
-              ),
-              Text(
-                '\$${costoDeEntregas.toStringAsFixed(2)}',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                  color: Colors.black,
-                ),
-              ),
-            ],
-          ),
-        ),
-        Container(
-          padding: EdgeInsets.all(3),
-          width: 80,
-          decoration: BoxDecoration(border: Border.all(color: Colors.black)),
-          child: Column(
-            children: [
-              const Text(
-                'Devoluciones:',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 9,
-                  color: Colors.black,
-                ),
-              ),
-              Text(
-                '\$${devoluciones.toStringAsFixed(2)}',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                  color: Colors.black,
-                ),
-              ),
-            ],
-          ),
-        ),
-        Container(
-          padding: EdgeInsets.all(3),
-          width: 80,
-          decoration: BoxDecoration(border: Border.all(color: Colors.black)),
-          child: Column(
-            children: [
-              const Text(
-                'Utilidad:',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 9,
-                  color: Colors.black,
-                ),
-              ),
-              Text(
-                '\$${utilidad.toStringAsFixed(2)}',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                  color: Colors.black,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
+    return Row(children: [
+      BuildInfoContainer(
+          title: 'Valores recibidos:',
+          value: '\$${totalValoresRecibidos.toStringAsFixed(2)}'),
+      BuildInfoContainer(
+          title: 'Costo de envío:',
+          value: '\$${costoDeEntregas.toStringAsFixed(2)}'),
+      BuildInfoContainer(
+        title: 'Devoluciones:',
+        value: '\$${devoluciones.toStringAsFixed(2)}',
+      ),
+      BuildInfoContainer(
+        title: 'Utilidad:',
+        value: '\$${utilidad.toStringAsFixed(2)}',
+      ),
+    ]);
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/ui/widgets/build_info_container.dart';
 
 class boxValuesTransport extends StatelessWidget {
   const boxValuesTransport({
@@ -12,57 +13,16 @@ class boxValuesTransport extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
+    return Row(
       children: [
-        Container(
-          padding: EdgeInsets.all(3),
-          width: 80,
-          decoration: BoxDecoration(border: Border.all(color: Colors.black)),
-          child: Column(
-            children: [
-              const Text(
-                'Val. recibidos:',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 9,
-                  color: Colors.black,
-                ),
-              ),
-              Text(
-                '\$${totalValoresRecibidos.toStringAsFixed(2)}',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                  color: Colors.black,
-                ),
-              ),
-            ],
-          ),
+        BuildInfoContainer(
+          title: 'Valores recibidos:',
+          value: '\$${totalValoresRecibidos.toStringAsFixed(2)}',
         ),
-        Container(
-          padding: EdgeInsets.all(3),
-          width: 80,
-          decoration: BoxDecoration(border: Border.all(color: Colors.black)),
-          child: Column(
-            children: [
-              const Text(
-                'Costo de envío:',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 9,
-                  color: Colors.black,
-                ),
-              ),
-              Text(
-                '\$${costoDeEntregas.toStringAsFixed(2)}',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                  color: Colors.black,
-                ),
-              ),
-            ],
-          ),
+        SizedBox(width: 10), // Espacio entre los contenedores
+        BuildInfoContainer(
+          title: 'Costo de envío:',
+          value: '\$${costoDeEntregas.toStringAsFixed(2)}',
         ),
       ],
     );
