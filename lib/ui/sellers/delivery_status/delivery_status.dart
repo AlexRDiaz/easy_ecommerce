@@ -122,8 +122,16 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
       getLoadingModal(context, false);
     });
 
-    var responseCounters = await Connections()
-        .getOrdersDashboardSellers(populate, arrayFiltersAndEq);
+    var responseCounters =
+        await Connections().getOrdersDashboardSellers(populate, [
+      {
+        "transportadora": {"\$not": null}
+      },
+      {
+        'IdComercial':
+            sharedPrefs!.getString("idComercialMasterSeller").toString()
+      }
+    ]);
 
     setState(() {
       isLoading = true;
@@ -191,12 +199,16 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
       sharedPrefs!.setString("dateDesdeVendedor",
           "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}");
     }
-    // _controllers.startDateController.text =
-    //     sharedPrefs!.getString("dateDesdeTransportadora")!;
+    _controllers.startDateController.text =
+        sharedPrefs!.getString("dateDesdeVendedor")!;
 
     if (sharedPrefs!.getString("dateHastaVendedor") == null) {
       sharedPrefs!.setString("dateHastaVendedor", "1/1/2200");
     }
+    _controllers.endDateController.text =
+        sharedPrefs!.getString("dateHastaVendedor") != "1/1/2200"
+            ? sharedPrefs!.getString("dateHastaVendedor")!
+            : "";
   }
 
   paginateData() async {
@@ -1028,10 +1040,7 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
     return [
       Row(
         children: [
-          Text(sharedPrefs!.getString("dateDesdeVendedor").toString() !=
-                  "1/1/2000"
-              ? sharedPrefs!.getString("dateDesdeVendedor").toString()
-              : ""),
+          Text(_controllers.startDateController.text),
           IconButton(
             icon: const Icon(Icons.calendar_month),
             onPressed: () async {
@@ -1039,10 +1048,7 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
             },
           ),
           const Text(' - '),
-          Text(sharedPrefs!.getString("dateHastaVendedor").toString() !=
-                  "1/1/2200"
-              ? sharedPrefs!.getString("dateHastaVendedor").toString()
-              : ""),
+          Text(_controllers.endDateController.text),
           IconButton(
             icon: Icon(Icons.calendar_month),
             onPressed: () async {

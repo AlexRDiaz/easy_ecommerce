@@ -2341,8 +2341,8 @@ class Connections {
     for (var filter in arrayDefaultOr) {
       filtersOrCont.add({filter['filter']: filter['value']});
     }
-    for (var filter in arrayDefaultOr) {
-      filtersOrCont.add({filter['filter']: filter['value']});
+    for (var filter in arrayDefaultAnd) {
+      filtersAndEq.add({filter['filter']: filter['value']});
     }
 
     if (code != "") {
@@ -2395,8 +2395,8 @@ class Connections {
     for (var filter in arrayDefaultOr) {
       filtersOrCont.add({filter['filter']: filter['value']});
     }
-    for (var filter in arrayDefaultOr) {
-      filtersOrCont.add({filter['filter']: filter['value']});
+    for (var filter in arrayDefaultAnd) {
+      filtersAndEq.add({filter['filter']: filter['value']});
     }
 
     if (code != "") {

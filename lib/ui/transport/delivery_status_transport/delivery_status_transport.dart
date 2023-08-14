@@ -76,9 +76,8 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
   ];
   List filtersDefaultAnd = [
     {
-      'transportadora': {
-        'id': sharedPrefs!.getString("idTransportadora").toString()
-      }
+      "filter": 'transportadora',
+      'value': sharedPrefs!.getString("idTransportadora").toString()
     }
   ];
   List arrayFiltersAnd = [
@@ -136,8 +135,17 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
       }
     ]);
 
-    var responseCounters = await Connections()
-        .getOrdersDashboardTransportadora(populate, arrayFiltersAndEq);
+    var responseCounters =
+        await Connections().getOrdersDashboardTransportadora(populate, [
+      {
+        "transportadora": {"\$not": null}
+      },
+      {
+        'transportadora': {
+          'id': sharedPrefs!.getString("idTransportadora").toString()
+        }
+      }
+    ]);
 
     setState(() {
       isLoading = true;
@@ -244,12 +252,16 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
       sharedPrefs!.setString("dateDesdeTransportadora",
           "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}");
     }
-    // _controllers.startDateController.text =
-    //     sharedPrefs!.getString("dateDesdeTransportadora")!;
+    _controllers.startDateController.text =
+        sharedPrefs!.getString("dateDesdeTransportadora")!;
 
     if (sharedPrefs!.getString("dateHastaTransportadora") == null) {
       sharedPrefs!.setString("dateHastaTransportadora", "1/1/2200");
     }
+    _controllers.endDateController.text =
+        sharedPrefs!.getString("dateHastaTransportadora") != "1/1/2200"
+            ? sharedPrefs!.getString("dateHastaTransportadora")!
+            : "";
   }
 
   paginateData() async {
@@ -970,6 +982,10 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
       child: TextField(
         controller: controller,
         onSubmitted: (value) {
+          // sharedPrefs!.setString("dateDesdeTransportadora", '1/1/2000');
+          // sharedPrefs!.setString("dateHastaTransportadora", '1/1/2200');
+          // _controllers.startDateController.text = "";
+          // _controllers.endDateController.text = "";
           loadData();
         },
         onChanged: (value) {
@@ -1106,10 +1122,7 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
     return [
       Row(
         children: [
-          Text(sharedPrefs!.getString("dateDesdeTransportadora").toString() !=
-                  "1/1/2000"
-              ? sharedPrefs!.getString("dateDesdeTransportadora").toString()
-              : ""),
+          Text(_controllers.startDateController.text),
           IconButton(
             icon: const Icon(Icons.calendar_month),
             onPressed: () async {
@@ -1117,10 +1130,7 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
             },
           ),
           const Text(' - '),
-          Text(sharedPrefs!.getString("dateHastaTransportadora").toString() !=
-                  "1/1/2200"
-              ? sharedPrefs!.getString("dateHastaTransportadora").toString()
-              : ""),
+          Text(_controllers.endDateController.text),
           IconButton(
             icon: Icon(Icons.calendar_month),
             onPressed: () async {
@@ -1174,6 +1184,7 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
         nuevaFecha = "$dia/$mes/$anio";
       }
     });
+
     return nuevaFecha;
   }
 
