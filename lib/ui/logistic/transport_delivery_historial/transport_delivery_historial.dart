@@ -36,8 +36,7 @@ class _TransportDeliveryHistorialState
   List data = [];
   bool sort = false;
   ScreenshotController screenshotController = ScreenshotController();
-  List<DateTime?> _datesDesde = [];
-  List<DateTime?> _datesHasta = [];
+
   bool search = false;
   String option = "";
   String url = "";
@@ -45,11 +44,11 @@ class _TransportDeliveryHistorialState
   List optionsCheckBox = [];
   int currentPage = 1;
   int pageSize = 75;
-  int pageCount = 100;
+  int pageCount = 0;
   bool isLoading = false;
   int total = 0;
   bool enabledBusqueda = true;
-
+  int totalRegistros = 0;
   List<String> listStatus = [
     'TODO',
     'PEDIDO PROGRAMADO',
@@ -93,6 +92,20 @@ class _TransportDeliveryHistorialState
     "users.vendedores"
   ];
   List arrayFiltersAnd = [];
+  List arrayFiltersOr = [
+    "numero_orden",
+    "direccion_shipping",
+    "nombre_shipping",
+    "telefono_shipping",
+    "precio_total",
+    "observacion",
+    "ciudad_shipping",
+    "estado_interno",
+    "producto_p",
+    "status",
+    "estado_logistico"
+  ];
+
   NumberPaginatorController paginatorController = NumberPaginatorController();
 
   TextEditingController codigoController = TextEditingController(text: "");
@@ -212,12 +225,24 @@ class _TransportDeliveryHistorialState
       search = false;
     });
 
-    var response = await Connections().getOrdersForHistorialTransportByDates(
-      populate,
-      arrayFiltersAnd,
-      currentPage,
-      pageSize,
-    );
+    var response = await Connections()
+        .getOrdersForHistorialTransportByDatesLaravel(
+            populate,
+            arrayFiltersAnd,
+            arrayFiltersOr,
+            currentPage,
+            pageSize,
+            _controllers.searchController.text);
+
+    // var response = await Connections().getOrdersForHistorialTransportByDates(
+    //   populate,
+    //   arrayFiltersAnd,
+    //   currentPage,
+    //   pageSize,
+    // );
+
+    // var m = response;
+
     setState(() {
       data = response['data'];
 
@@ -225,9 +250,9 @@ class _TransportDeliveryHistorialState
         return {...item, 'check': false};
       }).toList();
 
-      total = response['meta']['total'];
+      total = response['total'];
 
-      pageCount = calcularTotalPaginas(total, pageSize);
+      pageCount = response['last_page'];
       //paginate();
       //paginatorController.navigateToPage(0);
     });
@@ -243,16 +268,16 @@ class _TransportDeliveryHistorialState
     setState(() {});
   }
 
-  int calcularTotalPaginas(int totalRegistros, int registrosPorPagina) {
-    final int totalPaginas = totalRegistros ~/ registrosPorPagina;
-    final int registrosRestantes = totalRegistros % registrosPorPagina;
+  // int calcularTotalPaginas(int totalRegistros, int registrosPorPagina) {
+  //   final int totalPaginas = totalRegistros ~/ registrosPorPagina;
+  //   final int registrosRestantes = totalRegistros % registrosPorPagina;
 
-    return registrosRestantes > 0
-        ? totalPaginas + 1
-        : totalPaginas == 0
-            ? 1
-            : totalPaginas;
-  }
+  //   return registrosRestantes > 0
+  //       ? totalPaginas + 1
+  //       : totalPaginas == 0
+  //           ? 1
+  //           : totalPaginas;
+  // }
 
   paginateData() {
     paginate();
@@ -1240,7 +1265,6 @@ class _TransportDeliveryHistorialState
               "Confirmado",
               style: TextStyle(fontWeight: FontWeight.bold),
             )),
-
         ElevatedButton(
             onPressed: () async {
               showDialog(
@@ -1444,29 +1468,6 @@ class _TransportDeliveryHistorialState
               "Llamadas",
               style: TextStyle(fontWeight: FontWeight.bold),
             )),
-
-        // ElevatedButton(
-        //     onPressed: () async {
-        //       var response = await Connections().getSellersByIdMasterOnly(
-        //           "${data['attributes']['IdComercial'].toString()}");
-        //       await showDialog(
-        //           context: context,
-        //           builder: (context) {
-        //             return UpdateStatusOperator(
-        //               numberTienda:
-        //                   response['vendedores'][0]['Telefono2'].toString(),
-        //               codigo:
-        //                   "${data['attributes']['Name_Comercial']}-${data['attributes']['NumeroOrden']}",
-        //               numberCliente:
-        //                   "${data['attributes']['TelefonoShipping']}",
-        //             );
-        //           });
-        //       await loadData();
-        //     },
-        //     child: Text(
-        //       "Estado Entrega",
-        //       style: TextStyle(fontWeight: FontWeight.bold),
-        //     )),
       ],
     );
   }
@@ -1488,7 +1489,7 @@ class _TransportDeliveryHistorialState
                   .removeWhere((option) => option['id'] == data[index]['id']);
             }
           })),
-      DataCell(Text('${data[index]['Marca_T_I'].toString()}'), onTap: () {
+      DataCell(Text('${data[index]['marca_t_i'].toString()}'), onTap: () {
         showDialog(
             context: context,
             builder: (context) {
@@ -1519,7 +1520,7 @@ class _TransportDeliveryHistorialState
       }),
       DataCell(
           Text(
-            data[index]['Marca_T_I'].toString().split(' ')[0].toString(),
+            data[index]['marca_t_i'].toString().split(' ')[0].toString(),
             style: TextStyle(
               color: rowColor,
             ),
@@ -1528,7 +1529,7 @@ class _TransportDeliveryHistorialState
       }),
       DataCell(
           Text(
-            "${data[index]['users'] != null && data[index]['users'].toString() != "[]" ? data[index]['users'][0]['vendedores'][0]['Nombre_Comercial'] : data[index]['Tienda_Temporal']}-${data[index]['NumeroOrden']}",
+            "${data[index]['users'] != null && data[index]['users'].toString() != "[]" ? data[index]['users'][0]['vendedores'][0]['nombre_comercial'] : data[index]['tienda_temporal']}-${data[index]['numero_orden']}",
             style: TextStyle(
               color: rowColor,
             ),
@@ -1537,7 +1538,7 @@ class _TransportDeliveryHistorialState
       }),
       DataCell(
           Text(
-            '${data[index]['CiudadShipping'].toString()}',
+            '${data[index]['ciudad_shipping'].toString()}',
             style: TextStyle(
               color: rowColor,
             ),
@@ -1546,17 +1547,7 @@ class _TransportDeliveryHistorialState
       }),
       DataCell(
           Text(
-            data[index]['NombreShipping'].toString(),
-            style: TextStyle(
-              color: rowColor,
-            ),
-          ), onTap: () {
-        showDialogInfo(index);
-      }),
-
-      DataCell(
-          Text(
-            '${data[index]['DireccionShipping'].toString()}',
+            data[index]['nombre_shipping'].toString(),
             style: TextStyle(
               color: rowColor,
             ),
@@ -1565,7 +1556,7 @@ class _TransportDeliveryHistorialState
       }),
       DataCell(
           Text(
-            data[index]['TelefonoShipping'].toString(),
+            '${data[index]['direccion_shipping'].toString()}',
             style: TextStyle(
               color: rowColor,
             ),
@@ -1574,7 +1565,7 @@ class _TransportDeliveryHistorialState
       }),
       DataCell(
           Text(
-            data[index]['Cantidad_Total'].toString(),
+            data[index]['telefono_shipping'].toString(),
             style: TextStyle(
               color: rowColor,
             ),
@@ -1583,7 +1574,7 @@ class _TransportDeliveryHistorialState
       }),
       DataCell(
           Text(
-            data[index]['ProductoP'].toString(),
+            data[index]['cantidad_total'].toString(),
             style: TextStyle(
               color: rowColor,
             ),
@@ -1592,7 +1583,16 @@ class _TransportDeliveryHistorialState
       }),
       DataCell(
           Text(
-            data[index]['ProductoExtra'].toString(),
+            data[index]['producto_p'].toString(),
+            style: TextStyle(
+              color: rowColor,
+            ),
+          ), onTap: () {
+        showDialogInfo(index);
+      }),
+      DataCell(
+          Text(
+            data[index]['producto_extra'].toString(),
             style: TextStyle(
               color: rowColor,
             ),
@@ -1600,7 +1600,7 @@ class _TransportDeliveryHistorialState
           onTap: () {}),
       DataCell(
           Text(
-            data[index]['PrecioTotal'].toString(),
+            data[index]['precio_total'].toString(),
             style: TextStyle(
               color: rowColor,
             ),
@@ -1608,46 +1608,42 @@ class _TransportDeliveryHistorialState
           onTap: () {}),
       DataCell(
           Text(
-            data[index]['Observacion'].toString(),
+            data[index]['observacion'].toString(),
             style: TextStyle(
               color: rowColor,
             ),
           ), onTap: () {
         showDialogInfo(index);
       }),
-
       DataCell(
           Text(
-            '${data[index]['Comentario'].toString()}',
+            '${data[index]['comentario'].toString()}',
             style: TextStyle(
               color: rowColor,
             ),
           ),
           onTap: () {}),
-
       DataCell(
           Text(
-            data[index]['Status'].toString(),
+            data[index]['status'].toString(),
             style: TextStyle(
               color: rowColor,
             ),
           ),
           onTap: () {}),
-
       DataCell(
           Text(
-            data[index]['TipoPago'].toString(),
+            data[index]['tipo_pago'].toString(),
             style: TextStyle(
               color: rowColor,
             ),
           ),
           onTap: () {}),
-
       DataCell(
           Text(
             data[index]['ruta'] != null &&
                     data[index]['ruta'].toString() != "[]"
-                ? data[index]['ruta']['Titulo'].toString()
+                ? data[index]['ruta'][0]['titulo'].toString()
                 : "",
             style: TextStyle(
               color: rowColor,
@@ -1658,7 +1654,7 @@ class _TransportDeliveryHistorialState
           Text(
             data[index]['transportadora'] != null &&
                     data[index]['transportadora'].toString() != "[]"
-                ? data[index]['transportadora']['Nombre'].toString()
+                ? data[index]['transportadora'][0]['nombre'].toString()
                 : "",
             style: TextStyle(
               color: rowColor,
@@ -1669,7 +1665,7 @@ class _TransportDeliveryHistorialState
           Text(
             data[index]['sub_ruta'] != null &&
                     data[index]['sub_ruta'].toString() != "[]"
-                ? data[index]['sub_ruta']['Titulo'].toString()
+                ? data[index]['sub_ruta'][0]['titulo'].toString()
                 : "",
             style: TextStyle(
               color: rowColor,
@@ -1680,7 +1676,8 @@ class _TransportDeliveryHistorialState
           Text(
             data[index]['operadore'] != null &&
                     data[index]['operadore'].toString() != "[]"
-                ? data[index]['operadore']['user']['username'].toString()
+                ? data[index]['operadore'][0]['up_users'][0]['username']
+                    .toString()
                 : "",
             style: TextStyle(
               color: rowColor,
@@ -1689,7 +1686,7 @@ class _TransportDeliveryHistorialState
           onTap: () {}),
       DataCell(
           Text(
-            data[index]['Fecha_Entrega'].toString(),
+            data[index]['fecha_entrega'].toString(),
             style: TextStyle(
               color: rowColor,
             ),
@@ -1697,7 +1694,7 @@ class _TransportDeliveryHistorialState
           onTap: () {}),
       DataCell(
           Text(
-            data[index]['Tienda_Temporal'].toString(),
+            data[index]['tienda_temporal'].toString(),
             style: TextStyle(
               color: rowColor,
             ),
@@ -1705,7 +1702,7 @@ class _TransportDeliveryHistorialState
           onTap: () {}),
       DataCell(
           Text(
-            data[index]['Estado_Interno'].toString(),
+            data[index]['estado_interno'].toString(),
             style: TextStyle(
               color: rowColor,
             ),
@@ -1713,7 +1710,7 @@ class _TransportDeliveryHistorialState
           onTap: () {}),
       DataCell(
           Text(
-            data[index]['Estado_Logistico'].toString(),
+            data[index]['estado_logistico'].toString(),
             style: TextStyle(
               color: rowColor,
             ),
@@ -1723,7 +1720,7 @@ class _TransportDeliveryHistorialState
           Text(
             data[index]['transportadora'] != null &&
                     data[index]['transportadora'].toString() != "[]"
-                ? data[index]['transportadora']['Costo_Transportadora']
+                ? data[index]['transportadora'][0]['costo_transportadora']
                     .toString()
                 : "",
             style: TextStyle(
@@ -1736,7 +1733,7 @@ class _TransportDeliveryHistorialState
           Text(
             data[index]['operadore'] != null &&
                     data[index]['operadore'].toString() != "[]"
-                ? data[index]['operadore']['Costo_Operador'].toString()
+                ? data[index]['operadore'][0]['costo_operador'].toString()
                 : "",
             style: TextStyle(
               color: rowColor,
@@ -1746,28 +1743,21 @@ class _TransportDeliveryHistorialState
       DataCell(
           Text(data[index]['users'] != null &&
                   data[index]['users'].toString() != "[]"
-              ? data[index]['users'][0]['vendedores'][0]['CostoEnvio']
+              ? data[index]['users'][0]['vendedores'][0]['costo_envio']
                   .toString()
               : ""),
           onTap: () {}),
       DataCell(
           Text(data[index]['users'] != null &&
                   data[index]['users'].toString() != "[]"
-              ? data[index]['users'][0]['vendedores'][0]['CostoDevolucion']
+              ? data[index]['users'][0]['vendedores'][0]['costo_devolucion']
                   .toString()
               : ""), onTap: () {
         showDialogInfo(index);
       }),
-
-      // DataCell(Text(
-      //   data[index]['operadore']['Costo_Operador'].toString(),
-      //   style: TextStyle(
-      //     color: rowColor,
-      //   ),
-      // )),
       DataCell(
           Text(
-            data[index]['Estado_Devolucion'].toString(),
+            data[index]['estado_devolucion'].toString(),
             style: TextStyle(
               color: rowColor,
             ),
@@ -1776,7 +1766,7 @@ class _TransportDeliveryHistorialState
       }),
       DataCell(
           Text(
-            data[index]['Marca_T_D'].toString(),
+            data[index]['marca_t_d'].toString(),
             style: TextStyle(
               color: rowColor,
             ),
@@ -1784,7 +1774,7 @@ class _TransportDeliveryHistorialState
           onTap: () {}),
       DataCell(
           Text(
-            data[index]['Estado_Pago_Logistica'].toString(),
+            data[index]['estado_pago_logistica'].toString(),
             style: TextStyle(
               color: rowColor,
             ),
@@ -1844,7 +1834,7 @@ class _TransportDeliveryHistorialState
                         TextStyle(fontWeight: FontWeight.bold),
                   ),
                   dialogSize: const Size(325, 400),
-                  value: _datesDesde,
+                  value: [],
                   borderRadius: BorderRadius.circular(15),
                 );
                 setState(() {
@@ -1888,7 +1878,7 @@ class _TransportDeliveryHistorialState
                         TextStyle(fontWeight: FontWeight.bold),
                   ),
                   dialogSize: const Size(325, 400),
-                  value: _datesHasta,
+                  value: [],
                   borderRadius: BorderRadius.circular(15),
                 );
                 setState(() {

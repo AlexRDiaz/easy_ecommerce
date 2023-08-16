@@ -848,6 +848,29 @@ class Connections {
     return decodeData;
   }
 
+  getOrdersForHistorialTransportByDatesLaravel(
+      List populate, List and, List or, currentPage, sizePage, search) async {
+    print('start: ${sharedPrefs!.getString("dateDesdeLogistica")}');
+    print('end: ${sharedPrefs!.getString("dateHastaLogistica")}');
+
+    var request = await http.post(
+        Uri.parse("http://localhost:8000/api/pedidos-shopify/filter"),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          "start": sharedPrefs!.getString("dateDesdeLogistica"),
+          "end": sharedPrefs!.getString("dateHastaLogistica"),
+          "or": or,
+          "and": [],
+          "page_size": sizePage,
+          "page_number": currentPage,
+          "search": search
+        }));
+
+    var response = await request.body;
+    var decodeData = json.decode(response);
+    return decodeData;
+  }
+
   getOrdersDashboard(List populate, List and) async {
     print('start: ${sharedPrefs!.getString("dateDesdeVendedor")}');
     print('end: ${sharedPrefs!.getString("dateHastaVendedor")}');
