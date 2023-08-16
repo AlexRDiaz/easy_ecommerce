@@ -997,8 +997,6 @@ class Connections {
   }
 
   getOperatorsByTransport(var id) async {
-    String url = "$server/api/operator/transport/" + id;
-    print(url);
     var request = await http.post(
       Uri.parse("$server/api/operator/transport/" + id),
       headers: {'Content-Type': 'application/json'},
@@ -2427,6 +2425,18 @@ class Connections {
   }
 
   getWithdrawalSellers(code) async {
+    var request = await http.get(
+      Uri.parse(
+          "$server/api/ordenes-retiros?populate=users_permissions_user&filters[\$and][0][users_permissions_user][id][\$eq]=${sharedPrefs!.getString("idComercialMasterSeller").toString()}&pagination[limit]=-1"),
+      headers: {'Content-Type': 'application/json'},
+    );
+    var response = await request.body;
+    var decodeData = json.decode(response);
+
+    return decodeData;
+  }
+
+  getWithdrawalSellersTest(code) async {
     var request = await http.get(
       Uri.parse(
           "$server/api/ordenes-retiros?populate=users_permissions_user&filters[\$and][0][users_permissions_user][id][\$eq]=${sharedPrefs!.getString("idComercialMasterSeller").toString()}&pagination[limit]=-1"),

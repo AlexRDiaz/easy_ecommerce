@@ -32,7 +32,7 @@ class _CashWithdrawalsSellersState extends State<CashWithdrawalsSellers> {
   }
 
   loadData() async {
-    var response = [];
+    var response;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getLoadingModal(context, false);
     });
@@ -40,7 +40,7 @@ class _CashWithdrawalsSellersState extends State<CashWithdrawalsSellers> {
     response = await Connections()
         .getWithdrawalSellers(_controllers.searchController.text);
 
-    data = response;
+    data = response['data'];
 
     Future.delayed(Duration(milliseconds: 500), () {
       Navigator.pop(context);
@@ -73,9 +73,12 @@ class _CashWithdrawalsSellersState extends State<CashWithdrawalsSellers> {
           children: [
             Expanded(
               child: DataTable2(
-                  headingTextStyle: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-                  dataTextStyle:
-                      TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black),
+                  headingTextStyle: TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.black),
+                  dataTextStyle: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black),
                   columnSpacing: 12,
                   horizontalMargin: 12,
                   minWidth: 1000,
@@ -142,7 +145,6 @@ class _CashWithdrawalsSellersState extends State<CashWithdrawalsSellers> {
                                               .toString() !=
                                           "null"
                                       ? () {
-                                       
                                           launchUrl(Uri.parse(
                                               "$generalServer${data[index]['attributes']['Comprobante'].toString()}"));
                                         }

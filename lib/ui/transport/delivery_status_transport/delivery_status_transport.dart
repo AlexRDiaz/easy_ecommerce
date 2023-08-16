@@ -7,7 +7,6 @@ import 'package:data_table_2/data_table_2.dart';
 import 'package:frontend/connections/connections.dart';
 import 'package:frontend/helpers/responsive.dart';
 import 'package:frontend/main.dart';
-import 'package:frontend/ui/logistic/print_guides/model_guide/model_guide.dart';
 import 'package:frontend/ui/transport/delivery_status_transport/Opcion.dart';
 import 'package:frontend/ui/widgets/OptionsWidget.dart';
 import 'package:frontend/ui/transport/delivery_status_transport/delivery_details.dart';
@@ -112,7 +111,7 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
 
   @override
   Future<void> didChangeDependencies() async {
-    await initializeDates();
+    initializeDates();
 
     loadData();
     getOperatorsList();
@@ -120,6 +119,10 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
   }
 
   Future loadData() async {
+    setState(() {
+      isLoading = true;
+    });
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getLoadingModal(context, false);
     });
@@ -147,9 +150,6 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
       }
     ]);
 
-    setState(() {
-      isLoading = true;
-    });
     var response = await Connections()
         .getOrdersForSellerStateSearchForDateTransporter(
             _controllers.searchController.text,
@@ -167,22 +167,23 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
     data = response['data'];
     total = response['meta']['total'];
     pageCount = updateTotalPages(total, pageSize);
-    setState(() {
-      isFirst = false;
 
-      isLoading = false;
-    });
     // print(sharedPrefs!.getString("idTransportadora").toString());
 
     //paginate();
 
-    // paginatorController.navigateToPage(0);
+    paginatorController.navigateToPage(0);
 
     updateCounters();
     calculateValues();
 
     Future.delayed(Duration(milliseconds: 500), () {
       Navigator.pop(context);
+    });
+    setState(() {
+      isFirst = false;
+
+      isLoading = false;
     });
   }
 
@@ -192,7 +193,8 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
     listOperators.add('TODO');
     for (var operator in opertators) {
       if (operator['user'] != null) {
-        listOperators.add(operator['user']['username']);
+        listOperators
+            .add("${operator['user']['username']}-${operator['user']['id']}");
       }
     }
     //print(listOperators);
@@ -1387,15 +1389,18 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
                 setState(() {
                   controller.text = newValue ?? "";
 
-                  arrayFiltersAndEq = arrayFiltersAndEq
-                      .where((element) => element['filter'] != filter)
-                      .toList();
+                  arrayFiltersAndEq
+                      .removeWhere((element) => element.containsKey(filter));
 
                   if (newValue != 'TODO') {
-                    reemplazarValor(value, newValue!);
+                    //   reemplazarValor(value, newValue!);
                     //  print(value);
 
-                    arrayFiltersAndEq.add({'filter': filter, 'value': value});
+                    arrayFiltersAndEq.add({
+                      'operadore': {
+                        'user': {'id': newValue!.split("-")[1]}
+                      }
+                    });
                   }
 
                   loadData();
@@ -1407,7 +1412,8 @@ class _DeliveryStatusTransportState extends State<DeliveryStatusTransport> {
               items: listOptions.map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
-                  child: Text(value, style: TextStyle(fontSize: 15)),
+                  child:
+                      Text(value.split("-")[0], style: TextStyle(fontSize: 15)),
                 );
               }).toList(),
             ),

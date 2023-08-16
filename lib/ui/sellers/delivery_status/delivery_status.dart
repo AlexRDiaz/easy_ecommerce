@@ -118,6 +118,9 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
   }
 
   Future loadData() async {
+    setState(() {
+      isLoading = true;
+    });
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getLoadingModal(context, false);
     });
@@ -132,10 +135,6 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
             sharedPrefs!.getString("idComercialMasterSeller").toString()
       }
     ]);
-
-    setState(() {
-      isLoading = true;
-    });
 
     var responseValues = await Connections().getValuesSeller(populate, [
       {
@@ -164,22 +163,24 @@ class _DeliveryStatusState extends State<DeliveryStatus> {
     data = response['data'];
     total = response['meta']['total'];
     pageCount = updateTotalPages(total, pageSize);
-    setState(() {
-      isFirst = false;
 
-      isLoading = false;
-    });
     // print(sharedPrefs!.getString("idTransportadora").toString());
 
     //paginate();
 
-    // paginatorController.navigateToPage(0);
+    paginatorController.navigateToPage(0);
 
     updateCounters();
     calculateValues();
 
     Future.delayed(Duration(milliseconds: 500), () {
       Navigator.pop(context);
+    });
+
+    setState(() {
+      isFirst = false;
+
+      isLoading = false;
     });
   }
 

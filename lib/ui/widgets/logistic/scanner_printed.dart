@@ -16,6 +16,7 @@ class ScannerPrinted extends StatefulWidget {
 class _ScannerPrintedState extends State<ScannerPrinted> {
   String? _barcode;
   late bool visible;
+  bool edited = false;
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -32,19 +33,30 @@ class _ScannerPrintedState extends State<ScannerPrinted> {
               child: BarcodeKeyboardListener(
                 bufferDuration: Duration(milliseconds: 200),
                 onBarcodeScanned: (barcode) async {
-                  // barcode = "28659";
-
                   if (!visible) return;
                   getLoadingModal(context, false);
-                  var response = await Connections()
-                      .updateOrderLogisticStatusPrint(
-                          "ENVIADO", barcode.toString());
-                  var responseOrder = await Connections().getOrderByID(barcode);
 
-                  setState(() {
-                    _barcode =
-                        "${responseOrder['attributes']['Name_Comercial']}-${responseOrder['attributes']['NumeroOrden']}";
-                  });
+                  var responseOrder = await Connections().getOrderByID(barcode);
+                  if (responseOrder['Status'] != 'PEDIDO PROGRAMADO' ||
+                      responseOrder['Estado_Logistico'] == 'ENVIADO') {
+                    setState(() {
+                      _barcode =
+                          "EL pedido con código   ${responseOrder['attributes']['Name_Comercial']}-${responseOrder['attributes']['NumeroOrden']}   ya se encuentra enviado"
+                          "";
+                    });
+                    edited = false;
+                  } else {
+                    var response = await Connections()
+                        .updateOrderLogisticStatusPrint(
+                            "ENVIADO", barcode.toString());
+
+                    setState(() {
+                      _barcode =
+                          "${responseOrder['attributes']['Name_Comercial']}-${responseOrder['attributes']['NumeroOrden']}";
+                    });
+                    edited = true;
+                  }
+
                   Navigator.pop(context);
                 },
                 child: Column(
@@ -62,7 +74,7 @@ class _ScannerPrintedState extends State<ScannerPrinted> {
                             : 'ORDEN PROCESADA: $_barcode',
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: _barcode == null
+                            color: _barcode == null || edited == false
                                 ? Colors.redAccent
                                 : Colors.green)),
                   ],

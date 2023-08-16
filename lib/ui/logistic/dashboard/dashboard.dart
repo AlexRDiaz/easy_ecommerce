@@ -883,7 +883,8 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
                       GestureDetector(
                           onTap: () async {
                             setState(() {
-                              selectValueSeller = null;
+                              selectValueTransport = null;
+                              selectValueOperator = null;
                             });
                             arrayFiltersAnd.removeWhere((element) =>
                                 element.containsKey("transportadora"));
@@ -899,6 +900,8 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
         onChanged: (value) async {
           arrayFiltersAnd
               .removeWhere((element) => element.containsKey("transportadora"));
+          arrayFiltersAnd
+              .removeWhere((element) => element.containsKey("operadore"));
           setState(() {
             selectValueTransport = value as String;
             idTransport = value.split('-')[1];
