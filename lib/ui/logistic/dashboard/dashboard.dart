@@ -156,10 +156,10 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
   @override
   Future<void> didChangeDependencies() async {
     initializeDates();
-    loadRoutes();
+    // loadRoutes();
 
-    loadConfigs();
-    await loadData();
+    // loadConfigs();
+    //  await loadData();
     super.didChangeDependencies();
   }
 
