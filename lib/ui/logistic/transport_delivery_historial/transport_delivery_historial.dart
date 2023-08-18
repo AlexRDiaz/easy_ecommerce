@@ -7,11 +7,13 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:frontend/connections/connections.dart';
 import 'package:frontend/helpers/responsive.dart';
 import 'package:frontend/main.dart';
+import 'package:frontend/ui/logistic/dashboard/dashboard.dart';
 import 'package:frontend/ui/logistic/print_guides/model_guide/model_guide.dart';
 import 'package:frontend/ui/logistic/transport_delivery_historial/transport_delivery_details.dart';
 import 'package:frontend/ui/logistic/vendor_invoices/controllers/controllers.dart';
 import 'package:frontend/ui/widgets/routes/routes.dart';
 import 'package:frontend/ui/widgets/routes/sub_routes_historial.dart';
+import 'package:frontend/ui/widgets/widget_observer.dart';
 import 'package:number_paginator/number_paginator.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../helpers/navigators.dart';
@@ -205,21 +207,31 @@ class _TransportDeliveryHistorialState
     "Ruta",
     "SubRuta"
   ];
+
+  final WidgetObserver _observer = WidgetObserver();
+
   @override
   void didChangeDependencies() {
     loadData();
+    _observer.onPostFrameCallback = onWidgetRendered;
+    WidgetsBinding.instance.addObserver(_observer);
 
     super.didChangeDependencies();
   }
 
-  loadData() async {
-    isLoading = true;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      getLoadingModal(context, false);
-    });
+  void onWidgetRendered() {
     setState(() {
-      data = [];
+      isLoading = false;
     });
+    // Aquí puedes ejecutar la función que deseas después de que el widget haya terminado de renderizarse.
+  }
+
+  loadData() async {
+//isLoading = true;
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   getLoadingModal(context, false);
+    // });
+    setState(() {});
 
     setState(() {
       search = false;
@@ -244,6 +256,8 @@ class _TransportDeliveryHistorialState
     // var m = response;
 
     setState(() {
+      data = [];
+
       data = response['data'];
 
       data = data.map((item) {
@@ -262,22 +276,14 @@ class _TransportDeliveryHistorialState
       counterChecks = 0;
     });
 
-    Future.delayed(const Duration(milliseconds: 500), () {
-      Navigator.pop(context);
-    });
-    setState(() {});
+    // Future.delayed(const Duration(milliseconds: 500), () {
+    //   Navigator.pop(context);
+    // });
+    // await Future.delayed(Duration(seconds: 1));
+    // setState(() {
+    //   isLoading = false;
+    // });
   }
-
-  // int calcularTotalPaginas(int totalRegistros, int registrosPorPagina) {
-  //   final int totalPaginas = totalRegistros ~/ registrosPorPagina;
-  //   final int registrosRestantes = totalRegistros % registrosPorPagina;
-
-  //   return registrosRestantes > 0
-  //       ? totalPaginas + 1
-  //       : totalPaginas == 0
-  //           ? 1
-  //           : totalPaginas;
-  // }
 
   paginateData() {
     paginate();
@@ -824,6 +830,29 @@ class _TransportDeliveryHistorialState
           ],
         ),
       ),
+    );
+  }
+
+  NumberPaginator numberPaginator() {
+    return NumberPaginator(
+      config: NumberPaginatorUIConfig(
+        buttonShape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(5), // Customize the button shape
+        ),
+      ),
+      controller: paginatorController,
+      numberPages: pageCount > 0 ? pageCount : 1,
+      // initialPage: 0,
+      onPageChange: (index) async {
+        //  print("indice="+index.toString());
+        setState(() {
+          isLoading = true;
+          currentPage = index + 1;
+        });
+        // if (!isLoading) {
+        await loadData();
+        //  }
+      },
     );
   }
 
@@ -2512,28 +2541,6 @@ class _TransportDeliveryHistorialState
       counterChecks = 0;
       enabledBusqueda = true;
     });
-  }
-
-  NumberPaginator numberPaginator() {
-    return NumberPaginator(
-      config: NumberPaginatorUIConfig(
-        buttonShape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(5), // Customize the button shape
-        ),
-      ),
-      controller: paginatorController,
-      numberPages: pageCount > 0 ? pageCount : 1,
-      // initialPage: 0,
-      onPageChange: (index) async {
-        //  print("indice="+index.toString());
-        setState(() {
-          currentPage = index + 1;
-        });
-        // if (!isLoading) {
-        await loadData();
-        //  }
-      },
-    );
   }
 
   sortFuncOperador() {

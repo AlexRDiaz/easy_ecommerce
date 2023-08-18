@@ -6,6 +6,7 @@ import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:frontend/connections/connections.dart';
 import 'package:frontend/helpers/server.dart';
 import 'package:frontend/ui/widgets/loading.dart';
+import 'package:frontend/ui/widgets/novedad_dialog.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -481,6 +482,8 @@ class _UpdateStatusOperatorHistorialState
                       });
                       Navigator.pop(context);
                       Navigator.pop(context);
+
+                      // Navigator.pop(context);
                       // Navigator.pop(context);
                     }
                   : null,

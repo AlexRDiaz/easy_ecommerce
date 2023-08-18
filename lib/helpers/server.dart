@@ -1,4 +1,7 @@
 String generalServer = "http://localhost:1337";
+String generalServerApiLaravel =
+    "https://easyecommercelaravel-production.up.railway.app";
+
 String serverUrlByShopify = "http://localhost:1337/api/shopify/pedidos";
 
 // String generalServer = "https://api.easyecomerce.com";

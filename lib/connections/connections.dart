@@ -11,6 +11,7 @@ import 'package:async/async.dart';
 
 class Connections {
   String server = generalServer;
+  String serverLaravel = generalServerApiLaravel;
   Future<bool> login({identifier, password}) async {
     try {
       var request = await http.post(Uri.parse("$server/api/auth/local"), body: {
@@ -853,18 +854,18 @@ class Connections {
     print('start: ${sharedPrefs!.getString("dateDesdeLogistica")}');
     print('end: ${sharedPrefs!.getString("dateHastaLogistica")}');
 
-    var request = await http.post(
-        Uri.parse("http://localhost:8000/api/pedidos-shopify/filter"),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({
-          "start": sharedPrefs!.getString("dateDesdeLogistica"),
-          "end": sharedPrefs!.getString("dateHastaLogistica"),
-          "or": or,
-          "and": [],
-          "page_size": sizePage,
-          "page_number": currentPage,
-          "search": search
-        }));
+    var request =
+        await http.post(Uri.parse("$serverLaravel/api/pedidos-shopify/filter"),
+            headers: {'Content-Type': 'application/json'},
+            body: json.encode({
+              "start": sharedPrefs!.getString("dateDesdeLogistica"),
+              "end": sharedPrefs!.getString("dateHastaLogistica"),
+              "or": or,
+              "and": [],
+              "page_size": sizePage,
+              "page_number": currentPage,
+              "search": search
+            }));
 
     var response = await request.body;
     var decodeData = json.decode(response);

@@ -112,7 +112,7 @@ class _SalesReportState extends State<SalesReport> {
                                             btnCancelOnPress: () {},
                                             btnOkOnPress: () async {
                                               await loadData();
-                                              Navigator.pop(context);
+//Navigator.pop(context);
                                             },
                                           ).show();
                                         },
