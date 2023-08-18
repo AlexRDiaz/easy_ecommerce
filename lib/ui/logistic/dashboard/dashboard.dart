@@ -156,9 +156,9 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
   @override
   Future<void> didChangeDependencies() async {
     initializeDates();
-    // loadRoutes();
+    loadRoutes();
 
-    // loadConfigs();
+    loadConfigs();
     //  await loadData();
     super.didChangeDependencies();
   }
@@ -256,7 +256,7 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
     isLoading = false;
   }
 
-  bool _isMenuOpen = false;
+  bool _isMenuOpen = true;
   final double _menuWidth = 300.0; // Ancho del menú lateral
 
   void _toggleMenu() {
@@ -373,39 +373,89 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
             child: Column(
               children: [
                 _dates(context),
+
                 Expanded(
                   child: Container(
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey),
-                          borderRadius: BorderRadius.circular(3)),
-                      width: MediaQuery.of(context).size.width * 0.8,
-                      height: 200,
-                      child: isLoading
-                          ? CustomCircularProgressIndicator()
-                          : DynamicPieChart(
-                              filters: filters,
-                            )),
+                    padding: EdgeInsets.all(20),
+                    child: DefaultTabController(
+                      length:
+                          3, // Cambia el número de pestañas según tus necesidades
+                      child: Column(
+                        children: [
+                          TabBar(
+                            labelColor: Colors.black,
+                            tabs: [
+                              Tab(icon: Icon(Icons.pie_chart)),
+                              Tab(icon: Icon(Icons.bar_chart)),
+                            ],
+                          ),
+                          Expanded(
+                            child: TabBarView(
+                              children: [
+                                Container(
+                                    decoration: BoxDecoration(
+                                        border: Border.all(color: Colors.grey),
+                                        borderRadius: BorderRadius.circular(3)),
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.8,
+                                    height: 200,
+                                    child: DynamicPieChart(
+                                      filters: filters,
+                                    )),
+                                Container(
+                                    decoration: BoxDecoration(
+                                        border: Border.all(color: Colors.grey),
+                                        borderRadius: BorderRadius.circular(3)),
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.8,
+                                    height: 200,
+                                    child: isLoading
+                                        ? CustomCircularProgressIndicator()
+                                        : DynamicStackedColumnChart(
+                                            dataList: routeSelected)),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
-                Expanded(
-                  child: Container(
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey),
-                          borderRadius: BorderRadius.circular(3)),
-                      width: MediaQuery.of(context).size.width * 0.8,
-                      height: 200,
-                      child: isLoading
-                          ? CustomCircularProgressIndicator()
-                          : DynamicStackedColumnChart(dataList: routeSelected)),
-                ),
+
+                // Expanded(
+                //   child: Container(
+                //       decoration: BoxDecoration(
+                //           border: Border.all(color: Colors.grey),
+                //           borderRadius: BorderRadius.circular(3)),
+                //       width: MediaQuery.of(context).size.width * 0.8,
+                //       height: 200,
+                //       child: isLoading
+                //           ? CustomCircularProgressIndicator()
+                //           : DynamicPieChart(
+                //               filters: filters,
+                //             )),
+                // ),
+                // Expanded(
+                //   child: Container(
+                //       decoration: BoxDecoration(
+                //           border: Border.all(color: Colors.grey),
+                //           borderRadius: BorderRadius.circular(3)),
+                //       width: MediaQuery.of(context).size.width * 0.8,
+                //       height: 200,
+                //       child: isLoading
+                //           ? CustomCircularProgressIndicator()
+                //           : DynamicStackedColumnChart(dataList: routeSelected)),
+                // ),
               ],
             ),
           ),
         ),
-        IconButton(
-          icon: Icon(_isMenuOpen
-              ? Icons.arrow_right_outlined
-              : Icons.arrow_left_outlined),
-          onPressed: _toggleMenu,
+        Visibility(
+          visible: _isMenuOpen ? false : true,
+          child: IconButton(
+            icon: Icon(Icons.arrow_left_outlined),
+            onPressed: _toggleMenu,
+          ),
         ),
 
         // Menú lateral desplegable
@@ -415,23 +465,34 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
             height: MediaQuery.of(context).size.height,
             decoration: BoxDecoration(
               border: Border(left: BorderSide(color: Colors.black)),
-              color: Colors
-                  .white, // Agregamos un color de fondo blanco para que el menú se vea más limpio
+              color: Colors.white,
             ),
             width: _isMenuOpen ? _menuWidth : 0,
             child: _isMenuOpen
                 ? SingleChildScrollView(
-                    // Usamos SingleChildScrollView para que el contenido pueda desplazarse si se desborda
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const ListTile(
-                          title: Text(
-                            'Configuraciones',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
+                        ListTile(
+                          title: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                'Configuraciones',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.close),
+                                onPressed: () {
+                                  setState(() {
+                                    _isMenuOpen = false;
+                                  });
+                                },
+                              ),
+                            ],
                           ),
                         ),
                         Padding(
@@ -683,8 +744,9 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
     }
   }
 
-  SizedBox _dates(BuildContext context) {
-    return SizedBox(
+  Container _dates(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.only(top: 10, bottom: 10),
       width: double.infinity,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -729,7 +791,13 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
               },
               child: Text(
                 "${sharedPrefs!.getString("dateDesdeLogistica")}",
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  color: Colors.blue, // Cambia el color según tus preferencias
+                  fontFamily:
+                      'Roboto', // Cambia la fuente según tus preferencias
+                ),
               )),
           Text("-"),
           TextButton(
@@ -771,7 +839,13 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
               },
               child: Text(
                 "${sharedPrefs!.getString("dateHastaLogistica")}",
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  color: Colors.blue, // Cambia el color según tus preferencias
+                  fontFamily:
+                      'Roboto', // Cambia la fuente según tus preferencias
+                ),
               )),
           SizedBox(
             width: 10,

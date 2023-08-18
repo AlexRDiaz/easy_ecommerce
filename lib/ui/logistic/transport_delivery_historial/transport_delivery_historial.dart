@@ -7,13 +7,11 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:frontend/connections/connections.dart';
 import 'package:frontend/helpers/responsive.dart';
 import 'package:frontend/main.dart';
-import 'package:frontend/ui/logistic/dashboard/dashboard.dart';
 import 'package:frontend/ui/logistic/print_guides/model_guide/model_guide.dart';
 import 'package:frontend/ui/logistic/transport_delivery_historial/transport_delivery_details.dart';
 import 'package:frontend/ui/logistic/vendor_invoices/controllers/controllers.dart';
 import 'package:frontend/ui/widgets/routes/routes.dart';
 import 'package:frontend/ui/widgets/routes/sub_routes_historial.dart';
-import 'package:frontend/ui/widgets/widget_observer.dart';
 import 'package:number_paginator/number_paginator.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../helpers/navigators.dart';
@@ -38,7 +36,8 @@ class _TransportDeliveryHistorialState
   List data = [];
   bool sort = false;
   ScreenshotController screenshotController = ScreenshotController();
-
+  ScrollController _scrollController = ScrollController();
+  bool paginate = false;
   bool search = false;
   String option = "";
   String url = "";
@@ -207,101 +206,158 @@ class _TransportDeliveryHistorialState
     "Ruta",
     "SubRuta"
   ];
-
-  final WidgetObserver _observer = WidgetObserver();
-
   @override
   void didChangeDependencies() {
     loadData();
-    _observer.onPostFrameCallback = onWidgetRendered;
-    WidgetsBinding.instance.addObserver(_observer);
 
     super.didChangeDependencies();
   }
 
-  void onWidgetRendered() {
-    setState(() {
-      isLoading = false;
-    });
-    // Aquí puedes ejecutar la función que deseas después de que el widget haya terminado de renderizarse.
-  }
-
   loadData() async {
-//isLoading = true;
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   getLoadingModal(context, false);
-    // });
-    setState(() {});
+    isLoading = true;
+    try {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        getLoadingModal(context, false);
+      });
 
-    setState(() {
-      search = false;
-    });
+      setState(() {
+        search = false;
+      });
 
-    var response = await Connections()
-        .getOrdersForHistorialTransportByDatesLaravel(
-            populate,
-            arrayFiltersAnd,
-            arrayFiltersOr,
-            currentPage,
-            pageSize,
-            _controllers.searchController.text);
+      var response = await Connections()
+          .getOrdersForHistorialTransportByDatesLaravel(
+              populate,
+              arrayFiltersAnd,
+              arrayFiltersOr,
+              currentPage,
+              pageSize,
+              _controllers.searchController.text);
 
-    // var response = await Connections().getOrdersForHistorialTransportByDates(
-    //   populate,
-    //   arrayFiltersAnd,
-    //   currentPage,
-    //   pageSize,
-    // );
+      // var response = await Connections().getOrdersForHistorialTransportByDates(
+      //   populate,
+      //   arrayFiltersAnd,
+      //   currentPage,
+      //   pageSize,
+      // );
 
-    // var m = response;
+      // var m = response;
 
-    setState(() {
-      data = [];
+      setState(() {
+        data = [];
+        data = response['data'];
 
-      data = response['data'];
+        data = data.map((item) {
+          return {...item, 'check': false};
+        }).toList();
 
-      data = data.map((item) {
-        return {...item, 'check': false};
-      }).toList();
+        total = response['total'];
 
-      total = response['total'];
+        pageCount = response['last_page'];
+        //paginate();
+        isLoading && !paginate
+            ? paginatorController.navigateToPage(0)
+            : paginate = false;
 
-      pageCount = response['last_page'];
-      //paginate();
-      //paginatorController.navigateToPage(0);
-    });
+        // _scrollController.jumpTo(0);
+      });
 
-    setState(() {
-      optionsCheckBox = [];
-      counterChecks = 0;
-    });
+      setState(() {
+        optionsCheckBox = [];
+        counterChecks = 0;
+      });
 
-    // Future.delayed(const Duration(milliseconds: 500), () {
-    //   Navigator.pop(context);
-    // });
-    // await Future.delayed(Duration(seconds: 1));
-    // setState(() {
-    //   isLoading = false;
-    // });
-  }
+      Future.delayed(const Duration(milliseconds: 500), () {
+        Navigator.pop(context);
+      });
 
-  paginateData() {
-    paginate();
-  }
+      setState(() {
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      Navigator.pop(context);
 
-  paginate() {
-    if (allData.isNotEmpty) {
-      if (currentPage == pageCount) {
-        data = allData.sublist((pageSize * (currentPage - 1)), allData.length);
-      } else {
-        data = allData.sublist(
-            (pageSize * (currentPage - 1)), (pageSize * currentPage));
-      }
-    } else {
-      data = [];
+      _showErrorSnackBar(context, "Ha ocurrido un error de conexión");
     }
-    var res = 1;
   }
+
+  paginateData() async {
+    isLoading = true;
+    try {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        getLoadingModal(context, false);
+      });
+
+      setState(() {
+        search = false;
+      });
+
+      var response = await Connections()
+          .getOrdersForHistorialTransportByDatesLaravel(
+              populate,
+              arrayFiltersAnd,
+              arrayFiltersOr,
+              currentPage,
+              pageSize,
+              _controllers.searchController.text);
+
+      setState(() {
+        data = [];
+        data = response['data'];
+
+        data = data.map((item) {
+          return {...item, 'check': false};
+        }).toList();
+
+        isLoading && !paginate
+            ? paginatorController.navigateToPage(0)
+            : paginate = false;
+
+        // _scrollController.jumpTo(0);
+      });
+
+      Future.delayed(const Duration(milliseconds: 500), () {
+        Navigator.pop(context);
+      });
+
+      setState(() {
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      Navigator.pop(context);
+
+      _showErrorSnackBar(context, "Ha ocurrido un error de conexión");
+    }
+  }
+
+  void _showErrorSnackBar(BuildContext context, String errorMessage) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          errorMessage,
+          style: TextStyle(color: Color.fromRGBO(7, 0, 0, 1)),
+        ),
+        backgroundColor: Color.fromARGB(255, 253, 101, 90),
+        duration: Duration(seconds: 4),
+      ),
+    );
+  }
+
+  // int calcularTotalPaginas(int totalRegistros, int registrosPorPagina) {
+  //   final int totalPaginas = totalRegistros ~/ registrosPorPagina;
+  //   final int registrosRestantes = totalRegistros % registrosPorPagina;
+
+  //   return registrosRestantes > 0
+  //       ? totalPaginas + 1
+  //       : totalPaginas == 0
+  //           ? 1
+  //           : totalPaginas;
+  // }
 
   final VendorInvoicesControllers _controllers = VendorInvoicesControllers();
   @override
@@ -451,6 +507,7 @@ class _TransportDeliveryHistorialState
 
             Expanded(
                 child: DataTable2(
+                    scrollController: _scrollController,
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: const BorderRadius.all(Radius.circular(4)),
@@ -833,29 +890,6 @@ class _TransportDeliveryHistorialState
     );
   }
 
-  NumberPaginator numberPaginator() {
-    return NumberPaginator(
-      config: NumberPaginatorUIConfig(
-        buttonShape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(5), // Customize the button shape
-        ),
-      ),
-      controller: paginatorController,
-      numberPages: pageCount > 0 ? pageCount : 1,
-      // initialPage: 0,
-      onPageChange: (index) async {
-        //  print("indice="+index.toString());
-        setState(() {
-          isLoading = true;
-          currentPage = index + 1;
-        });
-        // if (!isLoading) {
-        await loadData();
-        //  }
-      },
-    );
-  }
-
   Column InputFilter(String title, filter, var controller, key) {
     return Column(
       children: [
@@ -990,23 +1024,6 @@ class _TransportDeliveryHistorialState
                             ElevatedButton(
                                 onPressed: () async {
                                   getLoadingModal(context, false);
-
-                                  // for (var i = 0;
-                                  //     i < optionsCheckBox.length;
-                                  //     i++) {
-                                  //   if (optionsCheckBox[i]['id']
-                                  //           .toString()
-                                  //           .isNotEmpty &&
-                                  //       optionsCheckBox[i]['id'].toString() !=
-                                  //           '' &&
-                                  //       optionsCheckBox[i]['check'] == true) {
-                                  //     var response = await Connections()
-                                  //         .updateOrderLogisticStatus(
-                                  //             "IMPRESO",
-                                  //             optionsCheckBox[i]['id']
-                                  //                 .toString());
-                                  //   }
-                                  // }
                                   for (var option in optionsCheckBox) {
                                     await Connections()
                                         .updateOrderLogisticStatus(
@@ -1027,22 +1044,6 @@ class _TransportDeliveryHistorialState
                                 onPressed: () async {
                                   getLoadingModal(context, false);
 
-                                  // for (var i = 0;
-                                  //     i < optionsCheckBox.length;
-                                  //     i++) {
-                                  //   if (optionsCheckBox[i]['id']
-                                  //           .toString()
-                                  //           .isNotEmpty &&
-                                  //       optionsCheckBox[i]['id'].toString() !=
-                                  //           '' &&
-                                  //       optionsCheckBox[i]['check'] == true) {
-                                  //     var response = await Connections()
-                                  //         .updateOrderLogisticStatusPrint(
-                                  //             "ENVIADO",
-                                  //             optionsCheckBox[i]['id']
-                                  //                 .toString());
-                                  //   }
-                                  // }
                                   for (var option in optionsCheckBox) {
                                     await Connections()
                                         .updateOrderLogisticStatusPrint(
@@ -1104,55 +1105,6 @@ class _TransportDeliveryHistorialState
                                     ));
                                   }
 
-                                  // for (var i = 0;
-                                  //     i < optionsCheckBox.length;
-                                  //     i++) {
-                                  //   if (optionsCheckBox[i]['id']
-                                  //           .toString()
-                                  //           .isNotEmpty &&
-                                  //       optionsCheckBox[i]['id'].toString() !=
-                                  //           '' &&
-                                  //       optionsCheckBox[i]['check'] == true) {
-                                  //     final capturedImage =
-                                  //         await screenshotController
-                                  //             .captureFromWidget(Container(
-                                  //                 child: ModelGuide(
-                                  //       address: optionsCheckBox[i]['address'],
-                                  //       city: optionsCheckBox[i]['city'],
-                                  //       date: optionsCheckBox[i]['date'],
-                                  //       extraProduct: optionsCheckBox[i]
-                                  //           ['extraProduct'],
-                                  //       idForBarcode: optionsCheckBox[i]['id'],
-                                  //       name: optionsCheckBox[i]['name'],
-                                  //       numPedido: optionsCheckBox[i]
-                                  //           ['numPedido'],
-                                  //       observation: optionsCheckBox[i]
-                                  //           ['obervation'],
-                                  //       phone: optionsCheckBox[i]['phone'],
-                                  //       price: optionsCheckBox[i]['price'],
-                                  //       product: optionsCheckBox[i]['product'],
-                                  //       qrLink: optionsCheckBox[i]['qrLink'],
-                                  //       quantity: optionsCheckBox[i]
-                                  //           ['quantity'],
-                                  //       transport: optionsCheckBox[i]
-                                  //           ['transport'],
-                                  //     )));
-                                  //     doc.addPage(pw.Page(
-                                  //       pageFormat: PdfPageFormat(
-                                  //           21.0 * cm, 21.0 * cm,
-                                  //           marginAll: 0.1 * cm),
-                                  //       build: (pw.Context context) {
-                                  //         return pw.Row(
-                                  //           children: [
-                                  //             pw.Image(
-                                  //                 pw.MemoryImage(capturedImage),
-                                  //                 fit: pw.BoxFit.contain)
-                                  //           ],
-                                  //         );
-                                  //       },
-                                  //     ));
-                                  //   }
-                                  // }
                                   Navigator.pop(context);
                                   await Printing.layoutPdf(
                                       onLayout: (PdfPageFormat format) async =>
@@ -1501,12 +1453,23 @@ class _TransportDeliveryHistorialState
     );
   }
 
+  isChecked(dataCheck) {
+    Map<String, dynamic>? foundMap = optionsCheckBox
+        .firstWhere((map) => map['id'] == dataCheck['id'], orElse: () => null);
+
+    if (foundMap != null) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   List<DataCell> getRows(index) {
     Color rowColor = Colors.black;
 
     return [
       DataCell(Checkbox(
-          value: data[index]['check'],
+          value: isChecked([index]),
           onChanged: (value) {
             setState(() {
               data[index]['check'] = value;
@@ -2541,6 +2504,25 @@ class _TransportDeliveryHistorialState
       counterChecks = 0;
       enabledBusqueda = true;
     });
+  }
+
+  NumberPaginator numberPaginator() {
+    return NumberPaginator(
+      config: NumberPaginatorUIConfig(
+        buttonShape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(5), // Customize the button shape
+        ),
+      ),
+      controller: paginatorController,
+      numberPages: pageCount > 0 ? pageCount : 1,
+      onPageChange: (index) async {
+        paginate = true;
+        setState(() {
+          currentPage = index + 1;
+        });
+        await paginateData();
+      },
+    );
   }
 
   sortFuncOperador() {
