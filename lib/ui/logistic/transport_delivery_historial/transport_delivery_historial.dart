@@ -247,9 +247,10 @@ class _TransportDeliveryHistorialState
         data = response['data'];
 
         data = data.map((item) {
-          return {...item, 'check': false};
+          bool check =
+              optionsCheckBox.any((element) => element['id'] == item['id']);
+          return {...item, 'check': check};
         }).toList();
-
         total = response['total'];
 
         pageCount = response['last_page'];
@@ -1480,6 +1481,9 @@ class _TransportDeliveryHistorialState
               optionsCheckBox
                   .removeWhere((option) => option['id'] == data[index]['id']);
             }
+            setState(() {
+              counterChecks = optionsCheckBox.length;
+            });
           })),
       DataCell(Text('${data[index]['marca_t_i'].toString()}'), onTap: () {
         showDialog(
@@ -2496,11 +2500,9 @@ class _TransportDeliveryHistorialState
   }
 
   clearSelected() {
-    optionsCheckBox = [];
-    for (var i = 0; i < total; i++) {
-      optionsCheckBox.add({"check": false, "id": "", "NumeroOrden": ""});
-    }
     setState(() {
+      optionsCheckBox = [];
+      data = data.map((item) => {...item, 'check': false}).toList();
       counterChecks = 0;
       enabledBusqueda = true;
     });
