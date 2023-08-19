@@ -29,6 +29,7 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
   bool enOficina = false;
   bool programado = false;
   bool openStatus = false;
+  bool changeGraphicOptions = false;
   List checks = [];
   List<Map<String, dynamic>> routeSelected = [];
   TextEditingController _search = TextEditingController();
@@ -156,9 +157,9 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
   @override
   Future<void> didChangeDependencies() async {
     initializeDates();
-    // loadRoutes();
+    loadRoutes();
 
-    // loadConfigs();
+    loadConfigs();
     //  await loadData();
     super.didChangeDependencies();
   }
@@ -241,6 +242,9 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
       sections = [];
     });
 
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getLoadingModal(context, false);
+    });
     var response = await Connections()
         .getOrdersDashboardLogistic(populate, arrayFiltersAnd);
     var responseRoutes = await Connections()
@@ -253,11 +257,14 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
       loadCounterRoute();
     });
 
+    Future.delayed(Duration(milliseconds: 500), () {
+      Navigator.pop(context);
+    });
     isLoading = false;
   }
 
-  bool _isMenuOpen = false;
-  final double _menuWidth = 300.0; // Ancho del menú lateral
+  bool _isMenuOpen = true;
+  final double _menuWidth = 270.0; // Ancho del menú lateral
 
   void _toggleMenu() {
     setState(() {
@@ -373,151 +380,233 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
             child: Column(
               children: [
                 _dates(context),
+
                 Expanded(
                   child: Container(
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey),
-                          borderRadius: BorderRadius.circular(3)),
-                      width: MediaQuery.of(context).size.width * 0.8,
-                      height: 200,
-                      child: isLoading
-                          ? CustomCircularProgressIndicator()
-                          : DynamicPieChart(
-                              filters: filters,
-                            )),
+                    padding: EdgeInsets.all(20),
+                    child: DefaultTabController(
+                      length:
+                          3, // Cambia el número de pestañas según tus necesidades
+                      child: Column(
+                        children: [
+                          TabBar(
+                            labelColor: Colors.black,
+                            tabs: [
+                              GestureDetector(
+                                  onTap: () {
+                                    changeGraphicOptions = true;
+                                  },
+                                  child: Tab(icon: Icon(Icons.pie_chart))),
+                              GestureDetector(
+                                  onTap: () {
+                                    changeGraphicOptions = false;
+                                  },
+                                  child: Tab(icon: Icon(Icons.bar_chart))),
+                            ],
+                          ),
+                          Expanded(
+                            child: TabBarView(
+                              children: [
+                                Container(
+                                    decoration: BoxDecoration(
+                                        border: Border.all(color: Colors.grey),
+                                        borderRadius: BorderRadius.circular(3)),
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.8,
+                                    height: 200,
+                                    child: DynamicPieChart(
+                                      filters: filters,
+                                    )),
+                                Container(
+                                    decoration: BoxDecoration(
+                                        border: Border.all(color: Colors.grey),
+                                        borderRadius: BorderRadius.circular(3)),
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.8,
+                                    height: 200,
+                                    child: isLoading
+                                        ? CustomCircularProgressIndicator()
+                                        : DynamicStackedColumnChart(
+                                            dataList: routeSelected)),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
-                Expanded(
-                  child: Container(
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey),
-                          borderRadius: BorderRadius.circular(3)),
-                      width: MediaQuery.of(context).size.width * 0.8,
-                      height: 200,
-                      child: isLoading
-                          ? CustomCircularProgressIndicator()
-                          : DynamicStackedColumnChart(dataList: routeSelected)),
-                ),
+
+                // Expanded(
+                //   child: Container(
+                //       decoration: BoxDecoration(
+                //           border: Border.all(color: Colors.grey),
+                //           borderRadius: BorderRadius.circular(3)),
+                //       width: MediaQuery.of(context).size.width * 0.8,
+                //       height: 200,
+                //       child: isLoading
+                //           ? CustomCircularProgressIndicator()
+                //           : DynamicPieChart(
+                //               filters: filters,
+                //             )),
+                // ),
+                // Expanded(
+                //   child: Container(
+                //       decoration: BoxDecoration(
+                //           border: Border.all(color: Colors.grey),
+                //           borderRadius: BorderRadius.circular(3)),
+                //       width: MediaQuery.of(context).size.width * 0.8,
+                //       height: 200,
+                //       child: isLoading
+                //           ? CustomCircularProgressIndicator()
+                //           : DynamicStackedColumnChart(dataList: routeSelected)),
+                // ),
               ],
             ),
           ),
         ),
-        IconButton(
-          icon: Icon(_isMenuOpen
-              ? Icons.arrow_right_outlined
-              : Icons.arrow_left_outlined),
-          onPressed: _toggleMenu,
+        Visibility(
+          visible: _isMenuOpen ? false : true,
+          child: IconButton(
+            icon: Icon(Icons.arrow_left_outlined),
+            onPressed: _toggleMenu,
+          ),
         ),
 
         // Menú lateral desplegable
-        Visibility(
-          visible: _isMenuOpen,
-          child: Container(
-            height: MediaQuery.of(context).size.height,
-            decoration: BoxDecoration(
-              border: Border(left: BorderSide(color: Colors.black)),
-              color: Colors
-                  .white, // Agregamos un color de fondo blanco para que el menú se vea más limpio
-            ),
-            width: _isMenuOpen ? _menuWidth : 0,
-            child: _isMenuOpen
-                ? SingleChildScrollView(
-                    // Usamos SingleChildScrollView para que el contenido pueda desplazarse si se desborda
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const ListTile(
-                          title: Text(
-                            'Configuraciones',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
+        responsive(
+            Visibility(
+              visible: _isMenuOpen,
+              child: Container(
+                height: MediaQuery.of(context).size.height,
+                decoration: BoxDecoration(
+                  border: Border(left: BorderSide(color: Colors.black)),
+                  color: Colors.white,
+                ),
+                width: _isMenuOpen ? _menuWidth : 0,
+                child: _isMenuOpen
+                    ? SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ListTile(
+                              title: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Text(
+                                    'Configuraciones',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                  IconButton(
+                                    icon: Icon(Icons.close),
+                                    onPressed: () {
+                                      setState(() {
+                                        _isMenuOpen = false;
+                                      });
+                                    },
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 7),
-                          child: ExpansionTile(
-                            title: Text("Entidades"),
-                            children: [
-                              Container(
-                                padding: EdgeInsets.only(left: 20),
-                                child: Row(
-                                  children: [
-                                    Container(
-                                        width: 100,
-                                        child: Text("Vendedores: ")),
-                                    _sellers(context)
-                                  ],
-                                ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 7),
+                              child: ExpansionTile(
+                                title: Text("Entidades"),
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.only(left: 20),
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                            width: 100,
+                                            child: Text("Vendedores: ")),
+                                        _sellers(context)
+                                      ],
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: EdgeInsets.only(left: 20),
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                            width: 100,
+                                            child: Text("Transportistas: ")),
+                                        _sellersTransport(context)
+                                      ],
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: EdgeInsets.only(left: 20),
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                            width: 100,
+                                            child: Text("Operadores: ")),
+                                        _operators(context)
+                                      ],
+                                    ),
+                                  ),
+                                  //  _sellers(context),
+                                ],
                               ),
-                              Container(
-                                padding: EdgeInsets.only(left: 20),
-                                child: Row(
-                                  children: [
-                                    Container(
-                                        width: 100,
-                                        child: Text("Transportistas: ")),
-                                    _sellersTransport(context)
-                                  ],
-                                ),
-                              ),
-                              Container(
-                                padding: EdgeInsets.only(left: 20),
-                                child: Row(
-                                  children: [
-                                    Container(
-                                        width: 100,
-                                        child: Text("Operadores: ")),
-                                    _operators(context)
-                                  ],
-                                ),
-                              ),
-                              //  _sellers(context),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 7),
-                          child: ExpansionTile(
-                            title: Text("Ciudades"),
-                            children: routes
-                                .map((route) => Container(
-                                      padding: EdgeInsets.only(left: 20),
-                                      child: Row(
-                                        children: [
-                                          Container(
-                                            width: 200,
-                                            child: Text(
-                                              capitalize(route['attributes']
-                                                      ['Titulo']
-                                                  .toString()),
-                                              style: TextStyle(fontSize: 16),
-                                            ),
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 7),
+                              child: ExpansionTile(
+                                title: Text("Ciudades"),
+                                children: routes
+                                    .map((route) => Container(
+                                          padding: EdgeInsets.only(left: 20),
+                                          child: Row(
+                                            children: [
+                                              Container(
+                                                width: 200,
+                                                child: Text(
+                                                  capitalize(route['attributes']
+                                                          ['Titulo']
+                                                      .toString()),
+                                                  style:
+                                                      TextStyle(fontSize: 16),
+                                                ),
+                                              ),
+                                              Checkbox(
+                                                value: route['check'],
+                                                onChanged: (value) {
+                                                  setState(() {
+                                                    route['check'] = value;
+                                                  });
+                                                  addCounterRoute(
+                                                      route['id'],
+                                                      route['attributes']
+                                                          ['Titulo'],
+                                                      value);
+                                                },
+                                              )
+                                            ],
                                           ),
-                                          Checkbox(
-                                            value: route['check'],
-                                            onChanged: (value) {
-                                              setState(() {
-                                                route['check'] = value;
-                                              });
-                                              addCounterRoute(
-                                                  route['id'],
-                                                  route['attributes']['Titulo'],
-                                                  value);
-                                            },
-                                          )
-                                        ],
-                                      ),
-                                    ))
-                                .toList(),
-                          ),
+                                        ))
+                                    .toList(),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  )
-                : Container(),
-          ),
-        ),
+                      )
+                    : Container(),
+              ),
+            ),
+            Container(
+                child: IconButton(
+                    onPressed: () {
+                      showModal(context);
+                    },
+                    icon: Icon(Icons.settings))),
+            context),
 
         // Container(
         //   width: 1235,
@@ -683,8 +772,9 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
     }
   }
 
-  SizedBox _dates(BuildContext context) {
-    return SizedBox(
+  Container _dates(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.only(top: 10, bottom: 10),
       width: double.infinity,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -729,7 +819,13 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
               },
               child: Text(
                 "${sharedPrefs!.getString("dateDesdeLogistica")}",
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  color: Colors.blue, // Cambia el color según tus preferencias
+                  fontFamily:
+                      'Roboto', // Cambia la fuente según tus preferencias
+                ),
               )),
           Text("-"),
           TextButton(
@@ -771,7 +867,13 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
               },
               child: Text(
                 "${sharedPrefs!.getString("dateHastaLogistica")}",
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  color: Colors.blue, // Cambia el color según tus preferencias
+                  fontFamily:
+                      'Roboto', // Cambia la fuente según tus preferencias
+                ),
               )),
           SizedBox(
             width: 10,
@@ -1049,6 +1151,101 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
   }
 
   void setRouteCounter(int id) {}
+
+  showModal(context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(20),
+        ),
+      ),
+      builder: (BuildContext modalContext) {
+        return SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 7),
+                  child: ExpansionTile(
+                    title: Text("Entidades"),
+                    children: [
+                      Container(
+                        padding: EdgeInsets.only(left: 20),
+                        child: Row(
+                          children: [
+                            Container(width: 100, child: Text("Vendedores: ")),
+                            _sellers(context)
+                          ],
+                        ),
+                      ),
+                      Container(
+                        padding: EdgeInsets.only(left: 20),
+                        child: Row(
+                          children: [
+                            Container(
+                                width: 100, child: Text("Transportistas: ")),
+                            _sellersTransport(context)
+                          ],
+                        ),
+                      ),
+                      Container(
+                        padding: EdgeInsets.only(left: 20),
+                        child: Row(
+                          children: [
+                            Container(width: 100, child: Text("Operadores: ")),
+                            _operators(context)
+                          ],
+                        ),
+                      ),
+                      //  _sellers(context),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 7),
+                  child: ExpansionTile(
+                    title: Text("Ciudades"),
+                    children: routes
+                        .map((route) => Container(
+                              padding: EdgeInsets.only(left: 20),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 200,
+                                    child: Text(
+                                      capitalize(route['attributes']['Titulo']
+                                          .toString()),
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                  ),
+                                  Checkbox(
+                                    value: route['check'],
+                                    onChanged: (value) {
+                                      setState(() {
+                                        route['check'] = value;
+                                      });
+                                      addCounterRoute(route['id'],
+                                          route['attributes']['Titulo'], value);
+                                    },
+                                  )
+                                ],
+                              ),
+                            ))
+                        .toList(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 
   // sendFilter(String selectedFilter, bool currentValue) {
   //   for (var filter in filters) {

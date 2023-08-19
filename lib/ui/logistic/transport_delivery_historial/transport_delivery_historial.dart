@@ -192,6 +192,7 @@ class _TransportDeliveryHistorialState
     "Ruta",
     "SubRuta"
   ];
+  bool paginate = false;
   @override
   void didChangeDependencies() {
     loadData();
@@ -231,7 +232,45 @@ class _TransportDeliveryHistorialState
 
       pageCount = calcularTotalPaginas(total, pageSize);
       //paginate();
-      //paginatorController.navigateToPage(0);
+    });
+
+    paginatorController.navigateToPage(0);
+
+    paginate = false;
+
+    Future.delayed(const Duration(milliseconds: 500), () {
+      Navigator.pop(context);
+    });
+    setState(() {});
+    isLoading = false;
+  }
+
+  paginateData() async {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getLoadingModal(context, false);
+    });
+    setState(() {
+      data = [];
+    });
+
+    setState(() {
+      search = false;
+    });
+
+    var response = await Connections().getOrdersForHistorialTransportByDates(
+      populate,
+      arrayFiltersAnd,
+      currentPage,
+      pageSize,
+    );
+    setState(() {
+      data = response['data'];
+
+      data = data.map((item) {
+        bool check =
+            optionsCheckBox.any((element) => element['id'] == item['id']);
+        return {...item, 'check': check};
+      }).toList();
     });
 
     Future.delayed(const Duration(milliseconds: 500), () {
@@ -251,23 +290,23 @@ class _TransportDeliveryHistorialState
             : totalPaginas;
   }
 
-  paginateData() {
-    paginate();
-  }
+  // paginateData() {
+  //   paginate();
+  // }
 
-  paginate() {
-    if (allData.isNotEmpty) {
-      if (currentPage == pageCount) {
-        data = allData.sublist((pageSize * (currentPage - 1)), allData.length);
-      } else {
-        data = allData.sublist(
-            (pageSize * (currentPage - 1)), (pageSize * currentPage));
-      }
-    } else {
-      data = [];
-    }
-    var res = 1;
-  }
+  // paginate() {
+  //   if (allData.isNotEmpty) {
+  //     if (currentPage == pageCount) {
+  //       data = allData.sublist((pageSize * (currentPage - 1)), allData.length);
+  //     } else {
+  //       data = allData.sublist(
+  //           (pageSize * (currentPage - 1)), (pageSize * currentPage));
+  //     }
+  //   } else {
+  //     data = [];
+  //   }
+  //   var res = 1;
+  // }
 
   final VendorInvoicesControllers _controllers = VendorInvoicesControllers();
   @override
@@ -2532,15 +2571,15 @@ class _TransportDeliveryHistorialState
       ),
       controller: paginatorController,
       numberPages: pageCount > 0 ? pageCount : 1,
-      // initialPage: 0,
       onPageChange: (index) async {
-        //  print("indice="+index.toString());
+        paginate = true;
+
         setState(() {
           currentPage = index + 1;
         });
-        // if (!isLoading) {
-        await loadData();
-        //  }
+        if (!isLoading) {
+          await paginateData();
+        }
       },
     );
   }
