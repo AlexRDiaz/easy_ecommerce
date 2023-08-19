@@ -215,6 +215,7 @@ class _TransportDeliveryHistorialState
 
   loadData() async {
     isLoading = true;
+    currentPage = 1;
     try {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         getLoadingModal(context, false);
@@ -251,13 +252,13 @@ class _TransportDeliveryHistorialState
               optionsCheckBox.any((element) => element['id'] == item['id']);
           return {...item, 'check': check};
         }).toList();
+
         total = response['total'];
 
         pageCount = response['last_page'];
         //paginate();
-        isLoading && !paginate
-            ? paginatorController.navigateToPage(0)
-            : paginate = false;
+
+        paginatorController.navigateToPage(0);
 
         // _scrollController.jumpTo(0);
       });
@@ -285,7 +286,6 @@ class _TransportDeliveryHistorialState
   }
 
   paginateData() async {
-    isLoading = true;
     try {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         getLoadingModal(context, false);
@@ -309,12 +309,10 @@ class _TransportDeliveryHistorialState
         data = response['data'];
 
         data = data.map((item) {
-          return {...item, 'check': false};
+          bool check =
+              optionsCheckBox.any((element) => element['id'] == item['id']);
+          return {...item, 'check': check};
         }).toList();
-
-        isLoading && !paginate
-            ? paginatorController.navigateToPage(0)
-            : paginate = false;
 
         // _scrollController.jumpTo(0);
       });
@@ -322,14 +320,7 @@ class _TransportDeliveryHistorialState
       Future.delayed(const Duration(milliseconds: 500), () {
         Navigator.pop(context);
       });
-
-      setState(() {
-        isLoading = false;
-      });
     } catch (e) {
-      setState(() {
-        isLoading = false;
-      });
       Navigator.pop(context);
 
       _showErrorSnackBar(context, "Ha ocurrido un error de conexión");
@@ -1470,7 +1461,7 @@ class _TransportDeliveryHistorialState
 
     return [
       DataCell(Checkbox(
-          value: isChecked([index]),
+          value: isChecked(data[index]),
           onChanged: (value) {
             setState(() {
               data[index]['check'] = value;
@@ -2522,7 +2513,9 @@ class _TransportDeliveryHistorialState
         setState(() {
           currentPage = index + 1;
         });
-        await paginateData();
+        if (!isLoading) {
+          await paginateData();
+        }
       },
     );
   }
