@@ -386,7 +386,7 @@ class _DashBoardLogisticState extends State<DashBoardLogistic> {
                     padding: EdgeInsets.all(20),
                     child: DefaultTabController(
                       length:
-                          3, // Cambia el número de pestañas según tus necesidades
+                          2, // Cambia el número de pestañas según tus necesidades
                       child: Column(
                         children: [
                           TabBar(
