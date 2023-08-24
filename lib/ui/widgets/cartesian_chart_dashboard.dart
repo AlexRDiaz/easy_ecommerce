@@ -45,20 +45,6 @@ class _DynamicStackedColumnChartState extends State<DynamicStackedColumnChart> {
               isVisible: true,
               orientation: LegendItemOrientation.vertical,
             ),
-            // annotations: <CartesianChartAnnotation>[
-            //   CartesianChartAnnotation(
-            //       widget: Container(child: const Text('Low')),
-            //       coordinateUnit: CoordinateUnit.point,
-            //       x: 15,
-            //       y: 50),
-            //   CartesianChartAnnotation(
-            //       widget: Container(child: const Text('High')),
-            //       coordinateUnit: CoordinateUnit.point,
-            //       x: 35,
-            //       y: 130,
-            //       yAxisName: 'YAxis' // Refers to the additional axis
-            //       )
-            // ],
           ),
         ),
       ],

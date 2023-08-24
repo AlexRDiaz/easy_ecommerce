@@ -18,7 +18,8 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   LoginControllers _controllers = LoginControllers();
   bool obscureC = true;
-
+  FocusNode _focusEmail = FocusNode();
+  FocusNode _focusPassword = FocusNode();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,7 +61,7 @@ class _LoginPageState extends State<LoginPage> {
             SizedBox(
               height: 20,
             ),
-            _modelTextField(
+            _modelTextFieldPass(
                 text: "Contraseña",
                 obscure: obscureC,
                 email: false,
@@ -74,44 +75,7 @@ class _LoginPageState extends State<LoginPage> {
                   minimumSize: Size(150, 40),
                 ),
                 onPressed: () async {
-                  getLoadingModal(context, false);
-
-                  await _controllers.login(success: () {
-                    Navigator.pop(context);
-                    if (sharedPrefs!.getString('role') == "LOGISTICA") {
-                      Navigators()
-                          .pushNamedAndRemoveUntil(context, '/layout/logistic');
-                    }
-                    if (sharedPrefs!.getString('role') == "VENDEDOR") {
-                      Navigators()
-                          .pushNamedAndRemoveUntil(context, '/layout/sellers');
-                    }
-
-                    if (sharedPrefs!.getString('role') == "TRANSPORTADOR") {
-                      Navigators().pushNamedAndRemoveUntil(
-                          context, '/layout/transport');
-                    }
-                    if (sharedPrefs!.getString('role') == "OPERADOR") {
-                      Navigators()
-                          .pushNamedAndRemoveUntil(context, '/layout/operator');
-                    }
-                  }, error: () {
-                    Navigator.pop(context);
-
-                    AwesomeDialog(
-                      width: 500,
-                      context: context,
-                      dialogType: DialogType.error,
-                      animType: AnimType.rightSlide,
-                      title: 'Credenciales Incorrectas',
-                      desc: 'Vuelve a intentarlo',
-                      btnCancel: Container(),
-                      btnOkText: "Aceptar",
-                      btnOkColor: colors.colorGreen,
-                      btnCancelOnPress: () {},
-                      btnOkOnPress: () {},
-                    ).show();
-                  });
+                  await enter();
                 },
                 child: Text(
                   "INGRESAR",
@@ -127,6 +91,43 @@ class _LoginPageState extends State<LoginPage> {
         )
       ],
     );
+  }
+
+  Future<void> enter() async {
+    getLoadingModal(context, false);
+
+    await _controllers.login(success: () {
+      Navigator.pop(context);
+      if (sharedPrefs!.getString('role') == "LOGISTICA") {
+        Navigators().pushNamedAndRemoveUntil(context, '/layout/logistic');
+      }
+      if (sharedPrefs!.getString('role') == "VENDEDOR") {
+        Navigators().pushNamedAndRemoveUntil(context, '/layout/sellers');
+      }
+
+      if (sharedPrefs!.getString('role') == "TRANSPORTADOR") {
+        Navigators().pushNamedAndRemoveUntil(context, '/layout/transport');
+      }
+      if (sharedPrefs!.getString('role') == "OPERADOR") {
+        Navigators().pushNamedAndRemoveUntil(context, '/layout/operator');
+      }
+    }, error: () {
+      Navigator.pop(context);
+
+      AwesomeDialog(
+        width: 500,
+        context: context,
+        dialogType: DialogType.error,
+        animType: AnimType.rightSlide,
+        title: 'Credenciales Incorrectas',
+        desc: 'Vuelve a intentarlo',
+        btnCancel: Container(),
+        btnOkText: "Aceptar",
+        btnOkColor: colors.colorGreen,
+        btnCancelOnPress: () {},
+        btnOkOnPress: () {},
+      ).show();
+    });
   }
 
   Column _logo() {
@@ -153,6 +154,58 @@ class _LoginPageState extends State<LoginPage> {
       child: TextField(
         controller: controller,
         obscureText: obscure,
+        focusNode: _focusEmail,
+        onSubmitted: (value) {
+          _focusEmail.unfocus();
+          FocusScope.of(context).requestFocus(_focusPassword);
+        },
+        keyboardType:
+            email ? TextInputType.emailAddress : TextInputType.visiblePassword,
+        style: TextStyle(fontWeight: FontWeight.bold),
+        decoration: InputDecoration(
+            hintText: text,
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                  width: 1, color: Color.fromRGBO(237, 241, 245, 1.0)),
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                  width: 1, color: Color.fromRGBO(237, 241, 245, 1.0)),
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            focusColor: Colors.black,
+            iconColor: Colors.black,
+            suffixIcon: email == false
+                ? GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        obscureC = !obscureC;
+                      });
+                    },
+                    child: Icon(
+                      obscure ? Icons.remove_red_eye_outlined : Icons.password,
+                      color: Colors.black,
+                    ))
+                : null),
+      ),
+    );
+  }
+
+  _modelTextFieldPass({text, obscure, email, controller, focus, function}) {
+    return Container(
+      width: 450,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10.0),
+        color: Color.fromARGB(255, 245, 244, 244),
+      ),
+      child: TextField(
+        controller: controller,
+        obscureText: obscure,
+        focusNode: _focusPassword,
+        onSubmitted: (value) async {
+          await enter();
+        },
         keyboardType:
             email ? TextInputType.emailAddress : TextInputType.visiblePassword,
         style: TextStyle(fontWeight: FontWeight.bold),

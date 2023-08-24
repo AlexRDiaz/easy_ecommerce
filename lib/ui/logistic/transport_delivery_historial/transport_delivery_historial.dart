@@ -9,9 +9,11 @@ import 'package:frontend/helpers/responsive.dart';
 import 'package:frontend/main.dart';
 import 'package:frontend/ui/logistic/print_guides/model_guide/model_guide.dart';
 import 'package:frontend/ui/logistic/transport_delivery_historial/transport_delivery_details.dart';
+import 'package:frontend/ui/logistic/transport_delivery_historial/transport_delivery_details_data.dart';
 import 'package:frontend/ui/logistic/vendor_invoices/controllers/controllers.dart';
 import 'package:frontend/ui/widgets/routes/routes.dart';
 import 'package:frontend/ui/widgets/routes/sub_routes_historial.dart';
+import 'package:frontend/ui/widgets/show_error_snackbar.dart';
 import 'package:number_paginator/number_paginator.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../helpers/navigators.dart';
@@ -215,6 +217,7 @@ class _TransportDeliveryHistorialState
 
   loadData() async {
     isLoading = true;
+    optionsCheckBox = [];
     currentPage = 1;
     try {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -234,23 +237,12 @@ class _TransportDeliveryHistorialState
               pageSize,
               _controllers.searchController.text);
 
-      // var response = await Connections().getOrdersForHistorialTransportByDates(
-      //   populate,
-      //   arrayFiltersAnd,
-      //   currentPage,
-      //   pageSize,
-      // );
-
-      // var m = response;
-
       setState(() {
         data = [];
         data = response['data'];
 
         data = data.map((item) {
-          bool check =
-              optionsCheckBox.any((element) => element['id'] == item['id']);
-          return {...item, 'check': check};
+          return {...item, 'check': false};
         }).toList();
 
         total = response['total'];
@@ -281,7 +273,8 @@ class _TransportDeliveryHistorialState
       });
       Navigator.pop(context);
 
-      _showErrorSnackBar(context, "Ha ocurrido un error de conexión");
+      SnackBarHelper.showErrorSnackBar(
+          context, "Ha ocurrido un error de conexión");
     }
   }
 
@@ -323,21 +316,9 @@ class _TransportDeliveryHistorialState
     } catch (e) {
       Navigator.pop(context);
 
-      _showErrorSnackBar(context, "Ha ocurrido un error de conexión");
+      SnackBarHelper.showErrorSnackBar(
+          context, "Hubo un error al cargar los datos.");
     }
-  }
-
-  void _showErrorSnackBar(BuildContext context, String errorMessage) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          errorMessage,
-          style: TextStyle(color: Color.fromRGBO(7, 0, 0, 1)),
-        ),
-        backgroundColor: Color.fromARGB(255, 253, 101, 90),
-        duration: Duration(seconds: 4),
-      ),
-    );
   }
 
   // int calcularTotalPaginas(int totalRegistros, int registrosPorPagina) {
@@ -872,9 +853,13 @@ class _TransportDeliveryHistorialState
                       ),
                     ],
                     rows: List<DataRow>.generate(data.length, (index) {
-                      Color rowColor = Colors.black;
+                      final color =
+                          index % 2 == 0 ? Colors.grey[400] : Colors.white;
 
-                      return DataRow(cells: getRows(index));
+                      return DataRow(
+                          color: MaterialStateColor.resolveWith(
+                              (states) => color!),
+                          cells: getRows(index));
                     }))),
           ],
         ),
@@ -971,141 +956,184 @@ class _TransportDeliveryHistorialState
                               height: 10,
                             ),
                             ElevatedButton(
-                                onPressed: () async {
-                                  await showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return RoutesModal(
-                                            idOrder: optionsCheckBox,
-                                            someOrders: true,
-                                            phoneClient: "",
-                                            codigo: "");
-                                      });
-
-                                  setState(() {});
-                                  await loadData();
-                                },
-                                child: Text(
-                                  "Asignar Ruta",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                )),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            ElevatedButton(
-                                onPressed: () async {
-                                  await showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return SubRoutesModalHistorial(
+                              onPressed: () async {
+                                await showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return RoutesModal(
                                           idOrder: optionsCheckBox,
                                           someOrders: true,
-                                        );
-                                      });
+                                          phoneClient: "",
+                                          codigo: "");
+                                    });
 
-                                  setState(() {});
-                                  await loadData();
-                                },
-                                child: Text(
-                                  "Asignar SubRuta y Operador",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                )),
+                                setState(() {});
+                                await loadData();
+                              },
+                              child: SizedBox(
+                                width: double.infinity,
+                                height: 50,
+                                child: Center(
+                                  child: Text(
+                                    "Asignar Ruta",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ),
+                            ),
                             SizedBox(
                               height: 20,
                             ),
                             ElevatedButton(
-                                onPressed: () async {
-                                  getLoadingModal(context, false);
-                                  for (var option in optionsCheckBox) {
-                                    await Connections()
-                                        .updateOrderLogisticStatus(
-                                            "IMPRESO", option['id'].toString());
-                                  }
+                              onPressed: () async {
+                                await showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return SubRoutesModalHistorial(
+                                        idOrder: optionsCheckBox,
+                                        someOrders: true,
+                                      );
+                                    });
 
-                                  Navigator.pop(context);
-                                  await loadData();
-                                },
-                                child: Text(
-                                  "IMPRESO",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                )),
+                                setState(() {});
+                                await loadData();
+                              },
+                              child: SizedBox(
+                                width: double.infinity,
+                                height: 50,
+                                child: Center(
+                                  child: Text(
+                                    "Asignar SubRuta y Operador",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ),
+                            ),
                             SizedBox(
                               height: 20,
                             ),
                             ElevatedButton(
-                                onPressed: () async {
-                                  getLoadingModal(context, false);
+                              onPressed: () async {
+                                getLoadingModal(context, false);
+                                for (var option in optionsCheckBox) {
+                                  await Connections().updateOrderLogisticStatus(
+                                      "IMPRESO", option['id'].toString());
+                                }
 
-                                  for (var option in optionsCheckBox) {
-                                    await Connections()
-                                        .updateOrderLogisticStatusPrint(
-                                            "ENVIADO", option['id'].toString());
-                                  }
-
-                                  Navigator.pop(context);
-                                  await loadData();
-                                },
-                                child: Text(
-                                  "ENVIADO",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                )),
+                                Navigator.pop(context);
+                                await loadData();
+                              },
+                              child: SizedBox(
+                                width: double.infinity,
+                                height: 50,
+                                child: Center(
+                                  child: Text(
+                                    "IMPRESO",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ),
+                            ),
                             SizedBox(
                               height: 20,
                             ),
                             ElevatedButton(
-                                onPressed: () async {
-                                  const double point = 1.0;
-                                  const double inch = 72.0;
-                                  const double cm = inch / 2.54;
-                                  const double mm = inch / 25.4;
-                                  getLoadingModal(context, false);
-                                  final doc = pw.Document();
+                              onPressed: () async {
+                                getLoadingModal(context, false);
 
-                                  for (var option in optionsCheckBox) {
-                                    final capturedImage =
-                                        await screenshotController
-                                            .captureFromWidget(Container(
-                                                child: ModelGuide(
-                                      address: option['address'],
-                                      city: option['city'],
-                                      date: option['date'],
-                                      extraProduct: option['extraProduct'],
-                                      idForBarcode: option['id'],
-                                      name: option['name'],
-                                      numPedido: option['numPedido'],
-                                      observation: option['obervation'],
-                                      phone: option['phone'],
-                                      price: option['price'],
-                                      product: option['product'],
-                                      qrLink: option['qrLink'],
-                                      quantity: option['quantity'],
-                                      transport: option['transport'],
-                                    )));
-                                    doc.addPage(pw.Page(
-                                      pageFormat: PdfPageFormat(
-                                          21.0 * cm, 21.0 * cm,
-                                          marginAll: 0.1 * cm),
-                                      build: (pw.Context context) {
-                                        return pw.Row(
-                                          children: [
-                                            pw.Image(
-                                                pw.MemoryImage(capturedImage),
-                                                fit: pw.BoxFit.contain)
-                                          ],
-                                        );
-                                      },
-                                    ));
-                                  }
+                                for (var option in optionsCheckBox) {
+                                  await Connections()
+                                      .updateOrderLogisticStatusPrint(
+                                          "ENVIADO", option['id'].toString());
+                                }
 
-                                  Navigator.pop(context);
-                                  await Printing.layoutPdf(
-                                      onLayout: (PdfPageFormat format) async =>
-                                          await doc.save());
-                                },
-                                child: Text(
-                                  "Imprimir",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                )),
+                                Navigator.pop(context);
+                                await loadData();
+                              },
+                              child: const SizedBox(
+                                width: double.infinity,
+                                height: 50,
+                                child: SizedBox(
+                                  width: double.infinity,
+                                  height: 50,
+                                  child: Center(
+                                    child: Text(
+                                      "ENVIADO",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              height: 20,
+                            ),
+                            ElevatedButton(
+                              onPressed: () async {
+                                const double point = 1.0;
+                                const double inch = 72.0;
+                                const double cm = inch / 2.54;
+                                const double mm = inch / 25.4;
+                                getLoadingModal(context, false);
+                                final doc = pw.Document();
+
+                                for (var option in optionsCheckBox) {
+                                  final capturedImage =
+                                      await screenshotController
+                                          .captureFromWidget(Container(
+                                              child: ModelGuide(
+                                    address: option['address'],
+                                    city: option['city'],
+                                    date: option['date'],
+                                    extraProduct: option['extraProduct'],
+                                    idForBarcode: option['id'],
+                                    name: option['name'],
+                                    numPedido: option['numPedido'],
+                                    observation: option['obervation'],
+                                    phone: option['phone'],
+                                    price: option['price'],
+                                    product: option['product'],
+                                    qrLink: option['qrLink'],
+                                    quantity: option['quantity'],
+                                    transport: option['transport'],
+                                  )));
+                                  doc.addPage(pw.Page(
+                                    pageFormat: PdfPageFormat(
+                                        21.0 * cm, 21.0 * cm,
+                                        marginAll: 0.1 * cm),
+                                    build: (pw.Context context) {
+                                      return pw.Row(
+                                        children: [
+                                          pw.Image(
+                                              pw.MemoryImage(capturedImage),
+                                              fit: pw.BoxFit.contain)
+                                        ],
+                                      );
+                                    },
+                                  ));
+                                }
+
+                                Navigator.pop(context);
+                                await Printing.layoutPdf(
+                                    onLayout: (PdfPageFormat format) async =>
+                                        await doc.save());
+                              },
+                              child: SizedBox(
+                                width: double.infinity,
+                                height: 50,
+                                child: Center(
+                                  child: Text(
+                                    "IMPRIMIR",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -1113,7 +1141,7 @@ class _TransportDeliveryHistorialState
                   });
             },
             child: Text(
-              "Logistico",
+              "Logístico",
               style: TextStyle(fontWeight: FontWeight.bold),
             )),
         ElevatedButton(
@@ -1139,95 +1167,119 @@ class _TransportDeliveryHistorialState
                               height: 10,
                             ),
                             ElevatedButton(
-                                onPressed: () async {
-                                  getLoadingModal(context, false);
+                              onPressed: () async {
+                                getLoadingModal(context, false);
 
-                                  for (var i = 0;
-                                      i < optionsCheckBox.length;
-                                      i++) {
-                                    if (optionsCheckBox[i]['id']
-                                            .toString()
-                                            .isNotEmpty &&
-                                        optionsCheckBox[i]['id'].toString() !=
-                                            '' &&
-                                        optionsCheckBox[i]['check'] == true) {
-                                      var response = await Connections()
-                                          .updateOrderInteralStatusHistorial(
-                                              "PENDIENTE",
-                                              optionsCheckBox[i]['id']
-                                                  .toString());
-                                    }
+                                for (var i = 0;
+                                    i < optionsCheckBox.length;
+                                    i++) {
+                                  if (optionsCheckBox[i]['id']
+                                          .toString()
+                                          .isNotEmpty &&
+                                      optionsCheckBox[i]['id'].toString() !=
+                                          '' &&
+                                      optionsCheckBox[i]['check'] == true) {
+                                    var response = await Connections()
+                                        .updateOrderInteralStatusHistorial(
+                                            "PENDIENTE",
+                                            optionsCheckBox[i]['id']
+                                                .toString());
                                   }
+                                }
 
-                                  Navigator.pop(context);
-                                  await loadData();
-                                },
-                                child: Text(
-                                  "Pendiente",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                )),
+                                Navigator.pop(context);
+                                await loadData();
+                              },
+                              child: const SizedBox(
+                                width: double.infinity,
+                                height: 50,
+                                child: Center(
+                                  child: Text(
+                                    "Pendiente",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ),
+                            ),
                             SizedBox(
                               height: 20,
                             ),
                             ElevatedButton(
-                                onPressed: () async {
-                                  getLoadingModal(context, false);
+                              onPressed: () async {
+                                getLoadingModal(context, false);
 
-                                  for (var i = 0;
-                                      i < optionsCheckBox.length;
-                                      i++) {
-                                    if (optionsCheckBox[i]['id']
-                                            .toString()
-                                            .isNotEmpty &&
-                                        optionsCheckBox[i]['id'].toString() !=
-                                            '' &&
-                                        optionsCheckBox[i]['check'] == true) {
-                                      var response = await Connections()
-                                          .updateOrderInteralStatusHistorial(
-                                              "CONFIRMADO",
-                                              optionsCheckBox[i]['id']
-                                                  .toString());
-                                    }
+                                for (var i = 0;
+                                    i < optionsCheckBox.length;
+                                    i++) {
+                                  if (optionsCheckBox[i]['id']
+                                          .toString()
+                                          .isNotEmpty &&
+                                      optionsCheckBox[i]['id'].toString() !=
+                                          '' &&
+                                      optionsCheckBox[i]['check'] == true) {
+                                    var response = await Connections()
+                                        .updateOrderInteralStatusHistorial(
+                                            "CONFIRMADO",
+                                            optionsCheckBox[i]['id']
+                                                .toString());
                                   }
+                                }
 
-                                  Navigator.pop(context);
-                                  await loadData();
-                                },
-                                child: Text(
-                                  "Confirmar",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                )),
+                                Navigator.pop(context);
+                                await loadData();
+                              },
+                              child: SizedBox(
+                                width: double.infinity,
+                                height: 50,
+                                child: Center(
+                                  child: Text(
+                                    "Confirmar",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ),
+                            ),
                             SizedBox(
                               height: 20,
                             ),
                             ElevatedButton(
-                                onPressed: () async {
-                                  getLoadingModal(context, false);
+                              onPressed: () async {
+                                getLoadingModal(context, false);
 
-                                  for (var i = 0;
-                                      i < optionsCheckBox.length;
-                                      i++) {
-                                    if (optionsCheckBox[i]['id']
-                                            .toString()
-                                            .isNotEmpty &&
-                                        optionsCheckBox[i]['id'].toString() !=
-                                            '' &&
-                                        optionsCheckBox[i]['check'] == true) {
-                                      var response = await Connections()
-                                          .updateOrderInteralStatusHistorial(
-                                              "NO DESEA",
-                                              optionsCheckBox[i]['id']
-                                                  .toString());
-                                    }
+                                for (var i = 0;
+                                    i < optionsCheckBox.length;
+                                    i++) {
+                                  if (optionsCheckBox[i]['id']
+                                          .toString()
+                                          .isNotEmpty &&
+                                      optionsCheckBox[i]['id'].toString() !=
+                                          '' &&
+                                      optionsCheckBox[i]['check'] == true) {
+                                    var response = await Connections()
+                                        .updateOrderInteralStatusHistorial(
+                                            "NO DESEA",
+                                            optionsCheckBox[i]['id']
+                                                .toString());
                                   }
+                                }
 
-                                  Navigator.pop(context);
-                                  await loadData();
-                                },
-                                child: Text(
-                                  "No Desea",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                )),
+                                Navigator.pop(context);
+                                await loadData();
+                              },
+                              child: SizedBox(
+                                width: double.infinity,
+                                height: 50,
+                                child: Center(
+                                  child: Text(
+                                    "No Desea",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -1261,90 +1313,114 @@ class _TransportDeliveryHistorialState
                               height: 10,
                             ),
                             ElevatedButton(
-                                onPressed: () async {
-                                  getLoadingModal(context, false);
+                              onPressed: () async {
+                                getLoadingModal(context, false);
 
-                                  for (var i = 0;
-                                      i < optionsCheckBox.length;
-                                      i++) {
-                                    if (optionsCheckBox[i]['id']
-                                            .toString()
-                                            .isNotEmpty &&
-                                        optionsCheckBox[i]['id'].toString() !=
-                                            '' &&
-                                        optionsCheckBox[i]['check'] == true) {
-                                      await Connections().updateOrderReturnAll(
-                                          optionsCheckBox[i]['id'].toString());
-                                    }
+                                for (var i = 0;
+                                    i < optionsCheckBox.length;
+                                    i++) {
+                                  if (optionsCheckBox[i]['id']
+                                          .toString()
+                                          .isNotEmpty &&
+                                      optionsCheckBox[i]['id'].toString() !=
+                                          '' &&
+                                      optionsCheckBox[i]['check'] == true) {
+                                    await Connections().updateOrderReturnAll(
+                                        optionsCheckBox[i]['id'].toString());
                                   }
+                                }
 
-                                  Navigator.pop(context);
-                                  await loadData();
-                                },
-                                child: Text(
-                                  "PENDIENTE",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                )),
+                                Navigator.pop(context);
+                                await loadData();
+                              },
+                              child: SizedBox(
+                                width: double.infinity,
+                                height: 50,
+                                child: Center(
+                                  child: Text(
+                                    "PENDIENTE",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ),
+                            ),
                             SizedBox(
                               height: 20,
                             ),
                             ElevatedButton(
-                                onPressed: () async {
-                                  getLoadingModal(context, false);
+                              onPressed: () async {
+                                getLoadingModal(context, false);
 
-                                  for (var i = 0;
-                                      i < optionsCheckBox.length;
-                                      i++) {
-                                    if (optionsCheckBox[i]['id']
-                                            .toString()
-                                            .isNotEmpty &&
-                                        optionsCheckBox[i]['id'].toString() !=
-                                            '' &&
-                                        optionsCheckBox[i]['check'] == true) {
-                                      await Connections()
-                                          .updateOrderReturnOperator(
-                                              optionsCheckBox[i]['id']
-                                                  .toString());
-                                    }
+                                for (var i = 0;
+                                    i < optionsCheckBox.length;
+                                    i++) {
+                                  if (optionsCheckBox[i]['id']
+                                          .toString()
+                                          .isNotEmpty &&
+                                      optionsCheckBox[i]['id'].toString() !=
+                                          '' &&
+                                      optionsCheckBox[i]['check'] == true) {
+                                    await Connections()
+                                        .updateOrderReturnOperator(
+                                            optionsCheckBox[i]['id']
+                                                .toString());
                                   }
+                                }
 
-                                  Navigator.pop(context);
-                                  await loadData();
-                                },
-                                child: Text(
-                                  "En Oficina",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                )),
+                                Navigator.pop(context);
+                                await loadData();
+                              },
+                              child: const SizedBox(
+                                width: double.infinity,
+                                height: 50,
+                                child: Center(
+                                  child: Text(
+                                    "En Oficina",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ),
+                            ),
                             SizedBox(
                               height: 20,
                             ),
                             ElevatedButton(
-                                onPressed: () async {
-                                  getLoadingModal(context, false);
+                              onPressed: () async {
+                                getLoadingModal(context, false);
 
-                                  for (var i = 0;
-                                      i < optionsCheckBox.length;
-                                      i++) {
-                                    if (optionsCheckBox[i]['id']
-                                            .toString()
-                                            .isNotEmpty &&
-                                        optionsCheckBox[i]['id'].toString() !=
-                                            '' &&
-                                        optionsCheckBox[i]['check'] == true) {
-                                      await Connections()
-                                          .updateOrderReturnLogistic(
-                                              optionsCheckBox[i]['id']
-                                                  .toString());
-                                    }
+                                for (var i = 0;
+                                    i < optionsCheckBox.length;
+                                    i++) {
+                                  if (optionsCheckBox[i]['id']
+                                          .toString()
+                                          .isNotEmpty &&
+                                      optionsCheckBox[i]['id'].toString() !=
+                                          '' &&
+                                      optionsCheckBox[i]['check'] == true) {
+                                    await Connections()
+                                        .updateOrderReturnLogistic(
+                                            optionsCheckBox[i]['id']
+                                                .toString());
                                   }
+                                }
 
-                                  Navigator.pop(context);
-                                  await loadData();
-                                },
-                                child: Text(
-                                  "En Bodega",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                )),
+                                Navigator.pop(context);
+                                await loadData();
+                              },
+                              child: const SizedBox(
+                                width: double.infinity,
+                                height: 50,
+                                child: Center(
+                                  child: Text(
+                                    "En Bodega",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -1378,59 +1454,73 @@ class _TransportDeliveryHistorialState
                               height: 10,
                             ),
                             ElevatedButton(
-                                onPressed: () async {
-                                  for (var i = 0;
-                                      i < optionsCheckBox.length;
-                                      i++) {
-                                    if (optionsCheckBox[i]['id']
-                                            .toString()
-                                            .isNotEmpty &&
-                                        optionsCheckBox[i]['id'].toString() !=
-                                            '' &&
-                                        optionsCheckBox[i]['check'] == true) {
-                                      var _url = Uri.parse(
-                                          """https://api.whatsapp.com/send?phone=${optionsCheckBox[i]['phone'].toString()}""");
-                                      if (!await launchUrl(_url)) {
-                                        throw Exception(
-                                            'Could not launch $_url');
-                                      }
+                              onPressed: () async {
+                                for (var i = 0;
+                                    i < optionsCheckBox.length;
+                                    i++) {
+                                  if (optionsCheckBox[i]['id']
+                                          .toString()
+                                          .isNotEmpty &&
+                                      optionsCheckBox[i]['id'].toString() !=
+                                          '' &&
+                                      optionsCheckBox[i]['check'] == true) {
+                                    var _url = Uri.parse(
+                                        """https://api.whatsapp.com/send?phone=${optionsCheckBox[i]['phone'].toString()}""");
+                                    if (!await launchUrl(_url)) {
+                                      throw Exception('Could not launch $_url');
                                     }
                                   }
-                                },
-                                child: Text(
-                                  "WhatsApp",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                )),
+                                }
+                              },
+                              child: const SizedBox(
+                                width: double.infinity,
+                                height: 50,
+                                child: Center(
+                                  child: Text(
+                                    "WhatsApp",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ),
+                            ),
                             SizedBox(
                               height: 20,
                             ),
                             ElevatedButton(
-                                onPressed: () async {
-                                  for (var i = 0;
-                                      i < optionsCheckBox.length;
-                                      i++) {
-                                    if (optionsCheckBox[i]['id']
-                                            .toString()
-                                            .isNotEmpty &&
-                                        optionsCheckBox[i]['id'].toString() !=
-                                            '' &&
-                                        optionsCheckBox[i]['check'] == true) {
-                                      var _url = Uri(
-                                          scheme: 'tel',
-                                          path:
-                                              '${optionsCheckBox[i]['phone'].toString()}');
+                              onPressed: () async {
+                                for (var i = 0;
+                                    i < optionsCheckBox.length;
+                                    i++) {
+                                  if (optionsCheckBox[i]['id']
+                                          .toString()
+                                          .isNotEmpty &&
+                                      optionsCheckBox[i]['id'].toString() !=
+                                          '' &&
+                                      optionsCheckBox[i]['check'] == true) {
+                                    var _url = Uri(
+                                        scheme: 'tel',
+                                        path:
+                                            '${optionsCheckBox[i]['phone'].toString()}');
 
-                                      if (!await launchUrl(_url)) {
-                                        throw Exception(
-                                            'Could not launch $_url');
-                                      }
+                                    if (!await launchUrl(_url)) {
+                                      throw Exception('Could not launch $_url');
                                     }
                                   }
-                                },
-                                child: Text(
-                                  "Llamada",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ))
+                                }
+                              },
+                              child: SizedBox(
+                                width: double.infinity,
+                                height: 50,
+                                child: Center(
+                                  child: Text(
+                                    "Llamada",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ),
+                            )
                           ],
                         ),
                       ),
@@ -1461,7 +1551,7 @@ class _TransportDeliveryHistorialState
 
     return [
       DataCell(Checkbox(
-          value: isChecked(data[index]),
+          value: data[index]['check'],
           onChanged: (value) {
             setState(() {
               data[index]['check'] = value;
@@ -1512,7 +1602,7 @@ class _TransportDeliveryHistorialState
               color: rowColor,
             ),
           ), onTap: () {
-        showDialogInfo(index);
+        showDialogInfoData(data[index]);
       }),
       DataCell(
           Text(
@@ -1521,7 +1611,7 @@ class _TransportDeliveryHistorialState
               color: rowColor,
             ),
           ), onTap: () {
-        showDialogInfo(index);
+        showDialogInfoData(data[index]);
       }),
       DataCell(
           Text(
@@ -1530,17 +1620,20 @@ class _TransportDeliveryHistorialState
               color: rowColor,
             ),
           ), onTap: () {
-        showDialogInfo(index);
+        showDialogInfoData(data[index]);
       }),
-      DataCell(
-          Text(
-            data[index]['nombre_shipping'].toString(),
-            style: TextStyle(
-              color: rowColor,
-            ),
-          ), onTap: () {
-        showDialogInfo(index);
-      }),
+     DataCell(
+  Text(
+    data[index]['nombre_shipping'].toString(),
+    style: TextStyle(
+      color: rowColor,
+    ),
+    textAlign: TextAlign.left, // Alineación a la izquierda
+  ),
+  onTap: () {
+    showDialogInfoData(data[index]);
+  },
+),
       DataCell(
           Text(
             '${data[index]['direccion_shipping'].toString()}',
@@ -1548,7 +1641,7 @@ class _TransportDeliveryHistorialState
               color: rowColor,
             ),
           ), onTap: () {
-        showDialogInfo(index);
+        showDialogInfoData(data[index]);
       }),
       DataCell(
           Text(
@@ -1557,7 +1650,7 @@ class _TransportDeliveryHistorialState
               color: rowColor,
             ),
           ), onTap: () {
-        showDialogInfo(index);
+        showDialogInfoData(data[index]);
       }),
       DataCell(
           Text(
@@ -1566,7 +1659,7 @@ class _TransportDeliveryHistorialState
               color: rowColor,
             ),
           ), onTap: () {
-        showDialogInfo(index);
+        showDialogInfoData(data[index]);
       }),
       DataCell(
           Text(
@@ -1575,7 +1668,7 @@ class _TransportDeliveryHistorialState
               color: rowColor,
             ),
           ), onTap: () {
-        showDialogInfo(index);
+        showDialogInfoData(data[index]);
       }),
       DataCell(
           Text(
@@ -1600,7 +1693,7 @@ class _TransportDeliveryHistorialState
               color: rowColor,
             ),
           ), onTap: () {
-        showDialogInfo(index);
+        showDialogInfoData(data[index]);
       }),
       DataCell(
           Text(
@@ -1714,7 +1807,7 @@ class _TransportDeliveryHistorialState
               color: rowColor,
             ),
           ), onTap: () {
-        showDialogInfo(index);
+        showDialogInfoData(data[index]);
       }),
       DataCell(
           Text(
@@ -1740,7 +1833,7 @@ class _TransportDeliveryHistorialState
               ? data[index]['users'][0]['vendedores'][0]['costo_devolucion']
                   .toString()
               : ""), onTap: () {
-        showDialogInfo(index);
+        showDialogInfoData(data[index]);
       }),
       DataCell(
           Text(
@@ -1749,7 +1842,7 @@ class _TransportDeliveryHistorialState
               color: rowColor,
             ),
           ), onTap: () {
-        showDialogInfo(index);
+        showDialogInfoData(data[index]);
       }),
       DataCell(
           Text(
@@ -1766,7 +1859,7 @@ class _TransportDeliveryHistorialState
               color: rowColor,
             ),
           ), onTap: () {
-        showDialogInfo(index);
+        showDialogInfoData(data[index]);
       }),
     ];
   }
@@ -1793,6 +1886,37 @@ class _TransportDeliveryHistorialState
                   Expanded(
                       child: TransportDeliveryHistoryDetails(
                     id: data[index]['id'].toString(),
+                  ))
+                ],
+              ),
+            ),
+          );
+        });
+  }
+
+  Future<dynamic> showDialogInfoData(data) {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            content: Container(
+              width: MediaQuery.of(context).size.width * 0.4,
+              height: MediaQuery.of(context).size.height,
+              child: Column(
+                children: [
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                        paginateData();
+                      },
+                      child: Icon(Icons.close),
+                    ),
+                  ),
+                  Expanded(
+                      child: TransportDeliveryHistoryDetailsData(
+                    data: data,
                   ))
                 ],
               ),
@@ -2502,6 +2626,10 @@ class _TransportDeliveryHistorialState
   NumberPaginator numberPaginator() {
     return NumberPaginator(
       config: NumberPaginatorUIConfig(
+        buttonSelectedBackgroundColor: Color.fromARGB(255, 71, 71, 71),
+        // buttonUnselectedBackgroundColor: Color.fromARGB(255, 71, 71, 71),
+        buttonSelectedForegroundColor: Colors.white,
+        buttonUnselectedForegroundColor: Colors.black,
         buttonShape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(5), // Customize the button shape
         ),

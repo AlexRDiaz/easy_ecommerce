@@ -912,6 +912,47 @@ class Connections {
     return decodeData['data'];
   }
 
+  getOrdersDashboardLogisticLaravel(List populate, List and) async {
+    print('start: ${sharedPrefs!.getString("dateDesdeLogistica")}');
+    print('end: ${sharedPrefs!.getString("dateHastaLogistica")}');
+
+    var request = await http.post(
+        Uri.parse("$serverLaravel/api/pedidos-shopify/products"),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          "start": sharedPrefs!.getString("dateDesdeLogistica"),
+          "end": sharedPrefs!.getString("dateHastaLogistica"),
+          "or": []
+        }));
+
+    var response = await request.body;
+    var decodeData = json.decode(response);
+    return decodeData['data'];
+  }
+
+  getOrdersDashboardLogisticRoutes(List populate, List and) async {
+    print('start: ${sharedPrefs!.getString("dateDesdeLogistica")}');
+    print('end: ${sharedPrefs!.getString("dateHastaLogistica")}');
+
+    var request = await http.post(
+        Uri.parse("$server/api/products/city/dashboard/logistic"),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          "start": sharedPrefs!.getString("dateDesdeLogistica"),
+          "end": sharedPrefs!.getString("dateHastaLogistica"),
+          "populate": jsonEncode(populate),
+          "and": jsonEncode(and)
+        }));
+
+    var response = await request.body;
+    var decodeData = json.decode(response);
+    return decodeData['data'];
+  }
+
   getOrdersDashboardTransportadora(List populate, List and) async {
     print('start: ${sharedPrefs!.getString("dateDesdeTransportadora")}');
     print('end: ${sharedPrefs!.getString("dateHastaTransportadora")}');
@@ -999,20 +1040,22 @@ class Connections {
     return decodeData;
   }
 
-  getOrdersDashboardLogisticRoutes(List populate, List and) async {
+  getOrdersDashboardLogisticRoutesLaravel(
+      List populate, List and, routeId) async {
     print('start: ${sharedPrefs!.getString("dateDesdeLogistica")}');
     print('end: ${sharedPrefs!.getString("dateHastaLogistica")}');
 
     var request = await http.post(
-        Uri.parse("$server/api/products/city/dashboard/logistic"),
+        Uri.parse("$serverLaravel/api/pedidos-shopify/routes/count"),
         headers: {
           'Content-Type': 'application/json',
         },
         body: json.encode({
           "start": sharedPrefs!.getString("dateDesdeLogistica"),
           "end": sharedPrefs!.getString("dateHastaLogistica"),
-          "populate": jsonEncode(populate),
-          "and": jsonEncode(and)
+          "search": "",
+          "or": [],
+          "route_id": routeId
         }));
 
     var response = await request.body;
@@ -1190,6 +1233,7 @@ class Connections {
   }
 
   Future updateOrderInteralStatusHistorial(text, id) async {
+    int res = 0;
     try {
       var request =
           await http.put(Uri.parse("$server/api/pedidos-shopifies/$id"),
@@ -1205,13 +1249,13 @@ class Connections {
       var decodeData = json.decode(response);
 
       if (request.statusCode != 200) {
-        return false;
-      } else {
-        return true;
+        res = 1;
       }
     } catch (e) {
       print(e);
+      res = 2;
     }
+    return res;
   }
 
   Future updateOrderInteralStatusLogistic(text, id) async {
@@ -1239,6 +1283,7 @@ class Connections {
   }
 
   Future updateOrderLogisticStatus(text, id) async {
+    int res = 0;
     try {
       var request =
           await http.put(Uri.parse("$server/api/pedidos-shopifies/$id"),
@@ -1252,16 +1297,17 @@ class Connections {
       var decodeData = json.decode(response);
 
       if (request.statusCode != 200) {
-        return false;
-      } else {
-        return true;
+        res = 1;
       }
     } catch (e) {
       print(e);
+      res = 2;
     }
+    return res;
   }
 
   Future updateOrderLogisticStatusPrint(text, id) async {
+    int res = 0;
     try {
       var request =
           await http.put(Uri.parse("$server/api/pedidos-shopifies/$id"),
@@ -1279,13 +1325,13 @@ class Connections {
       var response = await request.body;
       var decodeData = json.decode(response);
       if (request.statusCode != 200) {
-        return false;
-      } else {
-        return true;
+        res = 0;
       }
     } catch (e) {
       print(e);
+      res = 2;
     }
+    return res;
   }
 
   Future updateOrderInteralStatusInOrderPrinted(text, id) async {
@@ -2043,6 +2089,17 @@ class Connections {
     var decodeData = json.decode(response);
 
     return decodeData['data'];
+  }
+
+  Future getOrderByIDHistoryLaravel(id) async {
+    var request = await http.get(
+      Uri.parse("$serverLaravel/api/pedidos-shopify/$id"),
+      headers: {'Content-Type': 'application/json'},
+    );
+    var response = await request.body;
+    var decodeData = json.decode(response);
+
+    return decodeData;
   }
 
   Future getWithDrawalByID() async {
@@ -3155,47 +3212,57 @@ class Connections {
 
   //RETURNS
   Future updateOrderReturnOperator(id) async {
-    var request = await http.put(Uri.parse("$server/api/pedidos-shopifies/$id"),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({
-          "data": {
-            "Estado_Devolucion": "ENTREGADO EN OFICINA",
-            "DO": "ENTREGADO EN OFICINA",
-            "Marca_T_D":
-                "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year} ${DateTime.now().hour}:${DateTime.now().minute} "
-          }
-        }));
-    var response = await request.body;
-    var decodeData = json.decode(response);
-    if (request.statusCode != 200) {
-      return false;
-    } else {
-      return true;
+    int res = 0;
+    try {
+      var request =
+          await http.put(Uri.parse("$server/api/pedidos-shopifies/$id"),
+              headers: {'Content-Type': 'application/json'},
+              body: json.encode({
+                "data": {
+                  "Estado_Devolucion": "ENTREGADO EN OFICINA",
+                  "DO": "ENTREGADO EN OFICINA",
+                  "Marca_T_D":
+                      "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year} ${DateTime.now().hour}:${DateTime.now().minute} "
+                }
+              }));
+      var response = await request.body;
+      var decodeData = json.decode(response);
+      if (request.statusCode != 200) {
+        res = 1;
+      }
+    } catch (e) {
+      res = 2;
     }
+    return res;
   }
 
   //RETURNS
   Future updateOrderReturnAll(id) async {
-    var request = await http.put(Uri.parse("$server/api/pedidos-shopifies/$id"),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({
-          "data": {
-            "Estado_Devolucion": "PENDIENTE",
-            "DO": "PENDIENTE",
-            "DT": "PENDIENTE",
-            "DL": "PENDIENTE",
-            "Marca_T_D": "",
-            "Marca_T_D_T": "",
-            "Marca_T_D_L": ""
-          }
-        }));
-    var response = await request.body;
-    var decodeData = json.decode(response);
-    if (request.statusCode != 200) {
-      return false;
-    } else {
-      return true;
+    int res = 0;
+    try {
+      var request =
+          await http.put(Uri.parse("$server/api/pedidos-shopifies/$id"),
+              headers: {'Content-Type': 'application/json'},
+              body: json.encode({
+                "data": {
+                  "Estado_Devolucion": "PENDIENTE",
+                  "DO": "PENDIENTE",
+                  "DT": "PENDIENTE",
+                  "DL": "PENDIENTE",
+                  "Marca_T_D": "",
+                  "Marca_T_D_T": "",
+                  "Marca_T_D_L": ""
+                }
+              }));
+      var response = await request.body;
+      var decodeData = json.decode(response);
+      if (request.statusCode != 200) {
+        res = 1;
+      }
+    } catch (e) {
+      res = 2;
     }
+    return res;
   }
 
   Future updateReviewStatus(id) async {
@@ -3257,23 +3324,28 @@ class Connections {
   }
 
   Future updateOrderReturnLogistic(id) async {
-    var request = await http.put(Uri.parse("$server/api/pedidos-shopifies/$id"),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({
-          "data": {
-            "Estado_Devolucion": "EN BODEGA",
-            "DL": "EN BODEGA",
-            "Marca_T_D_L":
-                "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year} ${DateTime.now().hour}:${DateTime.now().minute} "
-          }
-        }));
-    var response = await request.body;
-    var decodeData = json.decode(response);
-    if (request.statusCode != 200) {
-      return false;
-    } else {
-      return true;
+    int res = 0;
+    try {
+      var request =
+          await http.put(Uri.parse("$server/api/pedidos-shopifies/$id"),
+              headers: {'Content-Type': 'application/json'},
+              body: json.encode({
+                "data": {
+                  "Estado_Devolucion": "EN BODEGA",
+                  "DL": "EN BODEGA",
+                  "Marca_T_D_L":
+                      "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year} ${DateTime.now().hour}:${DateTime.now().minute} "
+                }
+              }));
+      var response = await request.body;
+      var decodeData = json.decode(response);
+      if (request.statusCode != 200) {
+        res = 1;
+      }
+    } catch (e) {
+      res = 2;
     }
+    return res;
   }
 
   Future<bool> createNovedad(id_pedido, intento, url_imagen, comment) async {
