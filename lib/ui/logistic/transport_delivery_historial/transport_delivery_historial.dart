@@ -1622,18 +1622,18 @@ class _TransportDeliveryHistorialState
           ), onTap: () {
         showDialogInfoData(data[index]);
       }),
-     DataCell(
-  Text(
-    data[index]['nombre_shipping'].toString(),
-    style: TextStyle(
-      color: rowColor,
-    ),
-    textAlign: TextAlign.left, // Alineación a la izquierda
-  ),
-  onTap: () {
-    showDialogInfoData(data[index]);
-  },
-),
+      DataCell(
+        Text(
+          data[index]['nombre_shipping'].toString(),
+          style: TextStyle(
+            color: rowColor,
+          ),
+          textAlign: TextAlign.left, // Alineación a la izquierda
+        ),
+        onTap: () {
+          showDialogInfoData(data[index]);
+        },
+      ),
       DataCell(
           Text(
             '${data[index]['direccion_shipping'].toString()}',

@@ -1325,7 +1325,7 @@ class Connections {
       var response = await request.body;
       var decodeData = json.decode(response);
       if (request.statusCode != 200) {
-        res = 0;
+        res = 1;
       }
     } catch (e) {
       print(e);
